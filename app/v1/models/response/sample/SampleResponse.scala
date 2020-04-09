@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.sample
 
 import config.AppConfig
 import play.api.libs.json.{Json, OWrites}
@@ -33,6 +33,5 @@ object SampleResponse extends HateoasLinks {
     }
   }
 
+  case class SampleHateoasData(nino: String) extends HateoasData
 }
-
-case class SampleHateoasData(nino: String) extends HateoasData

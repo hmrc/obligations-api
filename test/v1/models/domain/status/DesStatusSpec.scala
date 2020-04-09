@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
-package v1.models.requestData
+package v1.models.domain.status
 
-trait RawData
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
+
+class DesStatusSpec extends UnitSpec with EnumJsonSpecSupport {
+  testRoundTrip[DesStatus](
+    ("F", DesStatus.F),
+    ("O", DesStatus.O)
+  )
+
+  "toMtd" should {
+    Seq((DesStatus.F, MtdStatus.Fulfilled), (DesStatus.O, MtdStatus.Open)).foreach {
+      case (desStatus, mtdStatus) =>
+        s"convert $desStatus to $mtdStatus" in {
+          desStatus.toMtd shouldBe mtdStatus
+        }
+    }
+  }
+}

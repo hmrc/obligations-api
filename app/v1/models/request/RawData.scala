@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers
+package v1.models.request
 
-import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
-import v1.controllers.requestParsers.validators.SampleValidator
-import v1.models.request.sample.{SampleRawData, SampleRequest, SampleRequestBody}
-import v1.models.request.DesTaxYear
-
-class SampleRequestDataParser @Inject()(val validator: SampleValidator)
-  extends RequestParser[SampleRawData, SampleRequest] {
-
-  override protected def requestFor(data: SampleRawData): SampleRequest =
-    SampleRequest(Nino(data.nino), DesTaxYear.fromMtd(data.taxYear), data.body.as[SampleRequestBody])
-
-}
+trait RawData

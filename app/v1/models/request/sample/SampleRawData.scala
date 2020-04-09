@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.request.sample
 
-import play.api.libs.json.Json
-import support.UnitSpec
+import play.api.libs.json.JsValue
+import v1.models.request.RawData
 
-class SampleResponseSpec extends UnitSpec {
-  "writes" must {
-    "write expected JSON format" in {
-      Json.toJson(SampleResponse("someData")) shouldBe Json.parse(
-        """
-          |{
-          |  "responseData" : "someData"
-          |}
-        """.stripMargin)
-    }
-  }
-}
+case class SampleRawData(nino: String, taxYear: String, body: JsValue) extends RawData

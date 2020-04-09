@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.domain.status
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-case class SampleRequestBody(data: String)
+sealed trait DesStatus {
+  def toMtd: MtdStatus
+}
 
-object SampleRequestBody {
-  implicit val reads: Reads[SampleRequestBody] = Json.reads[SampleRequestBody]
+object DesStatus {
+  case object F extends DesStatus {
+    override def toMtd: MtdStatus = MtdStatus.Fulfilled
+  }
+  case object O extends DesStatus {
+    override def toMtd: MtdStatus = MtdStatus.Open
+  }
+
+  implicit val format: Format[DesStatus] = Enums.format[DesStatus]
+  val parser: PartialFunction[String, DesStatus] = Enums.parser[DesStatus]
 }

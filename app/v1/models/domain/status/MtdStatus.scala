@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package v1.models.requestData
+package v1.models.domain.status
 
-/**
-  * Represents a tax year for DES
-  *
-  * @param value the tax year string (where 2018 represents 2017-18)
-  */
-case class DesTaxYear(value: String) extends AnyVal {
-  override def toString: String = value
-}
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-object DesTaxYear {
+sealed trait MtdStatus
 
-  /**
-    * @param taxYear tax year in MTD format (e.g. 2017-18)
-    */
-  def fromMtd(taxYear: String): DesTaxYear =
-    DesTaxYear(taxYear.take(2) + taxYear.drop(5))
+object MtdStatus {
+  case object Fulfilled extends MtdStatus
+  case object Open extends MtdStatus
+
+  implicit val format: Format[MtdStatus] = Enums.format[MtdStatus]
+  val parser: PartialFunction[String, MtdStatus] = Enums.parser[MtdStatus]
 }
