@@ -319,3 +319,124 @@ traits:
                 description: There is no accounting period for the year of the claim.
                 value:
                   code: RULE_NO_ACCOUNTING_PERIOD
+  FormatTypeOfBusiness:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              FormatTypeOfBusiness:
+                description: The format of the type of business field is not valid.
+                value:
+                  code: FORMAT_TYPE_OF_BUSINESS
+  FormatBusinessId:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              FormatBusinessId:
+                description: The format of the business Id field is not valid.
+                value:
+                  code: FORMAT_BUSINESS_ID
+  FormatFromDate:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              FormatFromDate:
+                description: The format of the from date field is not valid.
+                value:
+                  code: FORMAT_FROM_DATE
+  FormatToDate:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              FormatToDate:
+                description: The format of the to date field is not valid.
+                value:
+                  code: FORMAT_TO_DATE
+  FormatStatus:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              FormatStatus:
+                description: The format of the status field is not valid.
+                value:
+                  code: FORMAT_STATUS
+  MissingFromDate:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              MissingFromDate:
+                description: The From date parameter is missing.
+                value:
+                  code: MISSING_FROM_DATE
+  MissingToDate:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              MissingToDate:
+                description: The to date parameter is missing.
+                value:
+                  code: MISSING_TO_DATE
+  RangeToDateBeforeFromDate:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              RangeToDateBeforeFromDate:
+                description: The To date is before the From date.
+                value:
+                  code: RANGE_TO_DATE_BEFORE_FROM_DATE
+  MissingTypeOfBusiness:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              MissingTypeOfBusiness:
+                description: The Type of Business Parameter is missing.
+                value:
+                  code: MISSING_TYPE_OF_BUSINESS
+  RuleDateRangeInvalid:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              RuleDateRangeInvalid:
+                description: The date range is longer than 366 days.
+                value:
+                  code: RULE_DATE_RANGE_INVALID
+  RuleFromDateNonSupported:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              RuleFromDateNonSupported:
+                description: The from date specified is before 2018-04-06.
+                value:
+                  code: RULE_FROM_DATE_NOT_SUPPORTED

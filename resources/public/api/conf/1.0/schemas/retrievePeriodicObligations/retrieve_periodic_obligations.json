@@ -20,7 +20,7 @@
             "type": "string",
             "example": "XAIS12345678910"
           },
-          "ObligationDetails": {
+          "obligationDetails": {
             "type": "array",
             "description": "An array holding the obligations for the business income source",
             "items": {
@@ -69,7 +69,7 @@
         "required": [
           "typeOfBusiness",
           "businessId",
-          "ObligationDetails"
+          "obligationDetails"
         ]
       }
     }
