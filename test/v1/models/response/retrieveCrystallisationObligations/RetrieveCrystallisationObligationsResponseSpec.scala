@@ -49,7 +49,7 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25"))
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25"))
         ))
       }
       "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
@@ -86,8 +86,8 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
+          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
         ))
       }
       "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
@@ -133,8 +133,8 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1921-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1921-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
         ))
       }
       "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
@@ -196,13 +196,16 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
+          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25")),
+          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
+          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
         ))
       }
     }
+  }
+
+  it should {
     "filter out objects without ITSA periodKey" when {
       "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
         val desJson = Json.parse(

@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrieveCrystallisationObligations
+package v1.models.domain
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-case class Obligation(periodStartDate: String, periodEndDate: String, dueDate: String, status: MtdStatus, receivedDate: Option[String])
+sealed trait PeriodKey
 
-object Obligation {
-  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
+object PeriodKey {
+  case object ITSA extends PeriodKey
+
+  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
+  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
 }
+

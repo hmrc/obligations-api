@@ -17,17 +17,31 @@
 package v1.models.response.retrieveCrystallisationObligations
 
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
-import utils.JsonHelpers
+import v1.models.domain.PeriodKey
+import v1.models.response.retrieveCrystallisationObligations.des.DesObligation
 
 case class RetrieveCrystallisationObligationsResponse(obligationDetails: Seq[Obligation])
 
-object RetrieveCrystallisationObligationsResponse extends JsonHelpers {
+object RetrieveCrystallisationObligationsResponse {
 
   //bound case class to allow us to read from multiple lists of obligation details to merge together later
   case class Detail(obligation: Seq[Obligation])
 
   object Detail {
-    implicit val reads: Reads[Detail] = (JsPath \ "obligationDetails").read[Seq[Obligation]].map(Detail(_))
+    implicit val reads: Reads[Detail] = (JsPath \ "obligationDetails").read[Seq[DesObligation]]
+      .map(
+        _.collect {
+          case o if o.periodKey == PeriodKey.ITSA.toString =>
+            Obligation(
+              periodStartDate = o.inboundCorrespondenceFromDate,
+              periodEndDate = o.inboundCorrespondenceToDate,
+              dueDate = o.inboundCorrespondenceDueDate,
+              status = o.status.toMtd,
+              receivedDate = o.inboundCorrespondenceDateReceived
+            )
+        }
+      )
+      .map(Detail(_))
   }
 
   implicit val reads: Reads[RetrieveCrystallisationObligationsResponse] = {
