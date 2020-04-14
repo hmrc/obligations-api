@@ -32,3 +32,8 @@ traits:
       status:
         description: 'Obligation status to return: Open or Fulfilled only. Omit status to retrieve all obligations.'
         required: false
+  taxYear:
+    queryParameters:
+      taxYear:
+        description: 'The tax year the data applies to. If not supplied will default to the last completed tax year, The earliest permitted tax year is 2017-18'
+        required: false
