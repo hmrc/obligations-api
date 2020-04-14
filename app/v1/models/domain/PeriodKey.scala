@@ -23,7 +23,7 @@ sealed trait PeriodKey
 
 object PeriodKey {
   case object ITSA extends PeriodKey
-  case object EPOS extends PeriodKey
+  case object EOPS extends PeriodKey
 
   implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
   val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]

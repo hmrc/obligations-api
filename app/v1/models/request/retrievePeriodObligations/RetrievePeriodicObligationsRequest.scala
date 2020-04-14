@@ -17,12 +17,12 @@
 package v1.models.request.retrievePeriodObligations
 
 import uk.gov.hmrc.domain.Nino
-import v1.models.domain.Statuses
-import v1.models.domain.business.MtdBusinesses
+import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.MtdStatus
 
 case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[MtdBusinesses],
+                                              typeOfBusiness: Option[MtdBusiness],
                                               incomeSourceId: Option[String],
                                               fromDate: Option[String],
                                               toDate: Option[String],
-                                              status: Option[Statuses])
+                                              status: Option[MtdStatus])

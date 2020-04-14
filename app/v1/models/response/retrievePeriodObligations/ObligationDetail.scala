@@ -17,10 +17,14 @@
 package v1.models.response.retrievePeriodObligations
 
 import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.business.MtdBusinesses
+import v1.models.domain.status.MtdStatus
 
-case class Business(typeOfBusiness: MtdBusinesses, businessId: String, obligationDetails: Seq[Obligation])
+case class ObligationDetail(periodStartDate: String,
+                            periodEndDate: String,
+                            dueDate: String,
+                            receivedDate: Option[String],
+                            status: MtdStatus)
 
-object Business {
-  implicit val writes: OWrites[Business] = Json.writes[Business]
+object ObligationDetail {
+  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
 }

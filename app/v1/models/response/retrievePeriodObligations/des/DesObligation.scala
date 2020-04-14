@@ -16,18 +16,20 @@
 
 package v1.models.response.retrievePeriodObligations.des
 
-import play.api.libs.json.{Json, Reads}
-import v1.models.domain.status.DesStatus
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsPath, Reads}
+import v1.models.domain.business.DesBusiness
 
-case class DesObligation(
-                          inboundCorrespondenceFromDate: String,
-                          inboundCorrespondenceToDate: String,
-                          inboundCorrespondenceDueDate: String,
-                          status: DesStatus,
-                          inboundCorrespondenceDateReceived: Option[String],
-                          periodKey: String
-                        )
+case class DesObligation(incomeSourceType: DesBusiness,
+                         referenceNumber: String,
+                         referenceType: String,
+                         obligationDetails: Seq[DesObligationDetail])
 
 object DesObligation {
-  implicit val reads: Reads[DesObligation] = Json.reads[DesObligation]
+  implicit val reads: Reads[DesObligation] = (
+    (JsPath \ "identification" \ "incomeSourceType").read[DesBusiness] and
+      (JsPath \ "identification" \ "referenceNumber").read[String] and
+      (JsPath \ "identification" \ "referenceType").read[String] and
+      (JsPath \ "obligationDetails").read[Seq[DesObligationDetail]]
+  )(DesObligation.apply _)
 }

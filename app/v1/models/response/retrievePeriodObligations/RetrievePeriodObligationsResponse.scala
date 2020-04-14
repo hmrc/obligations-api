@@ -16,47 +16,34 @@
 
 package v1.models.response.retrievePeriodObligations
 
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v1.models.domain.PeriodKey
-import v1.models.response.retrieveCrystallisationObligations.des.DesObligation
-import v1.models.response.retrievePeriodObligations.des.DesBusiness
+import v1.models.response.retrievePeriodObligations.des.{DesObligation, DesObligationDetail}
 
-case class RetrievePeriodObligationsResponse(obligations: Seq[Business])
+case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
 
 object RetrievePeriodObligationsResponse {
 
-  case class Detail(obligations: Seq[Business])
-
-  object Detail{
-   implicit val reads: Reads[Detail] =
-     (JsPath \ "obligations").read[Seq[DesBusiness]].map(_.collect {
-       case u =>
-         Business(
-           typeOfBusiness = u.incomeSourceType.toMtd,
-           businessId = u.referenceNumber,
-           obligationDetails = Obligation((JsPath \ "obligations" \ "obligationDetails").read[Seq[DesObligation]]
-             .map(
-               _.collect {
-                 case o if o.periodKey != PeriodKey.ITSA.toString || o.periodKey != PeriodKey.EPOS.toString =>
-                   Obligation(
-                     periodKey = Some(o.periodKey),
-                     periodStartDate = o.inboundCorrespondenceFromDate,
-                     periodEndDate = o.inboundCorrespondenceToDate,
-                     dueDate = o.inboundCorrespondenceDueDate,
-                     status = o.status.toMtd,
-                     receivedDate = o.inboundCorrespondenceDateReceived
-                   )
-               }
-             )
-           )
-         )
-        }
-     )
-       .map(Detail(_))
-  }
   implicit val reads: Reads[RetrievePeriodObligationsResponse] = {
-    (JsPath \ "obligations").read[Seq[Detail]]
-      .map(det => RetrievePeriodObligationsResponse(det.flatMap(_.obligations)))
+    (JsPath \ "obligations").read[Seq[DesObligation]].map( // go inside Reads
+      _.map { // go inside Seq
+        ob =>
+          Obligation(
+            ob.incomeSourceType.toMtd,
+            ob.referenceNumber,
+            ob.obligationDetails.collect {
+              case det if (det.periodKey != PeriodKey.EOPS.toString && det.periodKey != PeriodKey.ITSA.toString) =>
+                ObligationDetail(
+                  det.inboundCorrespondenceFromDate,
+                  det.inboundCorrespondenceToDate,
+                  det.inboundCorrespondenceDueDate,
+                  det.inboundCorrespondenceDateReceived,
+                  det.status.toMtd
+                )
+            }
+          )
+      }
+    ).map(RetrievePeriodObligationsResponse(_))
   }
 
   implicit val writes: OWrites[RetrievePeriodObligationsResponse] = Json.writes[RetrievePeriodObligationsResponse]

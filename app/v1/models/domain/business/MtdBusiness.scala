@@ -19,21 +19,13 @@ package v1.models.domain.business
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait DesBusinesses {
-  def toMtd: MtdBusinesses
-}
+sealed trait MtdBusiness
 
-object DesBusinesses {
-  case object ITSB extends DesBusinesses {
-    override def toMtd: MtdBusinesses = MtdBusinesses.`self-employment`
-  }
-  case object ITSP extends DesBusinesses {
-    override def toMtd: MtdBusinesses = MtdBusinesses.`uk-property`
-  }
-  case object ITSF extends DesBusinesses {
-    override def toMtd: MtdBusinesses = MtdBusinesses.`foreign-property`
-  }
+object MtdBusiness {
+  case object `self-employment` extends MtdBusiness
+  case object `uk-property` extends MtdBusiness
+  case object `foreign-property` extends MtdBusiness
 
-  implicit val format: Format[DesBusinesses] = Enums.format[DesBusinesses]
-  val parser: PartialFunction[String, DesBusinesses] = Enums.parser[DesBusinesses]
+  implicit val format: Format[MtdBusiness] = Enums.format[MtdBusiness]
+  val parser: PartialFunction[String, MtdBusiness] = Enums.parser[MtdBusiness]
 }

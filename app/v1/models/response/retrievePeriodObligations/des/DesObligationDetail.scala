@@ -17,12 +17,17 @@
 package v1.models.response.retrievePeriodObligations.des
 
 import play.api.libs.json.{Json, Reads}
-import v1.models.domain.business.DesBusinesses
+import v1.models.domain.status.DesStatus
 
-case class DesBusiness(incomeSourceType: DesBusinesses,
-                       referenceNumber: String,
-                       referenceType: String)
+case class DesObligationDetail(
+                          inboundCorrespondenceFromDate: String,
+                          inboundCorrespondenceToDate: String,
+                          inboundCorrespondenceDueDate: String,
+                          status: DesStatus,
+                          inboundCorrespondenceDateReceived: Option[String],
+                          periodKey: String
+                        )
 
-object DesBusiness {
-  implicit val reads: Reads[DesBusiness] = Json.reads[DesBusiness]
+object DesObligationDetail {
+  implicit val reads: Reads[DesObligationDetail] = Json.reads[DesObligationDetail]
 }

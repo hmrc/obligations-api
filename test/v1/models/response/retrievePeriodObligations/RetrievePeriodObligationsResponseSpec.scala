@@ -18,13 +18,11 @@ package v1.models.response.retrievePeriodObligations
 
 import play.api.libs.json.Json
 import support.UnitSpec
+import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.MtdStatus
 import v1.models.utils.JsonErrorValidators
 
 class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValidators {
-
-  val obligationDetails = Obligation(Some("18AD"), "2018-04-06", "2019-04-05", "2018-04-06", Some("2019-12-15"), "Open")
-  val businessDetails = Business("self-employment", "SomeID", Seq(obligationDetails))
-  val responseBody = RetrievePeriodObligationsResponse(Seq(businessDetails))
 
   "reads" when {
     "passed valid JSON" should {
@@ -35,17 +33,55 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
           |        {
           |            "identification": {
           |                "incomeSourceType": "ITSB",
-          |                "incomeSourceId": "SomeID",
+          |                "referenceNumber": "XAIS12345678910",
           |                "referenceType": "IncomeSourceId"
           |            },
           |            "obligationDetails": [
           |                {
+          |                    "status": "F",
+          |                    "inboundCorrespondenceFromDate": "2018-01-01",
+          |                    "inboundCorrespondenceToDate": "2018-12-31",
+          |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+          |                    "inboundCorrespondenceDueDate": "2020-01-31",
+          |                    "periodKey": "EOPS"
+          |                },
+          |                {
+          |                    "status": "F",
+          |                    "inboundCorrespondenceFromDate": "2019-01-01",
+          |                    "inboundCorrespondenceToDate": "2019-03-31",
+          |                    "inboundCorrespondenceDateReceived": "2019-04-25",
+          |                    "inboundCorrespondenceDueDate": "2019-04-30",
+          |                    "periodKey": "#001"
+          |                },
+          |                {
+          |                    "status": "F",
+          |                    "inboundCorrespondenceFromDate": "2019-04-01",
+          |                    "inboundCorrespondenceToDate": "2019-06-30",
+          |                    "inboundCorrespondenceDateReceived": "2019-07-01",
+          |                    "inboundCorrespondenceDueDate": "2019-07-31",
+          |                    "periodKey": "#002"
+          |                },
+          |                {
+          |                    "status": "F",
+          |                    "inboundCorrespondenceFromDate": "2019-07-01",
+          |                    "inboundCorrespondenceToDate": "2019-09-30",
+          |                    "inboundCorrespondenceDateReceived": "2019-10-08",
+          |                    "inboundCorrespondenceDueDate": "2019-10-31",
+          |                    "periodKey": "#003"
+          |                },
+          |                {
           |                    "status": "O",
-          |                    "inboundCorrespondenceFromDate": "2018-04-06",
-          |                    "inboundCorrespondenceToDate": "2019-04-05",
-          |                    "inboundCorrespondenceDateReceived": "2019-12-15",
-          |                    "inboundCorrespondenceDueDate": "2018-04-06",
-          |                    "periodKey": "18AD"
+          |                    "inboundCorrespondenceFromDate": "2019-10-01",
+          |                    "inboundCorrespondenceToDate": "2019-12-31",
+          |                    "inboundCorrespondenceDueDate": "2020-01-31",
+          |                    "periodKey": "#004"
+          |                },
+          |                {
+          |                    "status": "O",
+          |                    "inboundCorrespondenceFromDate": "2019-01-01",
+          |                    "inboundCorrespondenceToDate": "2019-12-31",
+          |                    "inboundCorrespondenceDueDate": "2021-01-31",
+          |                    "periodKey": "ITSA"
           |                }
           |            ]
           |        }
@@ -54,7 +90,14 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
         """.stripMargin
       )
       "return a valid model" in {
-        responseBody shouldBe inputJson.as[RetrievePeriodObligationsResponse]
+        inputJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
+            ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-04-01", "2019-06-30", "2019-07-31", Some("2019-07-01"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-07-01", "2019-09-30", "2019-10-31", Some("2019-10-08"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-10-01", "2019-12-31", "2020-01-31", None, MtdStatus.Open)
+          ))
+        ))
       }
     }
   }
@@ -67,14 +110,33 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
           |  "obligations": [
           |     {
           |       "typeOfBusiness": "self-employment",
-          |       "incomeSourceId": "SomeID",
+          |       "businessId": "XAIS12345678910",
           |       "obligationDetails": [
           |         {
-          |           "periodKey": "18AD",
-          |           "fromDate": "2018-04-06",
-          |           "toDate": "2019-04-05",
-          |           "dueDate": "2018-04-06",
-          |           "receivedDate": "2019-12-15",
+          |           "periodStartDate": "2019-01-01",
+          |           "periodEndDate": "2019-03-31",
+          |           "dueDate": "2019-04-30",
+          |           "receivedDate": "2019-04-25",
+          |           "status": "Fulfilled"
+          |         },
+          |         {
+          |           "periodStartDate": "2019-04-01",
+          |           "periodEndDate": "2019-06-30",
+          |           "dueDate": "2019-07-31",
+          |           "receivedDate": "2019-07-01",
+          |           "status": "Fulfilled"
+          |         },
+          |         {
+          |           "periodStartDate": "2019-07-01",
+          |           "periodEndDate": "2019-09-30",
+          |           "dueDate": "2019-10-31",
+          |           "receivedDate": "2019-10-08",
+          |           "status": "Fulfilled"
+          |         },
+          |         {
+          |           "periodStartDate": "2019-10-01",
+          |           "periodEndDate": "2019-12-31",
+          |           "dueDate": "2020-01-31",
           |           "status": "Open"
           |         }
           |       ]
@@ -84,6 +146,15 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
           |""".stripMargin
       )
       "return valid json" in {
+        val responseBody = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
+            ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-04-01", "2019-06-30", "2019-07-31", Some("2019-07-01"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-07-01", "2019-09-30", "2019-10-31", Some("2019-10-08"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-10-01", "2019-12-31", "2020-01-31", None, MtdStatus.Open)
+          ))
+        ))
+
         Json.toJson(responseBody) shouldBe resJson
       }
     }
