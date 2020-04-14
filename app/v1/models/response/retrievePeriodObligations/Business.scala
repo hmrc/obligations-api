@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.retrievePeriodObligations
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.business.MtdBusinesses
 
-sealed trait Businesses
+case class Business(typeOfBusiness: MtdBusinesses, businessId: String, obligationDetails: Seq[Obligation])
 
-object Businesses {
-  case object `self-employment` extends Businesses
-  case object `uk-property` extends Businesses
-  case object `foreign-property` extends Businesses
-
-  implicit val format: Format[Businesses] = Enums.format[Businesses]
-  val parser: PartialFunction[String, Businesses] = Enums.parser[Businesses]
+object Business {
+  implicit val writes: OWrites[Business] = Json.writes[Business]
 }

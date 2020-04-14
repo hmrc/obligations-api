@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrieve
+package v1.models.domain.business
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-case class RetrievePeriodObligationsResponse(obligations: Seq[Business])
+sealed trait MtdBusinesses
 
-object RetrievePeriodObligationsResponse {
-  implicit val format: OFormat[RetrievePeriodObligationsResponse] = Json.format[RetrievePeriodObligationsResponse]
+object MtdBusinesses {
+  case object `self-employment` extends MtdBusinesses
+  case object `uk-property` extends MtdBusinesses
+  case object `foreign-property` extends MtdBusinesses
+
+  implicit val format: Format[MtdBusinesses] = Enums.format[MtdBusinesses]
+  val parser: PartialFunction[String, MtdBusinesses] = Enums.parser[MtdBusinesses]
 }

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package v1.models.requestData.retrieve
+package v1.models.request.retrievePeriodObligations
 
 import uk.gov.hmrc.domain.Nino
-import v1.models.domain.{Businesses, Statuses}
+import v1.models.domain.Statuses
+import v1.models.domain.business.MtdBusinesses
 
 case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[Businesses],
+                                              typeOfBusiness: Option[MtdBusinesses],
                                               incomeSourceId: Option[String],
                                               fromDate: Option[String],
                                               toDate: Option[String],

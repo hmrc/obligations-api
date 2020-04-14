@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package v1.models.requestData.retrieve
+package v1.models.response.retrievePeriodObligations.des
 
-import v1.models.requestData.RawData
+import play.api.libs.json.{Json, Reads}
+import v1.models.domain.business.DesBusinesses
 
-case class RetrievePeriodicObligationsRawData(nino: String,
-                                              typeOfBusiness: Option[String],
-                                              incomeSourceId: Option[String],
-                                              fromDate: Option[String],
-                                              toDate: Option[String],
-                                              status: Option[String]) extends RawData
+case class DesBusiness(incomeSourceType: DesBusinesses,
+                       referenceNumber: String,
+                       referenceType: String)
+
+object DesBusiness {
+  implicit val reads: Reads[DesBusiness] = Json.reads[DesBusiness]
+}

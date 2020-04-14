@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrieve
+package v1.models.response.retrievePeriodObligations
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, OWrites, Reads}
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.status.MtdStatus
 
 case class Obligation(periodKey: Option[String],
                       periodStartDate: String,
                       periodEndDate: String,
                       dueDate: String,
-                      status: String,
-                      receivedDate: Option[String])
+                      receivedDate: Option[String],
+                      status: MtdStatus)
 
 object Obligation {
-
-  implicit val reads: Reads[Obligation] =(
-    (JsPath \ "periodKey").readNullable[String] and
-      (JsPath \ "inboundCorrespondenceFromDate").read[String] and
-      (JsPath \ "inboundCorrespondenceToDate").read[String] and
-      (JsPath \ "inboundCorrespondenceDueDate").read[String] and
-      (JsPath \ "status").read[String] and
-      (JsPath \ "inboundCorrespondenceDateReceived").readNullable[String]
-    )(Obligation.apply _)
-
   implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
 }
