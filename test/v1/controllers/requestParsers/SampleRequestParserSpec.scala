@@ -39,7 +39,7 @@ class SampleRequestParserSpec extends UnitSpec {
     SampleRawData(nino, taxYear, requestBodyJson)
 
   trait Test extends MockSampleValidator {
-    lazy val parser = new SampleRequestDataParser(mockValidator)
+    lazy val parser = new SampleRequestParser(mockValidator)
   }
 
   "parse" should {

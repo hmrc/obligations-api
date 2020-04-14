@@ -21,27 +21,60 @@ import java.time.LocalDate
 import support.UnitSpec
 
 class ObligationsTaxYearSpec extends UnitSpec {
-  "fromMtd" should {
-    "return an ObligationsTaxYear model" when {
-      "passed a valid String" in {
-        ObligationsTaxYear.fromMtd("2019-20") shouldBe ObligationsTaxYear("2019-04-06", "2020-04-05")
+
+  trait Test extends ObligationsTaxYearHelpers
+
+  "RawTaxYear" should {
+    "return a RawTaxYear model" when {
+      "passed a valid taxYear" in new Test {
+        RawTaxYear(Some("2019-20")) shouldBe RawTaxYear(Some("2019-20"))
+      }
+      "passed no taxYear" in new Test {
+        RawTaxYear(None) shouldBe RawTaxYear(None)
+      }
+    }
+    "return an exception" when {
+      "passed an invalid taxYear" in new Test {
+        val result = intercept[IllegalArgumentException](RawTaxYear(Some("201-20")))
+        result.getMessage shouldBe "requirement failed"
+      }
+    }
+  }
+
+  "RawTaxYear.toObligationsTaxYear" should {
+    "return an ObligationsTaxYear" when {
+      "a valid taxYear is entered" in new Test {
+        RawTaxYear(Some("2019-20")).toObligationsTaxYear shouldBe ObligationsTaxYear("2019-04-06", "2020-04-05")
+      }
+      "no taxYear is entered" in new Test {
+        override val date: LocalDate = LocalDate.parse("2020-04-06")
+        RawTaxYear(None).toObligationsTaxYear shouldBe ObligationsTaxYear("2019-04-06", "2020-04-05")
+      }
+    }
+    "return an exception" when {
+      "passed an invalid taxYear" in new Test {
+        val result = intercept[IllegalArgumentException](RawTaxYear(Some("201-20")).toObligationsTaxYear)
+        result.getMessage shouldBe "requirement failed"
       }
     }
   }
 
   "mostRecentTaxYear" should {
     "return fromMtd(2018-19)" when {
-      "passed a date in the tax year 2019-20 before 04-05" in {
-        ObligationsTaxYear.mostRecentTaxYear(LocalDate.parse("2020-02-06")) shouldBe "2018-19"
+      "passed a date in the tax year 2019-20 before 04-05" in new Test {
+        override val date: LocalDate = LocalDate.parse("2020-02-06")
+        getMostRecentTaxYear shouldBe "2018-19"
       }
-      "passed the last date in 2019-20 (2020-04-05)" in {
-        ObligationsTaxYear.mostRecentTaxYear(LocalDate.parse("2020-04-05")) shouldBe "2018-19"
+      "passed the last date in 2019-20 (2020-04-05)" in new Test {
+        override val date: LocalDate = LocalDate.parse("2020-04-05")
+        getMostRecentTaxYear shouldBe "2018-19"
       }
     }
 
     "return fromMtd(2019-20)" when {
-      "passed a date after 2020-04-05" in {
-        ObligationsTaxYear.mostRecentTaxYear(LocalDate.parse("2020-04-06")) shouldBe  "2019-20"
+      "passed a date after 2020-04-05" in new Test {
+        override val date: LocalDate = LocalDate.parse("2020-04-06")
+        getMostRecentTaxYear shouldBe  "2019-20"
       }
     }
   }
