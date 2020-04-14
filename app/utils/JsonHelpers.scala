@@ -1,7 +1,7 @@
 
 package utils
 
-import play.api.libs.json.{JsPath, JsResult, JsValue, Json, Reads}
+import play.api.libs.json.{JsPath, JsValue, Json, Reads}
 
 trait JsonHelpers {
   implicit class JsPathOps(jsPath: JsPath) {

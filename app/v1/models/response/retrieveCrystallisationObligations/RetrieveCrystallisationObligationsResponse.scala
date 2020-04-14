@@ -16,19 +16,23 @@
 
 package v1.models.response.retrieveCrystallisationObligations
 
-import play.api.libs.json.{JsArray, JsObject, JsPath, JsResult, JsValue, Json, OWrites, Reads}
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import utils.JsonHelpers
 
 case class RetrieveCrystallisationObligationsResponse(obligationDetails: Seq[Obligation])
 
 object RetrieveCrystallisationObligationsResponse extends JsonHelpers {
 
-  implicit val reads: Reads[RetrieveCrystallisationObligationsResponse] = (json: JsValue) => {
-    (json \ "obligations").validateOpt[Seq[JsValue]]
-      .map(
-        _.getOrElse(Seq.empty).flatMap(
-          _.asOpt[Seq[Obligation]]((JsPath \ "obligationDetails").filteredArrayReads[Obligation]("periodKey", "ITSA"))
-        ).flatten).map(RetrieveCrystallisationObligationsResponse(_))
+  //bound case class to allow us to read from multiple lists of obligation details to merge together later
+  case class Detail(obligation: Seq[Obligation])
+
+  object Detail {
+    implicit val reads: Reads[Detail] = (JsPath \ "obligationDetails").read[Seq[Obligation]].map(Detail(_))
+  }
+
+  implicit val reads: Reads[RetrieveCrystallisationObligationsResponse] = {
+    (JsPath \ "obligations").read[Seq[Detail]]
+      .map(det => RetrieveCrystallisationObligationsResponse(det.flatMap(_.obligation))) // flatten nested arrays into one array
   }
 
   implicit val writes: OWrites[RetrieveCrystallisationObligationsResponse] = Json.writes[RetrieveCrystallisationObligationsResponse]
