@@ -51,7 +51,7 @@ class SampleControllerSpec
     val controller = new SampleController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      requestDataParser = mockRequestDataParser,
+      requestDataParser = mockRequestParser,
       sampleService = mockSampleService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
@@ -95,7 +95,7 @@ class SampleControllerSpec
     "return CREATED" when {
       "happy path" in new Test {
 
-        MockSampleRequestDataParser
+        MockSampleRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
@@ -124,7 +124,7 @@ class SampleControllerSpec
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
           s"a ${error.code} error is returned from the parser" in new Test {
 
-            MockSampleRequestDataParser
+            MockSampleRequestParser
               .parse(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
@@ -165,7 +165,7 @@ class SampleControllerSpec
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
           s"a $mtdError error is returned from the service" in new Test {
 
-            MockSampleRequestDataParser
+            MockSampleRequestParser
               .parse(rawData)
               .returns(Right(requestData))
 

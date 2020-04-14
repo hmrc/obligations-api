@@ -26,17 +26,26 @@ import java.time.LocalDate
   */
 case class ObligationsTaxYear(from: String, to: String)
 
-object ObligationsTaxYear {
+trait ObligationsTaxYearHelpers {
+
+  val date: LocalDate = LocalDate.now()
 
   /**
     * @param taxYear tax year in MTD format (e.g. 2017-18)
-    *
-    * @return ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
     */
-  def fromMtd(taxYear: String): ObligationsTaxYear = {
-    val pattern = "20(\\d\\d)-(\\d\\d)".r
-    val pattern(fromYear, toYear) = taxYear
-    ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
+  case class RawTaxYear(taxYear: Option[String]) {
+    val pattern = "20([1-9][0-9])\\-([1-9][0-9])"
+
+    require(taxYear.forall(_.matches(pattern)))
+
+    /**
+      * @return ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
+      */
+    def toObligationsTaxYear: ObligationsTaxYear = {
+      val patternRegex = pattern.r
+      val patternRegex(fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear)
+      ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
+    }
   }
 
   /**
@@ -49,12 +58,10 @@ object ObligationsTaxYear {
   }
 
   /**
-    * @param date java.util.LocalDate, defaults to today
-    *
     * @return the most recent complete tax year. If the date is before or on 5th April,
     *         the year is not considered complete and the previous tax year will be returned
     */
-  def mostRecentTaxYear(date: LocalDate = LocalDate.now()): String = {
+  def getMostRecentTaxYear: String = {
     val year = date.getYear
     val fiscalYearStartDate = LocalDate.parse(s"$year-04-05")
 
