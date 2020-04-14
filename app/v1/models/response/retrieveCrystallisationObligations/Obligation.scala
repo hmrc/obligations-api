@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.retrieveCrystallisationObligations
 
-import config.AppConfig
 import play.api.libs.json.{Json, OWrites}
-import v1.hateoas.{HateoasLinks, HateoasLinksFactory}
-import v1.models.hateoas.{HateoasData, Link}
+import v1.models.domain.status.MtdStatus
 
-case class SampleResponse(responseData: String)
+case class Obligation(periodStartDate: String, periodEndDate: String, dueDate: String, status: MtdStatus, receivedDate: Option[String])
 
-object SampleResponse extends HateoasLinks {
-  implicit val writes: OWrites[SampleResponse] = Json.writes[SampleResponse]
-
-  implicit object AmendLinksFactory extends HateoasLinksFactory[SampleResponse, SampleHateoasData] {
-    override def links(appConfig: AppConfig, data: SampleHateoasData): Seq[Link] = {
-      import data._
-      Seq(sampleLink(appConfig, nino))
-    }
-  }
-
+object Obligation {
+  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
 }
-
-case class SampleHateoasData(nino: String) extends HateoasData

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers
+package v1.models.domain
 
-import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
-import v1.controllers.requestParsers.validators.SampleValidator
-import v1.models.request.sample.{SampleRawData, SampleRequest, SampleRequestBody}
-import v1.models.request.DesTaxYear
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-class SampleRequestDataParser @Inject()(val validator: SampleValidator)
-  extends RequestParser[SampleRawData, SampleRequest] {
+sealed trait PeriodKey
 
-  override protected def requestFor(data: SampleRawData): SampleRequest =
-    SampleRequest(Nino(data.nino), DesTaxYear.fromMtd(data.taxYear), data.body.as[SampleRequestBody])
+object PeriodKey {
+  case object ITSA extends PeriodKey
 
+  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
+  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
 }
+

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.request.sample
 
 import play.api.libs.json._
 import support.UnitSpec
