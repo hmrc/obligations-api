@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.domain.business
 
 import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
 
-class PeriodKeySpec extends UnitSpec with EnumJsonSpecSupport {
-  testRoundTrip[PeriodKey](
-    ("ITSA", PeriodKey.ITSA),
-    ("EOPS", PeriodKey.EOPS)
+class MtdBusinessSpec extends UnitSpec with EnumJsonSpecSupport{
+
+  testRoundTrip[MtdBusiness](
+    ("self-employment", MtdBusiness.`self-employment`),
+    ("uk-property", MtdBusiness.`uk-property`),
+    ("foreign-property", MtdBusiness.`foreign-property`)
   )
 }

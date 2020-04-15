@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.domain.business
 
 import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
 
-class PeriodKeySpec extends UnitSpec with EnumJsonSpecSupport {
-  testRoundTrip[PeriodKey](
-    ("ITSA", PeriodKey.ITSA),
-    ("EOPS", PeriodKey.EOPS)
+class DesBusinessSpec extends UnitSpec with EnumJsonSpecSupport {
+  testRoundTrip[DesBusiness](
+    ("ITSP", DesBusiness.ITSP),
+    ("ITSB", DesBusiness.ITSB),
+    ("ITSF", DesBusiness.ITSF)
   )
+
+  "toMtd" should {
+    Seq((DesBusiness.ITSF, MtdBusiness.`foreign-property`),
+      (DesBusiness.ITSB, MtdBusiness.`self-employment`),
+      (DesBusiness.ITSP, MtdBusiness.`uk-property`)).foreach {
+      case (desBusiness, mtdBusiness) =>
+        s"convert $desBusiness to $mtdBusiness" in {
+          desBusiness.toMtd shouldBe mtdBusiness
+        }
+    }
+  }
+
 }

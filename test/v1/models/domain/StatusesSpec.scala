@@ -19,9 +19,10 @@ package v1.models.domain
 import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
 
-class PeriodKeySpec extends UnitSpec with EnumJsonSpecSupport {
-  testRoundTrip[PeriodKey](
-    ("ITSA", PeriodKey.ITSA),
-    ("EOPS", PeriodKey.EOPS)
+class StatusesSpec extends UnitSpec with EnumJsonSpecSupport{
+  testRoundTrip[Statuses](
+    ("Open", Statuses.`Open`),
+    ("Fulfilled", Statuses.`Fulfilled`)
   )
+
 }
