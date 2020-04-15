@@ -26,11 +26,6 @@
             "items": {
               "type": "object",
               "properties": {
-                "periodKey": {
-                  "description": "The ID code for the period that this obligation belongs to, The format is a string of four alphanumeric characters. Occasionally the format includes the # symbol.",
-                  "type": "string",
-                  "example": "#8AD"
-                },
                 "periodStartDate": {
                   "description": "The start date of this obligation period, Date in the format YYYY-MM-DD",
                   "type": "string",
