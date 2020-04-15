@@ -23,7 +23,7 @@ import v1.models.request.{ObligationsTaxYear, ObligationsTaxYearHelpers}
 import v1.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
 
 class RetrieveCrystallisationObligationsRequestParser @Inject()(val validator: RetrieveCrystallisationObligationsValidator)
-  extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest] { _: ObligationsTaxYearHelpers =>
+  extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest] with ObligationsTaxYearHelpers {
 
   override protected def requestFor(data: RetrieveCrystallisationObligationsRawData): RetrieveCrystallisationObligationsRequest = {
     val obligationsTaxYear: ObligationsTaxYear = RawTaxYear(data.taxYear).toObligationsTaxYear
