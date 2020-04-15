@@ -42,7 +42,7 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
     MockedAppConfig.desEnvironment returns "des-environment"
   }
 
-  "list" should {
+  "retrieve" should {
     val request = RetrieveCrystallisationObligationsRequest(validNino, ObligationsTaxYear(fromDate, toDate))
 
     "return a result" when {
@@ -55,7 +55,7 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
             url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.obligationsTaxYear.from}&to=${request.obligationsTaxYear.to}",
             requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
           ).returns(Future.successful(outcome))
-        await(connector.listDeductions(request)) shouldBe outcome
+        await(connector.retrieveCrystallisationObligations(request)) shouldBe outcome
       }
     }
   }

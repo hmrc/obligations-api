@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
-package v1.connectors
+package v1.mocks.connectors
 
-import config.AppConfig
-import javax.inject.Inject
+import org.scalamock.handlers.CallHandler
+import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-import v1.connectors.httpparsers.StandardDesHttpParser._
+import v1.connectors.{DesOutcome, RetrieveCrystallisationObligationsConnector}
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient,
-                                                            val appConfig: AppConfig) extends BaseDesConnector {
-  def retrieveCrystallisationObligations(request: RetrieveCrystallisationObligationsRequest)
-                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[RetrieveCrystallisationObligationsResponse]] = {
+trait MockRetrieveCrystallisationObligationsConnector extends MockFactory {
+  val mockRetrieveCrystallisationObligationsConnector: RetrieveCrystallisationObligationsConnector = mock[RetrieveCrystallisationObligationsConnector]
 
-    val url = s"enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.obligationsTaxYear.from}&to=${request.obligationsTaxYear.to}"
+  object MockRetrieveCrystallisationObligationsConnector {
 
-    get(
-      DesUri[RetrieveCrystallisationObligationsResponse](s"$url")
-    )
+    def doConnectorThing(requestData: RetrieveCrystallisationObligationsRequest): CallHandler[Future[DesOutcome[RetrieveCrystallisationObligationsResponse]]] = {
+      (mockRetrieveCrystallisationObligationsConnector
+        .retrieveCrystallisationObligations(_: RetrieveCrystallisationObligationsRequest)(_: HeaderCarrier, _: ExecutionContext))
+        .expects(requestData, *, *)
+    }
   }
 }
