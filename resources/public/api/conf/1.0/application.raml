@@ -31,7 +31,7 @@ uses:
   queryParameters: queryParameters.raml
 
 
-'/obligations/income':
+'/obligations/income-tax':
   /{nino}:
     uriParameters:
       nino:
@@ -49,4 +49,6 @@ uses:
           description: This is a sample endpoint
         post: !include sample_post.raml
     /income-and-expenditure:
-      get: !include RetrievePeriodObligations.raml
+      get: !include retrieve_period_obligations.raml
+    /crystallisation:
+      get: !include retrieve_crystallisation_obligations.raml
