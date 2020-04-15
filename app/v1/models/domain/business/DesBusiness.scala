@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.domain.business
 
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait PeriodKey
-
-object PeriodKey {
-  case object ITSA extends PeriodKey
-  case object EOPS extends PeriodKey
-
-  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
-  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
+sealed trait DesBusiness {
+  def toMtd: MtdBusiness
 }
 
+object DesBusiness {
+  case object ITSB extends DesBusiness {
+    override def toMtd: MtdBusiness = MtdBusiness.`self-employment`
+  }
+  case object ITSP extends DesBusiness {
+    override def toMtd: MtdBusiness = MtdBusiness.`uk-property`
+  }
+  case object ITSF extends DesBusiness {
+    override def toMtd: MtdBusiness = MtdBusiness.`foreign-property`
+  }
+
+  implicit val format: Format[DesBusiness] = Enums.format[DesBusiness]
+  val parser: PartialFunction[String, DesBusiness] = Enums.parser[DesBusiness]
+}

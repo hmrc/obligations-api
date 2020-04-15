@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.request.retrievePeriodObligations
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import uk.gov.hmrc.domain.Nino
+import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.DesStatus
 
-sealed trait PeriodKey
-
-object PeriodKey {
-  case object ITSA extends PeriodKey
-  case object EOPS extends PeriodKey
-
-  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
-  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
-}
-
+case class RetrievePeriodicObligationsRequest(nino: Nino,
+                                              typeOfBusiness: Option[MtdBusiness],
+                                              incomeSourceId: Option[String],
+                                              fromDate: Option[String],
+                                              toDate: Option[String],
+                                              status: Option[DesStatus])

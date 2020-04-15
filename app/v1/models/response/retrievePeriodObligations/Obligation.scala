@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.response.retrievePeriodObligations
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.business.MtdBusiness
 
-sealed trait PeriodKey
+case class Obligation(typeOfBusiness: MtdBusiness, businessId: String, obligationDetails: Seq[ObligationDetail])
 
-object PeriodKey {
-  case object ITSA extends PeriodKey
-  case object EOPS extends PeriodKey
-
-  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
-  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
+object Obligation {
+  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
 }
-

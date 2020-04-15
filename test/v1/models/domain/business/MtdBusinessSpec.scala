@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.domain
+package v1.models.domain.business
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
 
-sealed trait PeriodKey
+class MtdBusinessSpec extends UnitSpec with EnumJsonSpecSupport{
 
-object PeriodKey {
-  case object ITSA extends PeriodKey
-  case object EOPS extends PeriodKey
-
-  implicit val format: Format[PeriodKey] = Enums.format[PeriodKey]
-  val parser: PartialFunction[String, PeriodKey] = Enums.parser[PeriodKey]
+  testRoundTrip[MtdBusiness](
+    ("self-employment", MtdBusiness.`self-employment`),
+    ("uk-property", MtdBusiness.`uk-property`),
+    ("foreign-property", MtdBusiness.`foreign-property`)
+  )
 }
-
