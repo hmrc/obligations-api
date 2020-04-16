@@ -1,1 +1,3 @@
 POST       /:nino/:taxYear/sampleEndpoint                  v1.controllers.SampleController.handleRequest(nino: String, taxYear: String)
+
+GET        /:nino/crystallisation                          v1.controllers.RetrieveCrystallisationObligationsController.handleRequest(nino: String, taxYear: Option[String])
