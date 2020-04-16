@@ -36,7 +36,14 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
     def setupStubs(): StubMapping
 
-    def uri: String
+    def uri: String = s"/$nino/crystallisation"
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map (
+      "from" -> "2017-04-06",
+      "to" -> "2018-04-05"
+    )
 
     def request(): WSRequest = {
       setupStubs()
@@ -58,6 +65,31 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                                               |}
                                               |""".stripMargin)
 
+    val desResponse: JsValue = Json.parse(
+      """
+        | {
+        |    "obligations": [
+        |        {
+        |            "identification": {
+        |                "incomeSourceType": "ITSA",
+        |                "referenceNumber": "AB123456A",
+        |                "referenceType": "NINO"
+        |            },
+        |            "obligationDetails": [
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2018-04-06",
+        |                    "inboundCorrespondenceToDate": "2019-04-05",
+        |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+        |                    "inboundCorrespondenceDueDate": "2020-01-31",
+        |                    "periodKey": "ITSA"
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}
+    """.stripMargin)
+
     def errorBody(code: String): String =
       s"""
          |      {
@@ -67,47 +99,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     """.stripMargin
   }
 
-  "Calling the sample endpoint" should {
-
-    trait SampleTest extends Test {
-      def uri: String = s"/$nino/crystallisation"
-
-      def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-      def queryParams: Map[String, String] = Map (
-        "from" -> "2017-04-06",
-        "to" -> "2018-04-05"
-      )
-
-      val desResponse: JsValue = Json.parse(
-        """
-          | {
-          |    "obligations": [
-          |        {
-          |            "identification": {
-          |                "incomeSourceType": "ITSA",
-          |                "referenceNumber": "AB123456A",
-          |                "referenceType": "NINO"
-          |            },
-          |            "obligationDetails": [
-          |                {
-          |                    "status": "F",
-          |                    "inboundCorrespondenceFromDate": "2018-04-06",
-          |                    "inboundCorrespondenceToDate": "2019-04-05",
-          |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-          |                    "inboundCorrespondenceDueDate": "2020-01-31",
-          |                    "periodKey": "ITSA"
-          |                }
-          |            ]
-          |        }
-          |    ]
-          |}
-    """.stripMargin)
-    }
+  "Calling the retrieve crystallisation obligations endpoint" should {
 
     "return a 200 status code" when {
 
-      "any valid request is made" in new SampleTest {
+      "any valid request is made" in new Test {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
@@ -127,7 +123,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
       "validation error" when {
         def validationErrorTest(requestNino: String, requestTaxYear: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"validation fails with ${expectedBody.code} error" in new SampleTest {
+          s"validation fails with ${expectedBody.code} error" in new Test {
 
             override val nino: String = requestNino
             override val taxYear: String = requestTaxYear
@@ -157,7 +153,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
       "des service error" when {
         def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new SampleTest {
+          s"des returns an $desCode error and status $desStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
