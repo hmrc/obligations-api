@@ -19,20 +19,20 @@ package v1.controllers.requestParsers
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.validators.RetrieveMockPeriodicObligationsValidator
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.MtdStatus
 import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError}
 import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
 
 class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val nino = "AA123456B"
-  val typeOfBusiness = "ITSP"
-  val convertedTypeOfBusiness = DesBusiness.ITSP
+  val typeOfBusiness = "self-employment"
+  val convertedTypeOfBusiness = MtdBusiness.`self-employment`
   val incomeSourceId = "XAIS123456789012"
   val fromDate = "2019-01-01"
   val toDate = "2020-01-01"
-  val status = "O"
-  val convertedStatus = DesStatus.O
+  val status = "Open"
+  val convertedStatus = MtdStatus.Open
   val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))

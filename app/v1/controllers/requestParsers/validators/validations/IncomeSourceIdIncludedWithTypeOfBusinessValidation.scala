@@ -20,9 +20,9 @@ import v1.models.errors.{MissingTypeOfBusinessError, MtdError}
 
 object IncomeSourceIdIncludedWithTypeOfBusinessValidation {
 
-  def validate(businessId: Option[String], typeOfBusiness: Option[String]): List[MtdError] = {
-    (businessId, typeOfBusiness) match {
-      case (None, Some(x)) => List(MissingTypeOfBusinessError)
+  def validate(incomeSourceId: Option[String], typeOfBusiness: Option[String]): List[MtdError] = {
+    (incomeSourceId, typeOfBusiness) match {
+      case (Some(x), None) => List(MissingTypeOfBusinessError)
       case _ => Nil
     }
   }

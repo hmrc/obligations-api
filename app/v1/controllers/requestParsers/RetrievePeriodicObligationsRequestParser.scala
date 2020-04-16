@@ -19,16 +19,16 @@ package v1.controllers.requestParsers
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import v1.controllers.requestParsers.validators.RetrievePeriodicObligationsValidator
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.MtdStatus
 import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
 
 class RetrievePeriodicObligationsRequestParser @Inject()(val validator: RetrievePeriodicObligationsValidator)
   extends RequestParser[RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest] {
 
   override protected def requestFor(data: RetrievePeriodicObligationsRawData): RetrievePeriodicObligationsRequest = {
-    val typeOfBusiness: Option[DesBusiness] = data.typeOfBusiness.map(DesBusiness.parser)
-    val status: Option[DesStatus] = data.status.map(DesStatus.parser)
+    val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
+    val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
     RetrievePeriodicObligationsRequest(Nino(data.nino), typeOfBusiness, data.incomeSourceId, data.fromDate, data.toDate, status)
   }
 }

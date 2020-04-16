@@ -23,26 +23,26 @@ import v1.models.utils.JsonErrorValidators
 class IncomeSourceIdIncludedWithTypeOfBusinessValidationSpec extends UnitSpec with JsonErrorValidators {
 
   "validate" should {
-    val businessId = Some("XAIS123456789012")
+    val incomeSourceId = Some("XAIS123456789012")
     val typeOfBusiness = Some("F")
 
     "return no errors" when {
-      "when a businessId and typeOfBusiness is supplied" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(businessId, typeOfBusiness)
+      "when an incomeSourceId and typeOfBusiness is supplied" in {
+        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(incomeSourceId, typeOfBusiness)
         validationResult.isEmpty shouldBe true
       }
-      "when neither a businessId or typeOfBusiness is supplied" in {
+      "when neither an incomeSourceId or typeOfBusiness is supplied" in {
         val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(None, None)
         validationResult.isEmpty shouldBe true
       }
-      "when a businessId is supplied but not a typeOfBusiness" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(businessId, None)
+      "when a incomeSourceId is supplied but not a typeOfBusiness" in {
+        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(None, typeOfBusiness)
         validationResult.isEmpty shouldBe true
       }
     }
     "return a missing business Id Error" when {
-      "when the typeOfBusiness is supplied but not a businessId" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(None, typeOfBusiness)
+      "when the incomeSourceId is supplied but not a typeOfBusiness" in {
+        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(incomeSourceId, None)
         validationResult.isEmpty shouldBe false
         validationResult.head shouldBe MissingTypeOfBusinessError
       }

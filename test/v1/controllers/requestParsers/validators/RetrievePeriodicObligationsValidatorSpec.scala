@@ -42,11 +42,11 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
       }
-      "a valid request is supplied with no typeOfBusiness" in {
+      "a valid request is supplied with no incomeSourceId" in {
         validator.validate(RetrievePeriodicObligationsRawData(
           validNino,
+          Some(validTypeOfBusiness),
           None,
-          Some(validIncomeSourceId),
           Some(validFromDate),
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
