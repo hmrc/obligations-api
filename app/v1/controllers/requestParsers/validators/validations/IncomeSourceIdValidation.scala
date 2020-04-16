@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.request.retrievePeriodObligations
+package v1.controllers.requestParsers.validators.validations
 
-import uk.gov.hmrc.domain.Nino
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import v1.models.errors.{BusinessIdFormatError, MtdError}
 
-case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[DesBusiness],
-                                              incomeSourceId: Option[String],
-                                              fromDate: Option[String],
-                                              toDate: Option[String],
-                                              status: Option[DesStatus])
+object IncomeSourceIdValidation {
+
+  private val incomeSourceIdRegex = "^X[a-zA-Z0-9]{1}IS[0-9]{12}$"
+
+  def validate(incomeSourceId: String): List[MtdError] = {
+    if (incomeSourceId.matches(incomeSourceIdRegex)) NoValidationErrors else List(BusinessIdFormatError)
+  }
+
+}

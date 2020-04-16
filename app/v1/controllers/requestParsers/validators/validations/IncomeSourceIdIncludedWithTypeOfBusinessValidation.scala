@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodObligations
+package v1.controllers.requestParsers.validators.validations
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import v1.models.errors.{MissingTypeOfBusinessError, MtdError}
 
-case class ObligationDetail(periodStartDate: String,
-                            periodEndDate: String,
-                            dueDate: String,
-                            receivedDate: Option[String],
-                            status: MtdStatus)
+object IncomeSourceIdIncludedWithTypeOfBusinessValidation {
 
-object ObligationDetail {
-  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
+  def validate(businessId: Option[String], typeOfBusiness: Option[String]): List[MtdError] = {
+    (businessId, typeOfBusiness) match {
+      case (None, Some(x)) => List(MissingTypeOfBusinessError)
+      case _ => Nil
+    }
+  }
 }

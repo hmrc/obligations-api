@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package v1.models.request.retrievePeriodObligations
+package v1.controllers.requestParsers.validators.validations
 
-import uk.gov.hmrc.domain.Nino
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import v1.models.domain.business.MtdBusiness
+import v1.models.errors.{MtdError, TypeOfBusinessFormatError}
 
-case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[DesBusiness],
-                                              incomeSourceId: Option[String],
-                                              fromDate: Option[String],
-                                              toDate: Option[String],
-                                              status: Option[DesStatus])
+import scala.util.{Failure, Success, Try}
+
+object TypeOfBusinessValidation {
+  def validate(typeOfBusiness: String): List[MtdError] = {
+    Try {
+      Option(typeOfBusiness).map(MtdBusiness.parser)
+    } match {
+      case Failure(_) => List(TypeOfBusinessFormatError)
+      case Success(_) => NoValidationErrors
+    }
+  }
+}

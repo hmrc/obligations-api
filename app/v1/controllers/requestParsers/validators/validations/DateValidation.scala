@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package v1.models.request.retrievePeriodObligations
+package v1.controllers.requestParsers.validators.validations
 
-import uk.gov.hmrc.domain.Nino
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import java.time.LocalDate
 
-case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[DesBusiness],
-                                              incomeSourceId: Option[String],
-                                              fromDate: Option[String],
-                                              toDate: Option[String],
-                                              status: Option[DesStatus])
+import v1.models.errors.MtdError
+
+import scala.util.{Failure, Success, Try}
+
+object DateValidation {
+
+  def validate(date: String, error: MtdError): List[MtdError] = Try {
+    if(date.nonEmpty) LocalDate.parse(date, dateFormat)
+  } match {
+    case Success(_) => NoValidationErrors
+    case Failure(_) => List(error)
+  }
+
+}

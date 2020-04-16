@@ -16,8 +16,14 @@
 
 package v1.controllers.requestParsers.validators
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 package object validations {
 
+  val dateFormat = DateTimeFormatter ofPattern "yyyy-MM-dd"
+  val earliestDate = LocalDate.parse("2018-04-06", dateFormat)
+  val maxDateRange = 366
   val NoValidationErrors = List()
 
 }

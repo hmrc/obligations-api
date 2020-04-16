@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package v1.models.request.retrievePeriodObligations
+package v1.models.response.retrievePeriodicObligations
 
-import uk.gov.hmrc.domain.Nino
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.status.MtdStatus
 
-case class RetrievePeriodicObligationsRequest(nino: Nino,
-                                              typeOfBusiness: Option[DesBusiness],
-                                              incomeSourceId: Option[String],
-                                              fromDate: Option[String],
-                                              toDate: Option[String],
-                                              status: Option[DesStatus])
+case class ObligationDetail(periodStartDate: String,
+                            periodEndDate: String,
+                            dueDate: String,
+                            receivedDate: Option[String],
+                            status: MtdStatus)
+
+object ObligationDetail {
+  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
+}
