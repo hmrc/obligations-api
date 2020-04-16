@@ -20,10 +20,10 @@ import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.DesStatus
+import v1.models.domain.status.{DesStatus, MtdStatus}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.retrievePeriodObligations.RetrievePeriodObligationsResponse
+import v1.models.response.retrievePeriodObligations.{Obligation, ObligationDetail, RetrievePeriodObligationsResponse}
 
 import scala.concurrent.Future
 
@@ -47,18 +47,36 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
 
   "retrieve" should {
     "return a result" when {
-      "the downstream call is successful and a source is passed in" in new Test {
+      "a status is passed in and the downstream call is successful " in new Test {
         val request = RetrievePeriodicObligationsRequest(validNino,
           Some(validtypeOfBusiness),
           Some(validincomeSourceId),
           Some(validfromDate),
           Some(validtoDate),
           Some(validStatus))
-        val outcome = Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq())))
+        val outcome = Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(Obligation(
+          validtypeOfBusiness, validincomeSourceId, Seq(ObligationDetail(validfromDate, validtoDate, validtoDate, Some(validfromDate), MtdStatus.Open)))))))
 
         MockedHttpClient.
           get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.fromDate}&to=${request.toDate}&status=${request.status}",
+            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.fromDate.get}&to=${request.toDate.get}&status=${request.status.get}",
+            requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
+          ).returns(Future.successful(outcome))
+        await(connector.retrievePeriodicObligations(request)) shouldBe outcome
+      }
+      "no status is passed in and the downstream call is successful" in new Test {
+        val request = RetrievePeriodicObligationsRequest(validNino,
+          Some(validtypeOfBusiness),
+          Some(validincomeSourceId),
+          Some(validfromDate),
+          Some(validtoDate),
+          None)
+        val outcome = Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(Obligation(
+          validtypeOfBusiness, validincomeSourceId, Seq(ObligationDetail(validfromDate, validtoDate, validtoDate, Some(validfromDate), MtdStatus.Open)))))))
+
+        MockedHttpClient.
+          get(
+            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.fromDate.get}&to=${request.toDate.get}",
             requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
           ).returns(Future.successful(outcome))
         await(connector.retrievePeriodicObligations(request)) shouldBe outcome
