@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations
+package v1.models.response.retrieveEOPSObligations
 
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v1.models.domain.PeriodKey
-<<<<<<< HEAD:app/v1/models/response/retrievePeriodicObligations/RetrievePeriodObligationsResponse.scala
-import v1.models.response.retrievePeriodicObligations.des.DesObligation
-=======
 import v1.models.response.common
+import v1.models.response.common.des.DesObligation
 import v1.models.response.common.{Obligation, ObligationDetail}
-import v1.models.response.common.des.{DesObligation, DesObligationDetail}
->>>>>>> MTDSA-5237 Models for EOPS Obligations:app/v1/models/response/retrievePeriodObligations/RetrievePeriodObligationsResponse.scala
 
-case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
+case class RetrieveEOPSObligationsResponse(obligations: Seq[Obligation])
 
-object RetrievePeriodObligationsResponse {
+object RetrieveEOPSObligationsResponse {
 
-  implicit val reads: Reads[RetrievePeriodObligationsResponse] = {
+  implicit val reads: Reads[RetrieveEOPSObligationsResponse] = {
     (JsPath \ "obligations").read[Seq[DesObligation]].map( // go inside Reads
       _.map { // go inside Seq
         ob =>
@@ -38,7 +34,7 @@ object RetrievePeriodObligationsResponse {
             ob.incomeSourceType.toMtd,
             ob.referenceNumber,
             ob.obligationDetails.collect {
-              case det if (det.periodKey != PeriodKey.EOPS.toString && det.periodKey != PeriodKey.ITSA.toString) =>
+              case det if (det.periodKey == PeriodKey.EOPS.toString) =>
                 ObligationDetail(
                   det.inboundCorrespondenceFromDate,
                   det.inboundCorrespondenceToDate,
@@ -49,8 +45,9 @@ object RetrievePeriodObligationsResponse {
             }
           )
       }
-    ).map(RetrievePeriodObligationsResponse(_))
+    ).map(RetrieveEOPSObligationsResponse(_))
   }
 
-  implicit val writes: OWrites[RetrievePeriodObligationsResponse] = Json.writes[RetrievePeriodObligationsResponse]
+
+  implicit val writes: OWrites[RetrieveEOPSObligationsResponse] = Json.writes[RetrieveEOPSObligationsResponse]
 }

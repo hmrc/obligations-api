@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations
+package v1.models.response.retrieveEOPSObligations
 
 import play.api.libs.json.Json
 import support.UnitSpec
@@ -23,7 +23,7 @@ import v1.models.domain.status.MtdStatus
 import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.utils.JsonErrorValidators
 
-class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValidators {
+class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidators {
 
   "reads" should {
     "parse to a model" when {
@@ -41,20 +41,20 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "obligationDetails": [
             |                {
             |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "inboundCorrespondenceFromDate": "2018-01-01",
+            |                    "inboundCorrespondenceToDate": "2018-12-31",
+            |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+            |                    "inboundCorrespondenceDueDate": "2020-01-31",
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
-            ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)
+            ObligationDetail("2018-01-01", "2018-12-31", "2020-01-31", Some("2019-05-13"), MtdStatus.Fulfilled)
           ))
         ))
       }
@@ -72,33 +72,63 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "obligationDetails": [
             |                {
             |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
+            |                    "inboundCorrespondenceFromDate": "2018-01-01",
+            |                    "inboundCorrespondenceToDate": "2018-12-31",
+            |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+            |                    "inboundCorrespondenceDueDate": "2020-01-31",
+            |                    "periodKey": "EOPS"
+            |                },
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2019-01-01",
+            |                    "inboundCorrespondenceToDate": "2019-03-31",
+            |                    "inboundCorrespondenceDateReceived": "2019-04-25",
+            |                    "inboundCorrespondenceDueDate": "2019-04-30",
             |                    "periodKey": "#001"
             |                },
             |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1930-01-31",
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2019-04-01",
+            |                    "inboundCorrespondenceToDate": "2019-06-30",
+            |                    "inboundCorrespondenceDateReceived": "2019-07-01",
+            |                    "inboundCorrespondenceDueDate": "2019-07-31",
             |                    "periodKey": "#002"
+            |                },
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2019-07-01",
+            |                    "inboundCorrespondenceToDate": "2019-09-30",
+            |                    "inboundCorrespondenceDateReceived": "2019-10-08",
+            |                    "inboundCorrespondenceDueDate": "2019-10-31",
+            |                    "periodKey": "#003"
+            |                },
+            |                {
+            |                    "status": "O",
+            |                    "inboundCorrespondenceFromDate": "2019-10-01",
+            |                    "inboundCorrespondenceToDate": "2019-12-31",
+            |                    "inboundCorrespondenceDueDate": "2020-01-31",
+            |                    "periodKey": "#004"
+            |                },
+            |                {
+            |                    "status": "O",
+            |                    "inboundCorrespondenceFromDate": "2019-01-01",
+            |                    "inboundCorrespondenceToDate": "2019-12-31",
+            |                    "inboundCorrespondenceDueDate": "2021-01-31",
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
-            ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled),
-            ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
+            ObligationDetail("2018-01-01", "2018-12-31", "2020-01-31", Some("2019-05-13"), MtdStatus.Fulfilled),
+            ObligationDetail("2019-01-01", "2019-12-31", "2021-01-31", None,  MtdStatus.Open)
           ))
         ))
       }
-      "passed obligations with multiplle items in obligations and single items in the obligationDetails array" in {
+      "passed obligations with multiple items in obligations and single items in the obligationDetails array" in {
         val desJson = Json.parse(
           """
             |{
@@ -116,7 +146,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        },
@@ -133,7 +163,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
@@ -141,7 +171,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)
           )),
@@ -168,7 +198,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "O",
@@ -176,7 +206,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#002"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        },
@@ -193,7 +223,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "F",
@@ -201,7 +231,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#002"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
@@ -209,7 +239,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled),
             ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
@@ -250,7 +280,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq())))
       }
       "passed obligations with a multiple items in the obligationDetails array and a single item in the obligations array" in {
@@ -271,7 +301,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "O",
@@ -286,7 +316,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)))
         ))
@@ -326,7 +356,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
@@ -334,7 +364,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq()),
           Obligation(MtdBusiness.`foreign-property`, "XAIS12345678911", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Open)
@@ -367,7 +397,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#002"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        },
@@ -384,7 +414,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "F",
@@ -400,7 +430,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
           )),
@@ -409,7 +439,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
         ))
       }
     }
-    "remove objects with EOPS periodKey" when {
+    "remove objects without the EOPS periodKey" when {
       "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
         val desJson = Json.parse(
           """
@@ -428,14 +458,14 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq())))
       }
       "passed obligations with a multiple items in the obligationDetails array and a single item in the obligations array" in {
@@ -456,7 +486,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "O",
@@ -464,14 +494,14 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)))
         ))
@@ -494,7 +524,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        },
@@ -511,7 +541,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
@@ -519,7 +549,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq()),
           Obligation(MtdBusiness.`foreign-property`, "XAIS12345678911", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Open)
@@ -544,7 +574,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -552,7 +582,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#002"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        },
@@ -569,7 +599,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                },
             |                {
             |                    "status": "F",
@@ -577,7 +607,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "ITSA"
             |                }
             |            ]
             |        }
@@ -585,7 +615,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
           )),
@@ -594,8 +624,8 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
         ))
       }
     }
-    "remove objects with EOPS or ITSA periodKey within the same obligationDetails array" when {
-      "passed obligations with only EOPS & ITSA periodKeys in the obligationDetails array and a single item in the obligations array" in {
+    "remove objects with numbered or ITSA periodKey within the same obligationDetails array" when {
+      "passed obligations with only numbered & ITSA periodKeys in the obligationDetails array and a single item in the obligations array" in {
         val desJson = Json.parse(
           """
             |{
@@ -621,14 +651,14 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq())
         ))
       }
@@ -658,7 +688,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -666,20 +696,20 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
           ))
         ))
       }
-      "passed obligations with only EOPS & ITSA periodKeys in the obligationDetails array and a multiple items in the obligations array" in {
+      "passed obligations with only numbered & ITSA periodKeys in the obligationDetails array and a multiple items in the obligations array" in {
         val desJson = Json.parse(
           """
             |{
@@ -697,7 +727,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -730,7 +760,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -738,7 +768,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq()),
           Obligation(MtdBusiness.`foreign-property`, "XAIS12345678911", Seq())
         ))
@@ -761,7 +791,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -777,7 +807,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        },
@@ -802,7 +832,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "EOPS"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "F",
@@ -810,7 +840,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1930-01-31",
-            |                    "periodKey": "#001"
+            |                    "periodKey": "EOPS"
             |                }
             |            ]
             |        }
@@ -818,7 +848,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |}
             |""".stripMargin)
 
-        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
           Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
             ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Open)
           )),
@@ -873,7 +903,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |""".stripMargin
         )
         "return valid json" in {
-          val responseBody = RetrievePeriodObligationsResponse(Seq(
+          val responseBody = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`self-employment`, "XAIS12345678910", Seq(
               ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.Fulfilled),
               ObligationDetail("2019-04-01", "2019-06-30", "2019-07-31", Some("2019-07-01"), MtdStatus.Fulfilled),

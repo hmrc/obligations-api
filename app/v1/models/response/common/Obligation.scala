@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+<<<<<<< HEAD:app/v1/models/response/retrievePeriodicObligations/Obligation.scala
 package v1.models.response.retrievePeriodicObligations
+=======
+package v1.models.response.common
+>>>>>>> MTDSA-5237 Models for EOPS Obligations:app/v1/models/response/common/Obligation.scala
 
 import play.api.libs.json.{Json, OWrites}
 import v1.models.domain.business.MtdBusiness

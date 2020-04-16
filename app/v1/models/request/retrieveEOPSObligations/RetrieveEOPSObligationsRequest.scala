@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations.des
+package v1.models.request.retrieveEOPSObligations
 
-import play.api.libs.json.{Json, Reads}
+import uk.gov.hmrc.domain.Nino
+import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.DesStatus
 
-case class DesObligationDetail(
-                          inboundCorrespondenceFromDate: String,
-                          inboundCorrespondenceToDate: String,
-                          inboundCorrespondenceDueDate: String,
-                          status: DesStatus,
-                          inboundCorrespondenceDateReceived: Option[String],
-                          periodKey: String
-                        )
-
-object DesObligationDetail {
-  implicit val reads: Reads[DesObligationDetail] = Json.reads[DesObligationDetail]
-}
+case class RetrieveEOPSObligationsRequest(nino: Nino,
+                                          typeOfBusiness: Option[MtdBusiness],
+                                          incomeSourceId: Option[String],
+                                          fromDate: Option[String],
+                                          toDate: Option[String],
+                                          status: Option[DesStatus]
+                                         )
