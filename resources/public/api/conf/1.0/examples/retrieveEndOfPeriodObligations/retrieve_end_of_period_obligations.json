@@ -1,0 +1,37 @@
+{
+  "obligations": [
+    {
+      "typeOfBusiness": "self-employment",
+      "businessId": "XAIS12345678910",
+      "obligationDetails": [
+        {
+          "periodStartDate": "2019-01-01",
+          "periodEndDate": "2019-03-31",
+          "dueDate": "2019-04-30",
+          "receivedDate": "2019-04-25",
+          "status": "Fulfilled"
+        },
+        {
+          "periodStartDate": "2019-04-01",
+          "periodEndDate": "2019-06-30",
+          "dueDate": "2019-07-31",
+          "receivedDate": "2019-07-01",
+          "status": "Fulfilled"
+        },
+        {
+          "periodStartDate": "2019-07-01",
+          "periodEndDate": "2019-9-30",
+          "dueDate": "2019-10-31",
+          "receivedDate": "2019-10-08",
+          "status": "Fulfilled"
+        },
+        {
+          "periodStartDate": "2019-10-01",
+          "periodEndDate": "2019-12-31",
+          "dueDate": "2020-01-31",
+          "status": "Open"
+        }
+      ]
+    }
+  ]
+}
