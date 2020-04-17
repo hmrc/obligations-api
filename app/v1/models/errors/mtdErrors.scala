@@ -35,8 +35,6 @@ object FromDateFormatError extends MtdError("FORMAT_FROM_DATE", "The provided fr
 object ToDateFormatError extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid")
 
 object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when an incomeSourceId is supplied.")
-
-object NoObligationsFoundError extends MtdError("NO_OBLIGATIONS_FOUND", "No obligations found using this filter")
 // Rule Errors
 object RuleTaxYearNotSupportedError
     extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "Tax year not supported, because it precedes the earliest allowable tax year")
@@ -47,7 +45,6 @@ object RuleTaxYearRangeExceededError
     extends MtdError("RULE_TAX_YEAR_RANGE_EXCEEDED", "Tax year range exceeded. A tax year range of one year is required.")
 
 object RuleDateRangeInvalidError extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid")
-
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
 
