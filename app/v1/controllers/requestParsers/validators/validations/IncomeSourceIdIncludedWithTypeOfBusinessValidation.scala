@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators
+package v1.controllers.requestParsers.validators.validations
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import v1.models.errors.{MissingTypeOfBusinessError, MtdError}
 
-package object validations {
+object IncomeSourceIdIncludedWithTypeOfBusinessValidation {
 
-  val dateFormat = DateTimeFormatter ofPattern "yyyy-MM-dd"
-  val earliestDate = LocalDate.parse("2018-04-06", dateFormat)
-  val maxDateRange = 366
-  val NoValidationErrors = List()
-
+  def validate(incomeSourceId: Option[String], typeOfBusiness: Option[String]): List[MtdError] = {
+    (incomeSourceId, typeOfBusiness) match {
+      case (Some(x), None) => List(MissingTypeOfBusinessError)
+      case _ => Nil
+    }
+  }
 }

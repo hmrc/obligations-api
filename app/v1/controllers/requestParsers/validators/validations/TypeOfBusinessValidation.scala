@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators
+package v1.controllers.requestParsers.validators.validations
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import v1.models.domain.business.MtdBusiness
+import v1.models.errors.{MtdError, TypeOfBusinessFormatError}
 
-package object validations {
+import scala.util.{Failure, Success, Try}
 
-  val dateFormat = DateTimeFormatter ofPattern "yyyy-MM-dd"
-  val earliestDate = LocalDate.parse("2018-04-06", dateFormat)
-  val maxDateRange = 366
-  val NoValidationErrors = List()
-
+object TypeOfBusinessValidation {
+  def validate(typeOfBusiness: String): List[MtdError] = {
+    Try {
+      Option(typeOfBusiness).map(MtdBusiness.parser)
+    } match {
+      case Failure(_) => List(TypeOfBusinessFormatError)
+      case Success(_) => NoValidationErrors
+    }
+  }
 }

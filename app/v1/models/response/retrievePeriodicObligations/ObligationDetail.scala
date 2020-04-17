@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package v1.controllers.requestParsers.validators
+package v1.models.response.retrievePeriodicObligations
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.status.MtdStatus
 
-package object validations {
+case class ObligationDetail(periodStartDate: String,
+                            periodEndDate: String,
+                            dueDate: String,
+                            receivedDate: Option[String],
+                            status: MtdStatus)
 
-  val dateFormat = DateTimeFormatter ofPattern "yyyy-MM-dd"
-  val earliestDate = LocalDate.parse("2018-04-06", dateFormat)
-  val maxDateRange = 366
-  val NoValidationErrors = List()
-
+object ObligationDetail {
+  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
 }

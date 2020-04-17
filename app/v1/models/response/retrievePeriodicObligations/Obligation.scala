@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodObligations
+package v1.models.response.retrievePeriodicObligations
 
 import play.api.libs.json.{Json, OWrites}
 import v1.models.domain.business.MtdBusiness

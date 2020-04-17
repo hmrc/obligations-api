@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodObligations.des
+package v1.models.response.retrievePeriodicObligations.des
 
 import play.api.libs.json.{Json, Reads}
 import v1.models.domain.status.DesStatus

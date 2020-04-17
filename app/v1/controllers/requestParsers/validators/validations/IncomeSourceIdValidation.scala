@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodObligations
+package v1.controllers.requestParsers.validators.validations
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import v1.models.errors.{BusinessIdFormatError, MtdError}
 
-case class ObligationDetail(periodStartDate: String,
-                            periodEndDate: String,
-                            dueDate: String,
-                            receivedDate: Option[String],
-                            status: MtdStatus)
+object IncomeSourceIdValidation {
 
-object ObligationDetail {
-  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
+  private val incomeSourceIdRegex = "^X[a-zA-Z0-9]{1}IS[0-9]{12}$"
+
+  def validate(incomeSourceId: String): List[MtdError] = {
+    if (incomeSourceId.matches(incomeSourceIdRegex)) NoValidationErrors else List(BusinessIdFormatError)
+  }
+
 }
