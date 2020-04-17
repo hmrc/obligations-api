@@ -1,0 +1,29 @@
+is:
+  - headers.acceptJson
+  - headers.testScenarioHeader
+  - errors.formatNino
+  - errors.formatTaxYear
+  - errors.ruleTaxYearNotSupported
+  - errors.ruleTaxYearTooLong
+  - errors.formatLossId
+  - errors.clientOrAgentNotAuthorised
+  - errors.notFoundLossId
+  - queryParameters.taxYear
+displayName: Retrieve Income Tax (Self Assessment) Crystallisation Obligations [test only]
+description: This endpoint allows the developer to retrieve the Crystallisation obligations for a user's Income Tax account. The account identifier (National Insurance Number) must be provided
+(annotations.sandboxData): !include scenarios/retrieve_crystallisation_obligations_scenarios.md
+(annotations.scope): "write:self-assessment"
+securedBy: [ sec.oauth_2_0: { scopes: [ "write:self-assessment" ] } ]
+responses:
+  200:
+    body:
+      application/json:
+        type: !include schemas/retrieve_crystallisation_obligations_response.json
+        examples:
+          example-1:
+            description: Default
+            value: !include examples/retrieveCrystallisationObligations/retrieve_crystallisation_obligations.json
+    headers:
+      X-CorrelationId:
+        example: c75f40a6-a3df-4429-a697-471eeec46435
+        description: Unique ID for operation tracking <br> String, 36 characters.
