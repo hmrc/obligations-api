@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-<<<<<<< HEAD:app/v1/models/response/retrievePeriodicObligations/des/DesObligation.scala
-package v1.models.response.retrievePeriodicObligations.des
-=======
 package v1.models.response.common.des
->>>>>>> MTDSA-5237 Models for EOPS Obligations:app/v1/models/response/common/des/DesObligation.scala
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}

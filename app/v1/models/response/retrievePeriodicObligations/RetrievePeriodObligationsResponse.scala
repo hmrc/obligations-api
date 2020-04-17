@@ -18,13 +18,8 @@ package v1.models.response.retrievePeriodicObligations
 
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v1.models.domain.PeriodKey
-<<<<<<< HEAD:app/v1/models/response/retrievePeriodicObligations/RetrievePeriodObligationsResponse.scala
-import v1.models.response.retrievePeriodicObligations.des.DesObligation
-=======
-import v1.models.response.common
 import v1.models.response.common.{Obligation, ObligationDetail}
-import v1.models.response.common.des.{DesObligation, DesObligationDetail}
->>>>>>> MTDSA-5237 Models for EOPS Obligations:app/v1/models/response/retrievePeriodObligations/RetrievePeriodObligationsResponse.scala
+import v1.models.response.common.des.DesObligation
 
 case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
 
@@ -34,7 +29,7 @@ object RetrievePeriodObligationsResponse {
     (JsPath \ "obligations").read[Seq[DesObligation]].map( // go inside Reads
       _.map { // go inside Seq
         ob =>
-          common.Obligation(
+          Obligation(
             ob.incomeSourceType.toMtd,
             ob.referenceNumber,
             ob.obligationDetails.collect {

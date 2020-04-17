@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-<<<<<<< HEAD:test/v1/models/response/retrievePeriodicObligations/ObligationSpec.scala
-package v1.models.response.retrievePeriodicObligations
-=======
 package v1.models.response.common
->>>>>>> MTDSA-5237 Models for EOPS Obligations:test/v1/models/response/common/ObligationSpec.scala
 
 import play.api.libs.json.Json
 import support.UnitSpec

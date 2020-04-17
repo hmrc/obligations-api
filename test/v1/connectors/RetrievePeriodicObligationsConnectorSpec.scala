@@ -23,7 +23,8 @@ import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.retrievePeriodicObligations.{Obligation, ObligationDetail, RetrievePeriodObligationsResponse}
+import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 import scala.concurrent.Future
 
