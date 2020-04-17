@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations
+package v1.models.response.common
 
 import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.business.MtdBusiness
+import v1.models.domain.status.MtdStatus
 
-case class Obligation(typeOfBusiness: MtdBusiness, businessId: String, obligationDetails: Seq[ObligationDetail])
+case class ObligationDetail(periodStartDate: String,
+                            periodEndDate: String,
+                            dueDate: String,
+                            receivedDate: Option[String],
+                            status: MtdStatus)
 
-object Obligation {
-  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
+object ObligationDetail {
+  implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
 }

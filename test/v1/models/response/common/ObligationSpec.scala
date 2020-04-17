@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations
+package v1.models.response.common
 
 import play.api.libs.json.Json
 import support.UnitSpec

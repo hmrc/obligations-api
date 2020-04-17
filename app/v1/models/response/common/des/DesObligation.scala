@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrievePeriodicObligations.des
+package v1.models.response.common.des
 
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads}
