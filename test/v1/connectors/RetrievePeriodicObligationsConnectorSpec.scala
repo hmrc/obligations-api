@@ -60,7 +60,7 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
 
         MockedHttpClient.
           get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.fromDate.get}&to=${request.toDate.get}&status=${request.status.get}",
+            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.fromDate.get}&to=${request.toDate.get}&status=${request.status.get.toDes}",
             requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
           ).returns(Future.successful(outcome))
         await(connector.retrievePeriodicObligations(request)) shouldBe outcome
