@@ -20,10 +20,10 @@ import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.{DesStatus, MtdStatus}
+import v1.models.domain.status.MtdStatus
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.retrievePeriodObligations.{Obligation, ObligationDetail, RetrievePeriodObligationsResponse}
+import v1.models.response.retrievePeriodicObligations.{Obligation, ObligationDetail, RetrievePeriodObligationsResponse}
 
 import scala.concurrent.Future
 
@@ -34,7 +34,7 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
   private val validincomeSourceId = "XAIS123456789012"
   private val validfromDate = "2018-04-06"
   private val validtoDate = "2019-04-05"
-  private val validStatus = DesStatus.O
+  private val validStatus = MtdStatus.Open
 
   class Test extends MockHttpClient with MockAppConfig {
     val connector: RetrievePeriodicObligationsConnector = new RetrievePeriodicObligationsConnector(
