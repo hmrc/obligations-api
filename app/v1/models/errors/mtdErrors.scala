@@ -45,6 +45,7 @@ object RuleTaxYearRangeExceededError
     extends MtdError("RULE_TAX_YEAR_RANGE_EXCEEDED", "Tax year range exceeded. A tax year range of one year is required.")
 
 object RuleDateRangeInvalidError extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid")
+
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
 

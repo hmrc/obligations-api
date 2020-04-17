@@ -49,15 +49,9 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
       "INVALID_IDNUMBER" -> NinoFormatError,
       "INVALID_STATUS" -> DownstreamError,
       "INVALID_REGIME" -> DownstreamError,
-<<<<<<< HEAD
       "INVALID_DATE_FROM" -> FromDateFormatError,
       "INVALID_DATE_TO" -> ToDateFormatError,
       "INVALID_DATE_RANGE" -> RuleDateRangeInvalidError,
-=======
-//      "INVALID_DATE_FROM" -> FromDateFormatError,
-//      "INVALID_DATE_TO" -> ToDateFormatError,
-//      "INVALID_DATE_RANGE" -> RuleDateRangeInvalidError,
->>>>>>> [MTDSA-5195] - Retrieve periodic obligations service spec
       "NOT_FOUND" -> NotFoundError,
       "NOT_FOUND_BPKEY" -> NotFoundError,
       "SERVER_ERROR" -> DownstreamError,
