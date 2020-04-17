@@ -24,4 +24,13 @@ class MtdStatusSpec extends UnitSpec with EnumJsonSpecSupport {
     ("Fulfilled", MtdStatus.Fulfilled),
     ("Open", MtdStatus.Open)
   )
+
+  "toDes" should {
+    Seq((DesStatus.F, MtdStatus.Fulfilled), (DesStatus.O, MtdStatus.Open)).foreach {
+      case (desStatus, mtdStatus) =>
+        s"convert $mtdStatus to $desStatus" in {
+          mtdStatus.toDes shouldBe desStatus
+        }
+    }
+  }
 }

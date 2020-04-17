@@ -19,11 +19,17 @@ package v1.models.domain.status
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait MtdStatus
+sealed trait MtdStatus {
+  def toDes: DesStatus
+}
 
 object MtdStatus {
-  case object Fulfilled extends MtdStatus
-  case object Open extends MtdStatus
+  case object Fulfilled extends MtdStatus {
+    override def toDes: DesStatus = DesStatus.F
+  }
+  case object Open extends MtdStatus {
+    override def toDes: DesStatus = DesStatus.O
+  }
 
   implicit val format: Format[MtdStatus] = Enums.format[MtdStatus]
   val parser: PartialFunction[String, MtdStatus] = Enums.parser[MtdStatus]

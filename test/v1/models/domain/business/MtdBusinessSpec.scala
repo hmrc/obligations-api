@@ -26,4 +26,15 @@ class MtdBusinessSpec extends UnitSpec with EnumJsonSpecSupport{
     ("uk-property", MtdBusiness.`uk-property`),
     ("foreign-property", MtdBusiness.`foreign-property`)
   )
+
+  "toDes" should {
+    Seq((DesBusiness.ITSF, MtdBusiness.`foreign-property`),
+      (DesBusiness.ITSB, MtdBusiness.`self-employment`),
+      (DesBusiness.ITSP, MtdBusiness.`uk-property`)).foreach {
+      case (desBusiness, mtdBusiness) =>
+        s"convert $mtdBusiness to $desBusiness" in {
+          mtdBusiness.toDes shouldBe desBusiness
+        }
+    }
+  }
 }
