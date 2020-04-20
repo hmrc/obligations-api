@@ -23,8 +23,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.RetrievePeriodicObligationsConnector
 import v1.controllers.EndpointLogContext
+import v1.models.domain.business.MtdBusiness._
 import v1.models.errors._
+import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
+import v1.models.response.retrievePeriodObligations.RetrievePeriodObligationsResponse
 import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,8 +41,8 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
               logContext: EndpointLogContext): Future[RetrievePeriodicObligationsServiceOutcome] = {
     val result = for {
       desResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDesErrors(desErrorMap))
-    } yield desResponseWrapper
-
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterPeriodicValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
+    } yield mtdResponseWrapper
     result.value
   }
 

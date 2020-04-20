@@ -41,13 +41,32 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
   private val validStatus = DesStatus.O
   private val correlationId = "X-123"
 
-  private val requestData = RetrievePeriodicObligationsRequest(
-    Nino(validNino),
-    Some(validtypeOfBusiness),
-    Some(validincomeSourceId),
-    Some(validfromDate),
-    Some(validtoDate),
-    Some(validStatus))
+  private val fullResponseModel = RetrievePeriodObligationsResponse(Seq(
+    Obligation(MtdBusiness.`self-employment`,
+      validincomeSourceId,
+      Seq(ObligationDetail(validfromDate,
+        validtoDate,
+        validfromDate,
+        Some(validtoDate),
+        MtdStatus.Open))
+    ),
+    Obligation(MtdBusiness.`foreign-property`,
+      validincomeSourceId,
+      Seq(ObligationDetail(validfromDate,
+        validtoDate,
+        validfromDate,
+        Some(validtoDate),
+        MtdStatus.Open))
+    ),
+    Obligation(MtdBusiness.`uk-property`,
+      validincomeSourceId,
+      Seq(ObligationDetail(validfromDate,
+        validtoDate,
+        validfromDate,
+        Some(validtoDate),
+        MtdStatus.Open))
+    ),
+  ))
 
   trait Test extends MockRetrievePeriodicObligationsConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
@@ -59,27 +78,185 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
   }
 
   "service" when {
-    "service call is successful" must {
-      "return mapped result" in new Test {
-        val responseModel = RetrievePeriodObligationsResponse(Seq(
-          Obligation(validtypeOfBusiness,
-            validincomeSourceId,
-            Seq(ObligationDetail(validfromDate,
-              validtoDate,
-              validfromDate,
-              Some(validtoDate),
-              MtdStatus.Open)))))
+    "connector call is successful" must {
+      "return mapped result with nothing filtered out" when {
+        "no typeOfBusiness or incomeSourceId are provided" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            None,
+            None,
+            Some(validfromDate),
+            Some(validtoDate),
+            Some(validStatus))
 
-        MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
 
-        await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, responseModel))
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, fullResponseModel))
+        }
+      }
+
+      val businesses = Seq(MtdBusiness.`self-employment`, MtdBusiness.`foreign-property`, MtdBusiness.`uk-property`)
+
+      businesses.foreach {
+        business =>
+          s"return mapped result with only $business in it" when {
+            s"typeOfBusiness [$business] is provided " in new Test {
+              private val requestData = RetrievePeriodicObligationsRequest(
+                Nino(validNino),
+                Some(business),
+                None,
+                Some(validfromDate),
+                Some(validtoDate),
+                Some(validStatus))
+
+              private val filteredResponseModel = RetrievePeriodObligationsResponse(Seq(
+                Obligation(business,
+                  validincomeSourceId,
+                  Seq(ObligationDetail(validfromDate,
+                    validtoDate,
+                    validfromDate,
+                    Some(validtoDate),
+                    MtdStatus.Open))
+                )
+              ))
+
+              MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+                .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
+
+              await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
+            }
+          }
+      }
+
+      "filter out data with a different businessId" when {
+        "incomeSourceId is provided and not all of the response objects have that id" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            None,
+            Some(validincomeSourceId),
+            Some(validfromDate),
+            Some(validtoDate),
+            Some(validStatus))
+
+          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+            Obligation(MtdBusiness.`self-employment`,
+              validincomeSourceId,
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            ),
+            Obligation(MtdBusiness.`foreign-property`,
+              validincomeSourceId,
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            ),
+            Obligation(MtdBusiness.`uk-property`,
+              "beans",
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            )
+          ))
+
+          private val filteredResponseModel = RetrievePeriodObligationsResponse(Seq(
+            Obligation(MtdBusiness.`self-employment`,
+              validincomeSourceId,
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            ),
+            Obligation(MtdBusiness.`foreign-property`,
+              validincomeSourceId,
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            )
+          ))
+
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
+        }
+      }
+
+      "return 404" when {
+        "typeOfBusiness filter is applied and there are no response objects with that typeOfBusiness" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            Some(MtdBusiness.`foreign-property`),
+            Some(validincomeSourceId),
+            Some(validfromDate),
+            Some(validtoDate),
+            Some(validStatus))
+
+          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+            Obligation(MtdBusiness.`uk-property`,
+              validincomeSourceId,
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            )
+          ))
+
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
+        }
+        "incomeSourceId filter is applied and there are no response objects with that incomeSourceId" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            Some(MtdBusiness.`foreign-property`),
+            Some(validincomeSourceId),
+            Some(validfromDate),
+            Some(validtoDate),
+            Some(validStatus))
+
+          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+            Obligation(MtdBusiness.`foreign-property`,
+              "beans",
+              Seq(ObligationDetail(validfromDate,
+                validtoDate,
+                validfromDate,
+                Some(validtoDate),
+                MtdStatus.Open))
+            )
+          ))
+
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
+        }
       }
     }
-    "unsuccessful" must {
+    "connector call is unsuccessful" must {
       "map errors according to spec" when {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
+
+            private val requestData = RetrievePeriodicObligationsRequest(
+              Nino(validNino),
+              Some(validtypeOfBusiness),
+              Some(validincomeSourceId),
+              Some(validfromDate),
+              Some(validtoDate),
+              Some(validStatus))
 
             MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
@@ -92,9 +269,9 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
           ("INVALID_IDTYPE", DownstreamError),
           ("INVALID_STATUS", DownstreamError),
           ("INVALID_REGIME", DownstreamError),
-          ("INVALID_DATE_FROM", DownstreamError),
-          ("INVALID_DATE_TO", DownstreamError),
-          ("INVALID_DATE_RANGE", DownstreamError),
+          ("INVALID_DATE_FROM", FromDateFormatError),
+          ("INVALID_DATE_TO", ToDateFormatError),
+          ("INVALID_DATE_RANGE", RuleDateRangeInvalidError),
           ("NOT_FOUND_BPKEY", NotFoundError),
           ("NOT_FOUND", NotFoundError),
           ("SERVER_ERROR", DownstreamError),
