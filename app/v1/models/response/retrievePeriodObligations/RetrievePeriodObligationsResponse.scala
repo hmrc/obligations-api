@@ -18,7 +18,7 @@ package v1.models.response.retrievePeriodObligations
 
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v1.models.domain.PeriodKey
-import v1.models.response.retrievePeriodObligations.des.{DesObligation, DesObligationDetail}
+import v1.models.response.retrievePeriodObligations.des.DesObligation
 
 case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
 

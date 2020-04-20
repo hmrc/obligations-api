@@ -18,11 +18,39 @@ package v1.support
 
 import utils.Logging
 import v1.controllers.EndpointLogContext
+import v1.models.domain.business.MtdBusiness
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
+import v1.models.response.retrievePeriodObligations.RetrievePeriodObligationsResponse
 
 trait DesResponseMappingSupport {
   self: Logging =>
+
+  final def filterPeriodicValues(
+                                  responseWrapper: ResponseWrapper[RetrievePeriodObligationsResponse],
+                                  typeOfBusiness: Option[MtdBusiness],
+                                  incomeSourceId: Option[String]
+                                ): Either[ErrorWrapper, ResponseWrapper[RetrievePeriodObligationsResponse]] = {
+    val filteredObligations = responseWrapper.responseData.obligations.filter {
+      obligation =>
+        // filter based on typeOfBusiness (if provided)
+        typeOfBusiness.forall(_ == obligation.typeOfBusiness)
+    }.filter {
+      obligation =>
+        // filter on incomeSourceId (if provided)
+        incomeSourceId.forall(_ == obligation.businessId)
+    }
+
+    // if after filtering, list is not empty
+    if (filteredObligations.nonEmpty) {
+      Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(
+        filteredObligations
+      )))
+    } else {
+      // if list is empty after filtering, return not found
+      Left(ErrorWrapper(Some(responseWrapper.correlationId), NotFoundError))
+    }
+  }
 
   final def mapDesErrors[D](errorCodeMap: PartialFunction[String, MtdError])(desResponseWrapper: ResponseWrapper[DesError])(
     implicit logContext: EndpointLogContext): ErrorWrapper = {

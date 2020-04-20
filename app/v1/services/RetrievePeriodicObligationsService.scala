@@ -38,7 +38,8 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
               logContext: EndpointLogContext): Future[RetrievePeriodicObligationsServiceOutcome] = {
     val result = for {
       desResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDesErrors(desErrorMap))
-    } yield desResponseWrapper
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterPeriodicValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
+    } yield mtdResponseWrapper
 
     result.value
   }
