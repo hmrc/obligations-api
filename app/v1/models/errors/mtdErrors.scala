@@ -31,10 +31,10 @@ object FromDateFormatError extends MtdError("FORMAT_FROM_DATE", "The provided fr
 object ToDateFormatError extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid")
 object StatusFormatError extends MtdError("FORMAT_STATUS", "The provided status is invalid")
 object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided type of business is invalid")
-object FromDateFormatError extends MtdError("FORMAT_FROM_DATE", "The provided fromDate is invalid")
-object ToDateFormatError extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid")
 
 object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when an incomeSourceId is supplied.")
+
+object NoObligationsFoundError extends MtdError("NO_OBLIGATIONS_FOUND", "No obligations found using this filter")
 // Rule Errors
 object RuleTaxYearNotSupportedError
     extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "Tax year not supported, because it precedes the earliest allowable tax year")
