@@ -17,7 +17,7 @@
 package v1.connectors
 
 import config.AppConfig
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import v1.connectors.httpparsers.StandardDesHttpParser._
@@ -26,6 +26,7 @@ import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisa
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient,
                                                             val appConfig: AppConfig) extends BaseDesConnector {
   def retrieveCrystallisationObligations(request: RetrieveCrystallisationObligationsRequest)
