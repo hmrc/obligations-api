@@ -41,14 +41,20 @@ trait DesResponseMappingSupport {
         incomeSourceId.forall(_ == obligation.businessId)
     }
 
-    // if after filtering, list is not empty
-    if (filteredObligations.nonEmpty) {
-      Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(
-        filteredObligations
-      )))
-    } else {
-      // if list is empty after filtering, return not found
+    if(responseWrapper.responseData.obligations.isEmpty) {
+      // nothing in the original array
+      // e.g. if periodKey filters removed all objects
       Left(ErrorWrapper(Some(responseWrapper.correlationId), NotFoundError))
+    } else {
+      // if after filtering, list is not empty
+      if (filteredObligations.nonEmpty) {
+        Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(
+          filteredObligations
+        )))
+      } else {
+        // if list is empty after filtering, return not found
+        Left(ErrorWrapper(Some(responseWrapper.correlationId), NotFoundError))
+      }
     }
   }
 

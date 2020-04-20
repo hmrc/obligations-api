@@ -243,6 +243,22 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
         }
+        "the connector returns an empty Seq because the periodKey filters removed all objects" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            None,
+            None,
+            Some(validfromDate),
+            Some(validtoDate),
+            Some(validStatus))
+
+          private val responseModel = RetrievePeriodObligationsResponse(Seq())
+
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
+        }
       }
     }
     "connector call is unsuccessful" must {
