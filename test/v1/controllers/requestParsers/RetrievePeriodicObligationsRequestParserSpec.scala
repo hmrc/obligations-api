@@ -18,7 +18,7 @@ package v1.controllers.requestParsers
 
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
-import v1.mocks.validators.RetrieveMockPeriodicObligationsValidator
+import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError}
@@ -37,24 +37,24 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
 
-  trait Test extends RetrieveMockPeriodicObligationsValidator {
+  trait Test extends MockRetrievePeriodicObligationsValidator {
     lazy val parser = new RetrievePeriodicObligationsRequestParser(mockValidator)
   }
 
   "parse" should {
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
-        RetrieveMockPeriodicObligationsValidator.validate(data).returns(Nil)
+        MockRetrievePeriodicObligationsValidator.validate(data).returns(Nil)
         parser.parseRequest(data) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatus)))
       }
     }
     "return an error wrapper" when {
       "the validator returns a single error" in new Test {
-        RetrieveMockPeriodicObligationsValidator.validate(invalidNinoData).returns(List(NinoFormatError))
+        MockRetrievePeriodicObligationsValidator.validate(invalidNinoData).returns(List(NinoFormatError))
         parser.parseRequest(invalidNinoData) shouldBe Left(ErrorWrapper(None, NinoFormatError, None))
       }
       "the validator returns multiple errors" in new Test {
-        RetrieveMockPeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
+        MockRetrievePeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
         parser.parseRequest(invalidMultipleData) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
       }
     }
