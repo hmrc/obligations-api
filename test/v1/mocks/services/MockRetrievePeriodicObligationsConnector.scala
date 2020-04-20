@@ -21,7 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.connectors.{DesOutcome, RetrievePeriodicObligationsConnector}
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.retrievePeriodObligations.RetrievePeriodObligationsResponse
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 

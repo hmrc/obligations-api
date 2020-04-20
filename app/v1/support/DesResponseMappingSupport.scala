@@ -21,7 +21,7 @@ import v1.controllers.EndpointLogContext
 import v1.models.domain.business.MtdBusiness
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.response.retrievePeriodObligations.RetrievePeriodObligationsResponse
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 trait DesResponseMappingSupport {
   self: Logging =>
@@ -42,7 +42,7 @@ trait DesResponseMappingSupport {
         filteredObligations
       )))
     } else {
-      Left(ErrorWrapper(Some(responseWrapper.correlationId), NotFoundError))
+      Left(ErrorWrapper(Some(responseWrapper.correlationId), NoObligationsFoundError))
     }
   }
 

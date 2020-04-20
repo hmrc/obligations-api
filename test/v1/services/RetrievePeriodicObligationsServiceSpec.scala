@@ -26,7 +26,8 @@ import v1.models.domain.status.{DesStatus, MtdStatus}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.retrievePeriodObligations.{Obligation, ObligationDetail, RetrievePeriodObligationsResponse}
+import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,7 +39,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
   private val validincomeSourceId = "XAIS123456789012"
   private val validfromDate = "2018-04-06"
   private val validtoDate = "2019-04-05"
-  private val validStatus = DesStatus.O
+  private val validStatus = MtdStatus.Open
   private val correlationId = "X-123"
 
   private val fullResponseModel = RetrievePeriodObligationsResponse(Seq(
@@ -216,7 +217,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
           MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
         "incomeSourceId filter is applied and there are no response objects with that incomeSourceId" in new Test {
           private val requestData = RetrievePeriodicObligationsRequest(
@@ -241,7 +242,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
           MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NotFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
       }
     }
