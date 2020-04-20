@@ -9,7 +9,15 @@
     <tbody>
         <tr>
             <td><p>N/A - DEFAULT</p></td>
-            <td><p>Simulate a success response with self-employment loss.</p></td>
+            <td><p>Simulate a success response with a fulfilled obligation.</p></td>
+        </tr>
+        <tr>
+            <td><p>FULFILLED</p></td>
+            <td><p>Simulate a success response with a fulfilled obligation.</p></td>
+        </tr>
+        <tr>
+            <td><p>OPEN</p></td>
+            <td><p>Simulate a success response with an open obligation.</p></td>
         </tr>
         <tr>
             <td><p>NOT_FOUND</p></td>
