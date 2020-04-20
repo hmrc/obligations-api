@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers
 
+import java.time.LocalDate
+
 import javax.inject.Inject
 import uk.gov.hmrc.domain.Nino
 import v1.controllers.requestParsers.validators.RetrieveEOPSObligationsValidator
@@ -27,9 +29,17 @@ class RetrieveEOPSObligationsRequestParser @Inject()(val validator: RetrieveEOPS
   extends RequestParser[RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest] {
 
   override protected def requestFor(data: RetrieveEOPSObligationsRawData): RetrieveEOPSObligationsRequest = {
+
+    val (fromDate, toDate): (Option[String], Option[String]) = (data.fromDate, data.toDate, data.status) match {
+      case (None, None, Some("Fulfilled")) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
+      case _ => (data.fromDate, data.toDate)
+    }
+
     val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
     val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
-    RetrieveEOPSObligationsRequest(Nino(data.nino), typeOfBusiness, data.incomeSourceId, data.fromDate, data.toDate, status)
+
+    RetrieveEOPSObligationsRequest(Nino(data.nino), typeOfBusiness, data.incomeSourceId, fromDate, toDate, status)
   }
+
 
 }

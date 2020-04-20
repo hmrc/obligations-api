@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers
 
+import java.time.LocalDate
+
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.validators.MockRetrieveEOPSObligationsValidator
@@ -33,10 +35,14 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
   val fromDate = "2019-01-01"
   val toDate = "2020-01-01"
   val status = "Open"
-  val convertedStatus = MtdStatus.Open
+  val convertedStatusOpen = MtdStatus.Open
+  val convertedStatusFulfilled = MtdStatus.Fulfilled
   val data = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
   val invalidNinoData = RetrieveEOPSObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val invalidMultipleData = RetrieveEOPSObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDate = LocalDate.now().toString
+  val nextYearsDate = LocalDate.now().plusDays(366).toString
 
   trait Test extends MockRetrieveEOPSObligationsValidator {
     lazy val parser = new RetrieveEOPSObligationsRequestParser(mockValidator)
@@ -46,7 +52,7 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
         MockRetrieveEOPSObligationsValidator.validate(data).returns(Nil)
-        parser.parseRequest(data) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatus)))
+        parser.parseRequest(data) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatusOpen)))
       }
     }
     "return an error wrapper" when {
@@ -57,6 +63,12 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
       "the validator returns multiple errors" in new Test {
         MockRetrieveEOPSObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
         parser.parseRequest(invalidMultipleData) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
+      }
+    }
+    "convert fromDate to today and toDate to 366 days ahead" when {
+      "there are no dates input and the status is Fulfilled" in new Test {
+        MockRetrieveEOPSObligationsValidator.validate(todaysDatesData).returns(Nil)
+        parser.parseRequest(todaysDatesData) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
     }
   }
