@@ -18,7 +18,7 @@ package v1.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.RetrievePeriodicObligationsConnector
@@ -29,6 +29,7 @@ import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector)
   extends DesResponseMappingSupport with Logging {
 
