@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers
 
+import java.time.LocalDate
+
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
@@ -33,9 +35,13 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val toDate = "2020-01-01"
   val status = "Open"
   val convertedStatus = MtdStatus.Open
+  val convertedStatusFulfilled = MtdStatus.Fulfilled
   val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
   val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDate = LocalDate.now().toString
+  val nextYearsDate = LocalDate.now().plusDays(366).toString
 
   trait Test extends MockRetrievePeriodicObligationsValidator {
     lazy val parser = new RetrievePeriodicObligationsRequestParser(mockValidator)
@@ -56,6 +62,12 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
       "the validator returns multiple errors" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
         parser.parseRequest(invalidMultipleData) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
+      }
+    }
+    "convert fromDate to today and toDate to 366 days ahead" when {
+      "there are no dates input and the status is Fulfilled" in new Test {
+        MockRetrievePeriodicObligationsValidator.validate(todaysDatesData).returns(Nil)
+        parser.parseRequest(todaysDatesData) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
     }
   }
