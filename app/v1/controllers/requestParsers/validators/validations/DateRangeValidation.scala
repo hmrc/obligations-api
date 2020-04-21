@@ -18,19 +18,19 @@ package v1.controllers.requestParsers.validators.validations
 
 import java.time.{Duration, LocalDate}
 
-import v1.models.errors.MtdError
+import v1.models.errors.{MissingFromDateError, MissingToDateError, MtdError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError}
 
 object DateRangeValidation {
 
-  def validate(from: String, to: String, error: MtdError): List[MtdError] = {
+  def validate(from: String, to: String): List[MtdError] = {
     val fmtFrom = LocalDate.parse(from, dateFormat)
     val fmtTo = LocalDate.parse(to, dateFormat)
 
     List(
-      checkIfToIsBeforeFrom(fmtFrom, fmtTo, error),
-      checkIfFromIsTooEarly(fmtFrom, error),
-      checkIfDateRangeIsTooLarge(fmtFrom, fmtTo, error),
-      checkIfDateRangeIsTooShort(fmtFrom, fmtTo, error)
+      checkIfToIsBeforeFrom(fmtFrom, fmtTo, ToDateBeforeFromDateError),
+      checkIfFromIsTooEarly(fmtFrom, RuleFromDateNotSupportedError),
+      checkIfDateRangeIsTooLarge(fmtFrom, fmtTo, RuleDateRangeInvalidError),
+      checkIfDateRangeIsTooShort(fmtFrom, fmtTo, RuleDateRangeInvalidError)
     ).flatten
   }
 
@@ -42,5 +42,4 @@ object DateRangeValidation {
     if(Duration.between(start, end.plusDays(1) /* add day to make inclusive */).toDays > maxDateRange) List(error) else Nil
   }
   private def checkIfDateRangeIsTooShort(from: LocalDate, to: LocalDate, error: MtdError): List[MtdError] = if(to == from) List(error) else Nil
-
 }

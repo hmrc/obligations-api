@@ -22,7 +22,7 @@ import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRa
 
 class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObligationsRawData] {
 
-  private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
+  private val validationSet = List(parameterFormatValidation, parameterRuleValidation, missingParameterValidation)
 
   private def parameterFormatValidation: RetrievePeriodicObligationsRawData => List[List[MtdError]] = data => {
     List(
@@ -41,11 +41,17 @@ class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObl
       fromDate <- data.fromDate
       toDate <- data.toDate
     } yield {
-      DateRangeValidation.validate(fromDate, toDate, RuleDateRangeInvalidError)
+      DateRangeValidation.validate(fromDate, toDate)
     }
 
     List(
       dateRangeValidation.getOrElse(Nil)
+    )
+  }
+
+  private def missingParameterValidation: RetrievePeriodicObligationsRawData => List[List[MtdError]] = (data: RetrievePeriodicObligationsRawData) => {
+    List(
+      DateMissingValidation.validate(data.fromDate, data.toDate)
     )
   }
 

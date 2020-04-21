@@ -60,24 +60,6 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
       }
-      "a valid request is supplied with no fromDate" in {
-        validator.validate(RetrieveEOPSObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
-          None,
-          Some(validToDate),
-          Some(validStatus))) shouldBe Nil
-      }
-      "a valid request is supplied with no toDate" in {
-        validator.validate(RetrieveEOPSObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
-          Some(validFromDate),
-          None,
-          Some(validStatus))) shouldBe Nil
-      }
       "a valid request is supplied with no status" in {
         validator.validate(RetrieveEOPSObligationsRawData(
           validNino,
@@ -89,6 +71,29 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
       }
       "a valid request is supplied with none of the optional fields" in {
         validator.validate(RetrieveEOPSObligationsRawData(validNino, None, None, None, None, None)) shouldBe Nil
+      }
+    }
+
+    "return a missing fromDate error" when {
+      "the fromDate is missing while toDate exists" in {
+        validator.validate(RetrieveEOPSObligationsRawData(
+          validNino,
+          Some(validTypeOfBusiness),
+          Some(validIncomeSourceId),
+          None,
+          Some(validToDate),
+          Some(validStatus))) shouldBe List(MissingFromDateError)
+      }
+    }
+    "return a missing toDate error" when {
+      "the toDate is missing while fromDate exists" in {
+        validator.validate(RetrieveEOPSObligationsRawData(
+          validNino,
+          Some(validTypeOfBusiness),
+          Some(validIncomeSourceId),
+          Some(validFromDate),
+          None,
+          Some(validStatus))) shouldBe List(MissingToDateError)
       }
     }
 
@@ -117,8 +122,8 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
       (validNino, validTypeOfBusiness, "Walrus", validFromDate, validToDate, validStatus, BusinessIdFormatError),
       (validNino, validTypeOfBusiness, validIncomeSourceId, "01-02-2019", validToDate, validStatus, FromDateFormatError),
       (validNino, validTypeOfBusiness, validIncomeSourceId, validToDate, "01-02-2019", validStatus, ToDateFormatError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2017-01-01", "2018-01-01", validStatus, RuleDateRangeInvalidError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2019-01-01", "2018-01-01", validStatus, RuleDateRangeInvalidError),
+      (validNino, validTypeOfBusiness, validIncomeSourceId, "2017-01-01", "2018-01-01", validStatus, RuleFromDateNotSupportedError),
+      (validNino, validTypeOfBusiness, validIncomeSourceId, "2019-01-01", "2018-01-01", validStatus, ToDateBeforeFromDateError),
       (validNino, validTypeOfBusiness, validIncomeSourceId, "2020-01-01", "2020-01-01", validStatus, RuleDateRangeInvalidError),
       (validNino, validTypeOfBusiness, validIncomeSourceId, "2018-12-12", "2020-04-05", validStatus, RuleDateRangeInvalidError),
       (validNino, validTypeOfBusiness, validIncomeSourceId, validFromDate, validToDate, "Walrus", StatusFormatError),

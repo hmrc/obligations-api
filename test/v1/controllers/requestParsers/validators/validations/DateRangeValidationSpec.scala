@@ -17,28 +17,28 @@
 package v1.controllers.requestParsers.validators.validations
 
 import support.UnitSpec
-import v1.models.errors.RuleDateRangeInvalidError
+import v1.models.errors.{RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError}
 
 class DateRangeValidationSpec extends UnitSpec {
 
   "validate" should {
     "return no errors" when {
       "a valid date range is supplied" in {
-        DateRangeValidation.validate("2019-01-01", "2020-01-01", RuleDateRangeInvalidError) shouldBe Nil
+        DateRangeValidation.validate("2019-01-01", "2020-01-01") shouldBe Nil
       }
     }
     "return a Date range invalid rule error" when {
       "the 'To Date' is before the 'From Date'" in {
-        DateRangeValidation.validate("2020-01-01", "2019-01-01", RuleDateRangeInvalidError) shouldBe List(RuleDateRangeInvalidError)
+        DateRangeValidation.validate("2020-01-01", "2019-01-01") shouldBe List(ToDateBeforeFromDateError)
       }
       "the 'From Date' is before the earliest allowed date" in {
-        DateRangeValidation.validate("2015-01-01", "2016-01-01", RuleDateRangeInvalidError) shouldBe List(RuleDateRangeInvalidError)
+        DateRangeValidation.validate("2015-01-01", "2016-01-01") shouldBe List(RuleFromDateNotSupportedError)
       }
       "the date range is too large" in {
-        DateRangeValidation.validate("2018-11-01", "2020-01-01", RuleDateRangeInvalidError) shouldBe List(RuleDateRangeInvalidError)
+        DateRangeValidation.validate("2018-11-01", "2020-01-01") shouldBe List(RuleDateRangeInvalidError)
       }
       "the date range is too short" in {
-        DateRangeValidation.validate("2020-01-01", "2020-01-01", RuleDateRangeInvalidError) shouldBe List(RuleDateRangeInvalidError)
+        DateRangeValidation.validate("2020-01-01", "2020-01-01") shouldBe List(RuleDateRangeInvalidError)
       }
     }
   }
