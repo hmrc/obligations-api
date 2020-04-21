@@ -17,28 +17,30 @@
 package v1.services
 
 import cats.data.EitherT
+import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
-import v1.connectors.RetrieveCrystallisationObligationsConnector
+import v1.connectors.RetrieveEOPSObligationsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
-import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
+import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEopsObligationsService @Inject()(connector: RetrieveCrystallisationObligationsConnector)
+class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector)
   extends DesResponseMappingSupport with Logging {
 
-  def retrieve(request: RetrieveCrystallisationObligationsRequest)(
+  def retrieve(request: RetrieveEOPSObligationsRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
-    logContext: EndpointLogContext): Future[RetrieveCrystallisationObligationsServiceOutcome] = {
+    logContext: EndpointLogContext): Future[RetrieveEOPSObligationsServiceOutcome] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDesErrors(desErrorMap))
+      desResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDesErrors(desErrorMap))
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterPeriodicValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
     } yield desResponseWrapper
 
     result.value
