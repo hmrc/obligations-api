@@ -21,6 +21,7 @@ import v1.controllers.EndpointLogContext
 import v1.models.domain.business.MtdBusiness
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
+import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 trait DesResponseMappingSupport {
@@ -39,6 +40,26 @@ trait DesResponseMappingSupport {
 
     if (filteredObligations.nonEmpty) {
       Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(
+        filteredObligations
+      )))
+    } else {
+      Left(ErrorWrapper(Some(responseWrapper.correlationId), NoObligationsFoundError))
+    }
+  }
+
+  final def filterEOPSValues(
+                                  responseWrapper: ResponseWrapper[RetrieveEOPSObligationsResponse],
+                                  typeOfBusiness: Option[MtdBusiness],
+                                  incomeSourceId: Option[String]
+                                ): Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]] = {
+    val filteredObligations = responseWrapper.responseData.obligations.filter {
+      obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
+    }.filter {
+      obligation => incomeSourceId.forall(_ == obligation.businessId)
+    }
+
+    if (filteredObligations.nonEmpty) {
+      Right(ResponseWrapper(responseWrapper.correlationId, RetrieveEOPSObligationsResponse(
         filteredObligations
       )))
     } else {

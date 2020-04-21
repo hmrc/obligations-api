@@ -20,61 +20,61 @@ import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
-import v1.mocks.connectors.MockRetrievePeriodicObligationsConnector
+import v1.mocks.connectors.MockRetrieveEOPSObligationsConnector
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
+import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.common.{Obligation, ObligationDetail}
-import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
+import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
+class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
-  private val validtypeOfBusiness = MtdBusiness.`foreign-property`
-  private val validincomeSourceId = "XAIS123456789012"
-  private val validfromDate = "2018-04-06"
-  private val validtoDate = "2019-04-05"
-  private val validStatus = MtdStatus.Open
+  private val nino = "AA123456A"
+  private val typeOfBusiness = MtdBusiness.`self-employment`
+  private val incomeSourceId = "XAIS123456789012"
+  private val fromDate = "2018-04-06"
+  private val toDate = "2019-04-05"
+  private val status = MtdStatus.Open
   private val correlationId = "X-123"
 
-  private val fullResponseModel = RetrievePeriodObligationsResponse(Seq(
+  private val fullResponseModel = RetrieveEOPSObligationsResponse(Seq(
     Obligation(MtdBusiness.`self-employment`,
-      validincomeSourceId,
-      Seq(ObligationDetail(validfromDate,
-        validtoDate,
-        validfromDate,
-        Some(validtoDate),
+      incomeSourceId,
+      Seq(ObligationDetail(fromDate,
+        toDate,
+        fromDate,
+        Some(toDate),
         MtdStatus.Open))
     ),
     Obligation(MtdBusiness.`foreign-property`,
-      validincomeSourceId,
-      Seq(ObligationDetail(validfromDate,
-        validtoDate,
-        validfromDate,
-        Some(validtoDate),
+      incomeSourceId,
+      Seq(ObligationDetail(fromDate,
+        toDate,
+        fromDate,
+        Some(toDate),
         MtdStatus.Open))
     ),
     Obligation(MtdBusiness.`uk-property`,
-      validincomeSourceId,
-      Seq(ObligationDetail(validfromDate,
-        validtoDate,
-        validfromDate,
-        Some(validtoDate),
+      incomeSourceId,
+      Seq(ObligationDetail(fromDate,
+        toDate,
+        fromDate,
+        Some(toDate),
         MtdStatus.Open))
     ),
   ))
 
-  trait Test extends MockRetrievePeriodicObligationsConnector {
+  trait Test extends MockRetrieveEOPSObligationsConnector {
     implicit val hc: HeaderCarrier = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
-    val service = new RetrievePeriodicObligationsService(
-      connector = mockRetrievePeriodicObligationsConnector
+    val service = new RetrieveEOPSObligationsService(
+      connector = mockRetrieveEOPSObligationsConnector
     )
   }
 
@@ -82,15 +82,15 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
     "connector call is successful" must {
       "return mapped result with nothing filtered out" when {
         "no typeOfBusiness or incomeSourceId are provided" in new Test {
-          private val requestData = RetrievePeriodicObligationsRequest(
-            Nino(validNino),
+          private val requestData = RetrieveEOPSObligationsRequest(
+            Nino(nino),
             None,
             None,
-            Some(validfromDate),
-            Some(validtoDate),
-            Some(validStatus))
+            Some(fromDate),
+            Some(toDate),
+            Some(status))
 
-          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+          MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
 
           await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, fullResponseModel))
@@ -103,26 +103,26 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
         business =>
           s"return mapped result with only $business in it" when {
             s"typeOfBusiness [$business] is provided " in new Test {
-              private val requestData = RetrievePeriodicObligationsRequest(
-                Nino(validNino),
+              private val requestData = RetrieveEOPSObligationsRequest(
+                Nino(nino),
                 Some(business),
                 None,
-                Some(validfromDate),
-                Some(validtoDate),
-                Some(validStatus))
+                Some(fromDate),
+                Some(toDate),
+                Some(status))
 
-              private val filteredResponseModel = RetrievePeriodObligationsResponse(Seq(
+              private val filteredResponseModel = RetrieveEOPSObligationsResponse(Seq(
                 Obligation(business,
-                  validincomeSourceId,
-                  Seq(ObligationDetail(validfromDate,
-                    validtoDate,
-                    validfromDate,
-                    Some(validtoDate),
+                  incomeSourceId,
+                  Seq(ObligationDetail(fromDate,
+                    toDate,
+                    fromDate,
+                    Some(toDate),
                     MtdStatus.Open))
                 )
               ))
 
-              MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+              MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
                 .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
 
               await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
@@ -132,61 +132,61 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
 
       "filter out data with a different businessId" when {
         "incomeSourceId is provided and not all of the response objects have that id" in new Test {
-          private val requestData = RetrievePeriodicObligationsRequest(
-            Nino(validNino),
+          private val requestData = RetrieveEOPSObligationsRequest(
+            Nino(nino),
             None,
-            Some(validincomeSourceId),
-            Some(validfromDate),
-            Some(validtoDate),
-            Some(validStatus))
+            Some(incomeSourceId),
+            Some(fromDate),
+            Some(toDate),
+            Some(status))
 
-          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+          private val responseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`self-employment`,
-              validincomeSourceId,
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              incomeSourceId,
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             ),
             Obligation(MtdBusiness.`foreign-property`,
-              validincomeSourceId,
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              incomeSourceId,
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             ),
             Obligation(MtdBusiness.`uk-property`,
               "beans",
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             )
           ))
 
-          private val filteredResponseModel = RetrievePeriodObligationsResponse(Seq(
+          private val filteredResponseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`self-employment`,
-              validincomeSourceId,
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              incomeSourceId,
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             ),
             Obligation(MtdBusiness.`foreign-property`,
-              validincomeSourceId,
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              incomeSourceId,
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             )
           ))
 
-          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+          MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
           await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
@@ -195,51 +195,51 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
 
       "return 404" when {
         "typeOfBusiness filter is applied and there are no response objects with that typeOfBusiness" in new Test {
-          private val requestData = RetrievePeriodicObligationsRequest(
-            Nino(validNino),
+          private val requestData = RetrieveEOPSObligationsRequest(
+            Nino(nino),
             Some(MtdBusiness.`foreign-property`),
-            Some(validincomeSourceId),
-            Some(validfromDate),
-            Some(validtoDate),
-            Some(validStatus))
+            Some(incomeSourceId),
+            Some(fromDate),
+            Some(toDate),
+            Some(status))
 
-          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+          private val responseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`uk-property`,
-              validincomeSourceId,
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              incomeSourceId,
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             )
           ))
 
-          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+          MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
         "incomeSourceId filter is applied and there are no response objects with that incomeSourceId" in new Test {
-          private val requestData = RetrievePeriodicObligationsRequest(
-            Nino(validNino),
+          private val requestData = RetrieveEOPSObligationsRequest(
+            Nino(nino),
             Some(MtdBusiness.`foreign-property`),
-            Some(validincomeSourceId),
-            Some(validfromDate),
-            Some(validtoDate),
-            Some(validStatus))
+            Some(incomeSourceId),
+            Some(fromDate),
+            Some(toDate),
+            Some(status))
 
-          private val responseModel = RetrievePeriodObligationsResponse(Seq(
+          private val responseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`foreign-property`,
               "beans",
-              Seq(ObligationDetail(validfromDate,
-                validtoDate,
-                validfromDate,
-                Some(validtoDate),
+              Seq(ObligationDetail(fromDate,
+                toDate,
+                fromDate,
+                Some(toDate),
                 MtdStatus.Open))
             )
           ))
 
-          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+          MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
@@ -251,15 +251,15 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
 
-            private val requestData = RetrievePeriodicObligationsRequest(
-              Nino(validNino),
-              Some(validtypeOfBusiness),
-              Some(validincomeSourceId),
-              Some(validfromDate),
-              Some(validtoDate),
-              Some(validStatus))
+            private val requestData = RetrieveEOPSObligationsRequest(
+              Nino(nino),
+              Some(typeOfBusiness),
+              Some(incomeSourceId),
+              Some(fromDate),
+              Some(toDate),
+              Some(status))
 
-            MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
             await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
