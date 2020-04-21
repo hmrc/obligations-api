@@ -22,11 +22,11 @@ import v1.controllers.requestParsers.validators.RetrievePeriodicObligationsValid
 import v1.models.errors.MtdError
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 
-class RetrieveMockPeriodicObligationsValidator extends MockFactory {
+class MockRetrievePeriodicObligationsValidator extends MockFactory {
 
   val mockValidator: RetrievePeriodicObligationsValidator = mock[RetrievePeriodicObligationsValidator]
 
-  object RetrieveMockPeriodicObligationsValidator {
+  object MockRetrievePeriodicObligationsValidator {
 
     def validate(data: RetrievePeriodicObligationsRawData): CallHandler1[RetrievePeriodicObligationsRawData, List[MtdError]] = {
       (mockValidator.validate(_: RetrievePeriodicObligationsRawData)).expects(data)
