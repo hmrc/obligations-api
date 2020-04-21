@@ -16,13 +16,13 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations.{DateRangeValidation, DateValidation, IncomeSourceIdIncludedWithTypeOfBusinessValidation, IncomeSourceIdValidation, NinoValidation, StatusValidation, TypeOfBusinessValidation}
+import v1.controllers.requestParsers.validators.validations.{DateMissingValidation, DateRangeValidation, DateValidation, IncomeSourceIdIncludedWithTypeOfBusinessValidation, IncomeSourceIdValidation, NinoValidation, StatusValidation, TypeOfBusinessValidation}
 import v1.models.errors.{FromDateFormatError, MtdError, RuleDateRangeInvalidError, ToDateFormatError}
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 
 class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligationsRawData] {
 
-  private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
+  private val validationSet = List(parameterFormatValidation, parameterRuleValidation, missingParameterValidation)
 
   private def parameterFormatValidation: RetrieveEOPSObligationsRawData => List[List[MtdError]] = data => {
     List(
@@ -41,11 +41,17 @@ class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligations
       fromDate <- data.fromDate
       toDate <- data.toDate
     } yield {
-      DateRangeValidation.validate(fromDate, toDate, RuleDateRangeInvalidError)
+      DateRangeValidation.validate(fromDate, toDate)
     }
 
     List(
       dateRangeValidation.getOrElse(Nil)
+    )
+  }
+
+  private def missingParameterValidation: RetrieveEOPSObligationsRawData => List[List[MtdError]] = (data: RetrieveEOPSObligationsRawData) => {
+    List(
+      DateMissingValidation.validate(data.fromDate, data.toDate)
     )
   }
 

@@ -33,6 +33,11 @@ object StatusFormatError extends MtdError("FORMAT_STATUS", "The provided status 
 object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided type of business is invalid")
 
 object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when an incomeSourceId is supplied.")
+object MissingFromDateError extends MtdError("MISSING_FROM_DATE", "The From date parameter is missing")
+object MissingToDateError extends MtdError("MISSING_TO_DATE", "The To date parameter is missing")
+
+object ToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date must be after the From date")
+
 
 object NoObligationsFoundError extends MtdError("NO_OBLIGATIONS_FOUND", "No obligations found using this filter")
 // Rule Errors
@@ -46,6 +51,7 @@ object RuleTaxYearRangeExceededError
 
 object RuleDateRangeInvalidError extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid")
 
+object RuleFromDateNotSupportedError extends MtdError("RULE_FROM_DATE_NOT_SUPPORTED", "The specified from date is not supported as too early")
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
 
