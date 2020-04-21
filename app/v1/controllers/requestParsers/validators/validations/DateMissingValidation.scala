@@ -21,8 +21,6 @@ import v1.models.errors.{MissingFromDateError, MissingToDateError, MtdError}
 object DateMissingValidation {
 
   def validate(fromDate: Option[String], toDate: Option[String]): List[MtdError] = {
-    print(fromDate)
-    print(toDate)
     (fromDate, toDate) match {
       case (Some(x), None) => List(MissingToDateError)
       case (None, Some(y)) => List(MissingFromDateError)
