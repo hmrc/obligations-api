@@ -20,13 +20,14 @@ import java.time.LocalDate
 
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
-import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
+import v1.mocks.validators.MockRetrieveEOPSObligationsValidator
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError}
-import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.request.retrieveEOPSObligations.{RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest}
 
-class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
+class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
+
   val nino = "AA123456B"
   val typeOfBusiness = "self-employment"
   val convertedTypeOfBusiness = MtdBusiness.`self-employment`
@@ -34,42 +35,41 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val fromDate = "2019-01-01"
   val toDate = "2020-01-01"
   val status = "Open"
-  val convertedStatus = MtdStatus.Open
+  val convertedStatusOpen = MtdStatus.Open
   val convertedStatusFulfilled = MtdStatus.Fulfilled
-  val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDatesData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
-  val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val data = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
+  val invalidNinoData = RetrieveEOPSObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val invalidMultipleData = RetrieveEOPSObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
   val todaysDate = LocalDate.now().toString
   val nextYearsDate = LocalDate.now().plusDays(366).toString
 
-  trait Test extends MockRetrievePeriodicObligationsValidator {
-    lazy val parser = new RetrievePeriodicObligationsRequestParser(mockValidator)
+  trait Test extends MockRetrieveEOPSObligationsValidator {
+    lazy val parser = new RetrieveEOPSObligationsRequestParser(mockValidator)
   }
 
   "parse" should {
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
-        MockRetrievePeriodicObligationsValidator.validate(data).returns(Nil)
-        parser.parseRequest(data) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatus)))
+        MockRetrieveEOPSObligationsValidator.validate(data).returns(Nil)
+        parser.parseRequest(data) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatusOpen)))
       }
     }
     "return an error wrapper" when {
       "the validator returns a single error" in new Test {
-        MockRetrievePeriodicObligationsValidator.validate(invalidNinoData).returns(List(NinoFormatError))
+        MockRetrieveEOPSObligationsValidator.validate(invalidNinoData).returns(List(NinoFormatError))
         parser.parseRequest(invalidNinoData) shouldBe Left(ErrorWrapper(None, NinoFormatError, None))
       }
       "the validator returns multiple errors" in new Test {
-        MockRetrievePeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
+        MockRetrieveEOPSObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
         parser.parseRequest(invalidMultipleData) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
       }
     }
     "convert fromDate to today and toDate to 366 days ahead" when {
       "there are no dates input and the status is Fulfilled" in new Test {
-        MockRetrievePeriodicObligationsValidator.validate(todaysDatesData).returns(Nil)
-        parser.parseRequest(todaysDatesData) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+        MockRetrieveEOPSObligationsValidator.validate(todaysDatesData).returns(Nil)
+        parser.parseRequest(todaysDatesData) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
     }
   }
-
 }

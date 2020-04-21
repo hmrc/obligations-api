@@ -20,6 +20,7 @@ import v1.models.errors.ErrorWrapper
 import v1.models.outcomes.ResponseWrapper
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 package object services {
   private type ServiceOutcome[A] = Either[ErrorWrapper, ResponseWrapper[A]]
@@ -27,4 +28,6 @@ package object services {
   type RetrieveCrystallisationObligationsServiceOutcome = ServiceOutcome[RetrieveCrystallisationObligationsResponse]
 
   type RetrieveEOPSObligationsServiceOutcome = ServiceOutcome[RetrieveEOPSObligationsResponse]
+
+  type RetrievePeriodicObligationsServiceOutcome = ServiceOutcome[RetrievePeriodObligationsResponse]
 }

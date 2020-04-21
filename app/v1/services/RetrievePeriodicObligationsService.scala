@@ -21,44 +21,41 @@ import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
-import v1.connectors.RetrieveEOPSObligationsConnector
+import v1.connectors.RetrievePeriodicObligationsConnector
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
-import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
+import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.support.DesResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector)
+class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector)
   extends DesResponseMappingSupport with Logging {
 
-  def retrieve(request: RetrieveEOPSObligationsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext): Future[RetrieveEOPSObligationsServiceOutcome] = {
-
+  def retrieve(request: RetrievePeriodicObligationsRequest)(
+              implicit hc: HeaderCarrier,
+              ec: ExecutionContext,
+              logContext: EndpointLogContext): Future[RetrievePeriodicObligationsServiceOutcome] = {
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDesErrors(desErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](filterEOPSValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
-    } yield desResponseWrapper
+      desResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDesErrors(desErrorMap))
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterPeriodicValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
+    } yield mtdResponseWrapper
     result.value
-
   }
 
   private def desErrorMap =
     Map(
-      "INVALID_IDNUMBER" -> NinoFormatError,
       "INVALID_IDTYPE" -> DownstreamError,
+      "INVALID_IDNUMBER" -> NinoFormatError,
       "INVALID_STATUS" -> DownstreamError,
       "INVALID_REGIME" -> DownstreamError,
-      "INVALID_DATE_FROM" -> DownstreamError,
-      "INVALID_DATE_TO" -> DownstreamError,
-      "INVALID_DATE_RANGE" -> DownstreamError,
-      "NOT_FOUND_BPKEY" -> NotFoundError,
+      "INVALID_DATE_FROM" -> FromDateFormatError,
+      "INVALID_DATE_TO" -> ToDateFormatError,
+      "INVALID_DATE_RANGE" -> RuleDateRangeInvalidError,
       "NOT_FOUND" -> NotFoundError,
+      "NOT_FOUND_BPKEY" -> NotFoundError,
       "SERVER_ERROR" -> DownstreamError,
       "SERVICE_UNAVAILABLE" -> DownstreamError
     )
-
 }

@@ -19,10 +19,8 @@ package v1.mocks.connectors
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{DesOutcome, RetrieveCrystallisationObligationsConnector, RetrieveEOPSObligationsConnector}
-import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
+import v1.connectors.{DesOutcome, RetrieveEOPSObligationsConnector}
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
-import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
