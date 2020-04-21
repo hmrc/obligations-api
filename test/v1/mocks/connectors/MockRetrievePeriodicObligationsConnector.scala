@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.mocks.services
+package v1.mocks.connectors
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
@@ -25,7 +25,7 @@ import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsR
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class MockRetrievePeriodicObligationsConnector extends MockFactory {
+trait MockRetrievePeriodicObligationsConnector extends MockFactory {
   val mockRetrievePeriodicObligationsConnector: RetrievePeriodicObligationsConnector = mock[RetrievePeriodicObligationsConnector]
 
   object MockRetrievePeriodicObligationsConnector {

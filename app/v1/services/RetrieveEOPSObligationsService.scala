@@ -41,7 +41,7 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
     val result = for {
       desResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDesErrors(desErrorMap))
       mtdResponseWrapper <- EitherT.fromEither[Future](filterEOPSValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
-    } yield desResponseWrapper
+    } yield mtdResponseWrapper
     result.value
 
   }
@@ -52,9 +52,9 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
       "INVALID_IDTYPE" -> DownstreamError,
       "INVALID_STATUS" -> DownstreamError,
       "INVALID_REGIME" -> DownstreamError,
-      "INVALID_DATE_FROM" -> DownstreamError,
-      "INVALID_DATE_TO" -> DownstreamError,
-      "INVALID_DATE_RANGE" -> DownstreamError,
+      "INVALID_DATE_FROM" -> FromDateFormatError,
+      "INVALID_DATE_TO" -> ToDateFormatError,
+      "INVALID_DATE_RANGE" -> RuleDateRangeInvalidError,
       "NOT_FOUND_BPKEY" -> NotFoundError,
       "NOT_FOUND" -> NotFoundError,
       "SERVER_ERROR" -> DownstreamError,
