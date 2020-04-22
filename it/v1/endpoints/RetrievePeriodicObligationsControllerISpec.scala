@@ -22,7 +22,7 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.errors.{BusinessIdFormatError, FromDateFormatError, MissingTypeOfBusinessError, MtdError, NinoFormatError, StatusFormatError, ToDateFormatError, TypeOfBusinessFormatError}
+import v1.models.errors.{BusinessIdFormatError, DownstreamError, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
@@ -138,6 +138,66 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
 
+      "missing parameter error" when {
+
+        "fromDate is missing" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "typeOfBusiness" -> typeOfBusiness,
+            "incomeSourceId" -> incomeSourceId,
+            "toDate" -> toDate,
+            "status" -> status).get())
+
+          response.status shouldBe Status.BAD_REQUEST
+          response.json shouldBe Json.toJson(MissingFromDateError)
+        }
+
+        "toDate is missing" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "typeOfBusiness" -> typeOfBusiness,
+            "incomeSourceId" -> incomeSourceId,
+            "fromDate" -> fromDate,
+            "status" -> status).get())
+
+          response.status shouldBe Status.BAD_REQUEST
+          response.json shouldBe Json.toJson(MissingToDateError)
+        }
+
+        "typeOfBusiness is missing while there is an incomeSourceId" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "incomeSourceId" -> incomeSourceId,
+            "fromDate" -> fromDate,
+            "toDate" -> toDate,
+            "status" -> status).get())
+
+          response.status shouldBe Status.BAD_REQUEST
+          response.json shouldBe Json.toJson(MissingTypeOfBusinessError)
+        }
+      }
+
       "validation error" when {
         def validationErrorTest(requestNino: String,
                                 requestTypeOfBusiness: String,
@@ -179,13 +239,93 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2019-06", "Open", Status.BAD_REQUEST, ToDateFormatError),
           ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2019-06-06", "Closed", Status.BAD_REQUEST, StatusFormatError),
           ("AA123456A", "walrus", "XAIS123456789012", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, TypeOfBusinessFormatError),
-          ("AA123456A", "walrus", "XAIS123456789012", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, TypeOfBusinessFormatError)
+          ("AA123456A", "self-employment", "XAIS123456789012", "2019-06-06", "2019-01-01", "Open", Status.BAD_REQUEST, ToDateBeforeFromDateError),
+          ("AA123456A", "self-employment", "XAIS123456789012", "2017-01-01", "2018-01-01", "Open", Status.BAD_REQUEST, RuleFromDateNotSupportedError),
+          ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2020-06-06", "Open", Status.BAD_REQUEST, RuleDateRangeInvalidError)
         )
-
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
+
+      "des service error" when {
+        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"des returns an $desCode error and status $desStatus" in new Test {
+
+            override def setupStubs(): StubMapping = {
+              AuditStub.audit()
+              AuthStub.authorised()
+              MtdIdLookupStub.ninoFound(nino)
+              DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+            }
+
+            val response: WSResponse = await(request().withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "incomeSourceId" -> incomeSourceId,
+              "fromDate" -> fromDate,
+              "toDate" -> toDate,
+              "status" -> status).get())
+            response.status shouldBe expectedStatus
+            response.json shouldBe Json.toJson(expectedBody)
+          }
+        }
+        val input = Seq(
+          (Status.BAD_REQUEST, "INVALID_IDNUMBER", Status.BAD_REQUEST ,NinoFormatError),
+          (Status.BAD_REQUEST, "INVALID_IDTYPE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
+          (Status.BAD_REQUEST, "INVALID_STATUS", Status.INTERNAL_SERVER_ERROR, DownstreamError),
+          (Status.BAD_REQUEST, "INVALID_REGIME", Status.INTERNAL_SERVER_ERROR, DownstreamError),
+          (Status.BAD_REQUEST, "INVALID_DATE_FROM", Status.BAD_REQUEST, FromDateFormatError),
+          (Status.BAD_REQUEST, "INVALID_DATE_TO", Status.BAD_REQUEST, ToDateFormatError),
+          (Status.BAD_REQUEST, "INVALID_DATE_RANGE", Status.BAD_REQUEST, RuleDateRangeInvalidError),
+          (Status.NOT_FOUND, "NOT_FOUND", Status.NOT_FOUND, NotFoundError),
+          (Status.FORBIDDEN, "NOT_FOUND_BPKEY", Status.NOT_FOUND, NotFoundError),
+          (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError),
+          (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError)
+        )
+
+        input.foreach(args => (serviceErrorTest _).tupled(args))
+      }
+
+      "no obligation error" when {
+        "no selected typeOfBusiness is found within the response object" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "typeOfBusiness" -> "uk-property",
+            "incomeSourceId" -> incomeSourceId,
+            "fromDate" -> fromDate,
+            "toDate" -> toDate,
+            "status" -> status).get())
+
+          response.status shouldBe Status.NOT_FOUND
+          response.json shouldBe Json.toJson(NoObligationsFoundError)
+        }
+
+        "no selected incomeSourceId is found within the response object" in new Test {
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "typeOfBusiness" -> typeOfBusiness,
+            "incomeSourceId" -> "XAIS123456789013",
+            "fromDate" -> fromDate,
+            "toDate" -> toDate,
+            "status" -> status).get())
+
+          response.status shouldBe Status.NOT_FOUND
+          response.json shouldBe Json.toJson(NoObligationsFoundError)
+        }
+
+      }
     }
-
-
   }
 }
