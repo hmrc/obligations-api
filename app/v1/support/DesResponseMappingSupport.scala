@@ -52,6 +52,7 @@ trait DesResponseMappingSupport {
                                   typeOfBusiness: Option[MtdBusiness],
                                   incomeSourceId: Option[String]
                                 ): Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]] = {
+
     val filteredObligations = responseWrapper.responseData.obligations.filter {
       obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
     }.filter {

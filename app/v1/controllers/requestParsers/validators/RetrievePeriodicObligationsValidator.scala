@@ -17,7 +17,7 @@
 package v1.controllers.requestParsers.validators
 
 import v1.controllers.requestParsers.validators.validations._
-import v1.models.errors.{FromDateFormatError, MtdError, RuleDateRangeInvalidError, ToDateFormatError}
+import v1.models.errors.{FromDateFormatError, MtdError, ToDateFormatError}
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 
 class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObligationsRawData] {

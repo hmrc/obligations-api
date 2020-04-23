@@ -33,12 +33,12 @@ object AppDependencies {
 
   def test(scope: String = "test, it"): Seq[sbt.ModuleID] = Seq(
     "org.scalatest"          %% "scalatest"          % "3.1.0"             % scope,
-    "com.vladsch.flexmark"   % "flexmark-all"        % "0.35.10"           % scope,
+    "com.vladsch.flexmark"   %  "flexmark-all"       % "0.35.10"           % scope,
     "org.scalacheck"         %% "scalacheck"         % "1.14.2"            % scope,
     "org.scalamock"          %% "scalamock"          % "4.4.0"             % scope,
     "com.typesafe.play"      %% "play-test"          % PlayVersion.current % scope,
     "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2"             % scope,
-    "com.github.tomakehurst" % "wiremock"            % "2.25.1"            % scope
+    "com.github.tomakehurst" %  "wiremock"           % "2.25.1"            % scope
   )
 
   // Fixes a transitive dependency clash between wiremock and scalatestplus-play

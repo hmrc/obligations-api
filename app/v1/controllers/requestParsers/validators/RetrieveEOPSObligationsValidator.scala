@@ -16,8 +16,8 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations.{DateMissingValidation, DateRangeValidation, DateValidation, IncomeSourceIdIncludedWithTypeOfBusinessValidation, IncomeSourceIdValidation, NinoValidation, StatusValidation, TypeOfBusinessValidation}
-import v1.models.errors.{FromDateFormatError, MtdError, RuleDateRangeInvalidError, ToDateFormatError}
+import v1.controllers.requestParsers.validators.validations._
+import v1.models.errors.{FromDateFormatError, MtdError, ToDateFormatError}
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 
 class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligationsRawData] {
