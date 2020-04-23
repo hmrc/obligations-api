@@ -149,36 +149,35 @@ class RetrievePeriodicObligationsControllerSpec
         input.foreach(args => (errorsFromParserTester _).tupled(args))
       }
 
-    "service errors occur" must {
-      def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
-        s"a $mtdError error is returned from the service" in new Test {
+      "service errors occur" must {
+        def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
+          s"a $mtdError error is returned from the service" in new Test {
 
-          MockRetrievePeriodicObligationsRequestParser
-            .parse(rawData)
-            .returns(Right(requestData))
+            MockRetrievePeriodicObligationsRequestParser
+              .parse(rawData)
+              .returns(Right(requestData))
 
-          MockRetrievePeriodicObligationsService
-            .retrieve(requestData)
-            .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
+            MockRetrievePeriodicObligationsService
+              .retrieve(requestData)
+              .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-          val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
 
-          status(result) shouldBe expectedStatus
-          contentAsJson(result) shouldBe Json.toJson(mtdError)
-          header("X-CorrelationId", result) shouldBe Some(correlationId)
+            status(result) shouldBe expectedStatus
+            contentAsJson(result) shouldBe Json.toJson(mtdError)
+            header("X-CorrelationId", result) shouldBe Some(correlationId)
+          }
         }
+
+        val input = Seq(
+          (NinoFormatError, BAD_REQUEST),
+          (NotFoundError, NOT_FOUND),
+          (DownstreamError, INTERNAL_SERVER_ERROR),
+          (NoObligationsFoundError, NOT_FOUND)
+        )
+
+        input.foreach(args => (serviceErrors _).tupled(args))
       }
-
-      val input = Seq(
-        (NinoFormatError, BAD_REQUEST),
-        (NotFoundError, NOT_FOUND),
-        (DownstreamError, INTERNAL_SERVER_ERROR),
-        (NoObligationsFoundError, NOT_FOUND)
-      )
-
-      input.foreach(args => (serviceErrors _).tupled(args))
     }
   }
-  }
-
 }
