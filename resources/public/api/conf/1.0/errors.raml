@@ -11,11 +11,10 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            examples:
-              notFound:
-                description: The matching resource is not found.
-                value:
-                  code: MATCHING_RESOURCE_NOT_FOUND
+            example:
+              description: The matching resource is not found.
+              value:
+                code: MATCHING_RESOURCE_NOT_FOUND
   notFoundIncomeSource:
     responses:
       404:
