@@ -75,7 +75,8 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
       case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
-           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError => BadRequest(Json.toJson(errorWrapper))
+           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
+           | BadRequestError                                                                        => BadRequest(Json.toJson(errorWrapper))
       case NotFoundError | NoObligationsFoundError                                                  => NotFound(Json.toJson(errorWrapper))
       case DownstreamError                                                                          => InternalServerError(Json.toJson(errorWrapper))
     }
