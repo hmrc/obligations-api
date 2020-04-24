@@ -33,6 +33,9 @@ object MtdBusiness {
   case object `foreign-property` extends MtdBusiness {
     override def toDes: DesBusiness = DesBusiness.ITSF
   }
+  case object `do-not-use` extends MtdBusiness {
+    override def toDes: DesBusiness = DesBusiness.ITSA
+  }
 
   implicit val format: Format[MtdBusiness] = Enums.format[MtdBusiness]
   val parser: PartialFunction[String, MtdBusiness] = Enums.parser[MtdBusiness]
