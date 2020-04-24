@@ -31,8 +31,7 @@ class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObl
       data.fromDate.map(DateValidation.validate(_, FromDateFormatError)).getOrElse(Nil),
       data.toDate.map(DateValidation.validate(_, ToDateFormatError)).getOrElse(Nil),
       data.status.map(StatusValidation.validate).getOrElse(Nil),
-      data.typeOfBusiness.map(TypeOfBusinessValidation.validate).getOrElse(Nil),
-      IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(data.incomeSourceId, data.typeOfBusiness)
+      data.typeOfBusiness.map(TypeOfBusinessValidation.validate).getOrElse(Nil)
     )
   }
 
@@ -51,7 +50,8 @@ class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObl
 
   private def missingParameterValidation: RetrievePeriodicObligationsRawData => List[List[MtdError]] = (data: RetrievePeriodicObligationsRawData) => {
     List(
-      DateMissingValidation.validate(data.fromDate, data.toDate)
+      DateMissingValidation.validate(data.fromDate, data.toDate),
+      IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(data.incomeSourceId, data.typeOfBusiness)
     )
   }
 
