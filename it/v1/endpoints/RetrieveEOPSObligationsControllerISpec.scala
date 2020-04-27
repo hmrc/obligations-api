@@ -31,7 +31,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val typeOfBusiness = "self-employment"
-    val incomeSourceId = "XAIS123456789012"
+    val businessId = "XAIS123456789012"
     val fromDate = "2018-04-06"
     val toDate = "2019-04-05"
     val status = "Open"
@@ -182,7 +182,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status
@@ -321,7 +321,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status
@@ -460,7 +460,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status
@@ -476,7 +476,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
       "validation error" when {
         def validationErrorTest(requestNino: String, requestTypeOfBusiness: Option[String],
-                                requestIncomeSourceId: Option[String], requestFromDate: Option[String],
+                                requestBusinessId: Option[String], requestFromDate: Option[String],
                                 requestToDate: Option[String], requestStatus: Option[String], expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
             override def setupStubs(): StubMapping = {
@@ -489,7 +489,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(request().withQueryStringParameters(
               requestTypeOfBusiness.map("typeOfBusiness" -> _).getOrElse(("", "")),
-              requestIncomeSourceId.map( "incomeSourceId" -> _).getOrElse(("", "")),
+              requestBusinessId.map( "businessId" -> _).getOrElse(("", "")),
               requestFromDate.map("fromDate" -> _).getOrElse(("", "")),
               requestToDate.map("toDate" -> _).getOrElse(("", "")),
               requestStatus.map("status" -> _).getOrElse(("", ""))
@@ -531,7 +531,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(request().withQueryStringParameters(
               "typeOfBusiness" -> typeOfBusiness,
-              "incomeSourceId" -> incomeSourceId,
+              "businessId" -> businessId,
               "fromDate" -> fromDate,
               "toDate" -> toDate,
               "status" -> status

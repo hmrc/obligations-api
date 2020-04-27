@@ -62,7 +62,7 @@ class RetrieveEOPSObligationsControllerSpec
 
   private val nino = "AA123456A"
   private val typeOfBusiness = MtdBusiness.`self-employment`
-  private val incomeSourceId = "XAIS123456789012"
+  private val businessId = "XAIS123456789012"
   private val fromDate = "2018-04-06"
   private val toDate = "2019-04-05"
   private val status = MtdStatus.Open
@@ -73,7 +73,7 @@ class RetrieveEOPSObligationsControllerSpec
       |  "obligations": [
       |    {
       |      "typeOfBusiness": "$typeOfBusiness",
-      |      "businessId": "$incomeSourceId",
+      |      "businessId": "$businessId",
       |      "obligationDetails": [
       |        {
       |          "periodStartDate": "$fromDate",
@@ -89,7 +89,7 @@ class RetrieveEOPSObligationsControllerSpec
   private val rawData = RetrieveEOPSObligationsRawData(
     nino = nino,
     typeOfBusiness = Some(typeOfBusiness.toString),
-    businessId = Some(incomeSourceId),
+    businessId = Some(businessId),
     fromDate = Some(fromDate),
     toDate = Some(toDate),
     status = Some(status.toString)
@@ -97,7 +97,7 @@ class RetrieveEOPSObligationsControllerSpec
   private val requestData = RetrieveEOPSObligationsRequest(
     nino = Nino(nino),
     typeOfBusiness = Some(typeOfBusiness),
-    incomeSourceId = Some(incomeSourceId),
+    businessId = Some(businessId),
     fromDate = Some(fromDate),
     toDate = Some(toDate),
     status = Some(status)
@@ -117,7 +117,7 @@ class RetrieveEOPSObligationsControllerSpec
             obligations = Seq(
               Obligation(
                 typeOfBusiness = MtdBusiness.`self-employment`,
-                incomeSourceId = incomeSourceId,
+                businessId = businessId,
                 obligationDetails = Seq(
                   ObligationDetail(
                     periodStartDate = fromDate, periodEndDate = toDate, dueDate = "2020-04-05", receivedDate = None, status = status
@@ -130,7 +130,7 @@ class RetrieveEOPSObligationsControllerSpec
         val result: Future[Result] = controller.handleRequest(
           nino = nino,
           typeOfBusiness = Some(typeOfBusiness.toString),
-          incomeSourceId = Some(incomeSourceId),
+          businessId = Some(businessId),
           fromDate = Some(fromDate),
           toDate = Some(toDate),
           status = Some(status.toString)
@@ -154,7 +154,7 @@ class RetrieveEOPSObligationsControllerSpec
             val result: Future[Result] = controller.handleRequest(
               nino = nino,
               typeOfBusiness = Some(typeOfBusiness.toString),
-              incomeSourceId = Some(incomeSourceId),
+              businessId = Some(businessId),
               fromDate = Some(fromDate),
               toDate = Some(toDate),
               status = Some(status.toString)
@@ -200,7 +200,7 @@ class RetrieveEOPSObligationsControllerSpec
             val result: Future[Result] = controller.handleRequest(
               nino = nino,
               typeOfBusiness = Some(typeOfBusiness.toString),
-              incomeSourceId = Some(incomeSourceId),
+              businessId = Some(businessId),
               fromDate = Some(fromDate),
               toDate = Some(toDate),
               status = Some(status.toString)

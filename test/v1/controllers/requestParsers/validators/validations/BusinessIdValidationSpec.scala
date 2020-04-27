@@ -20,13 +20,13 @@ import support.UnitSpec
 import v1.models.errors.BusinessIdFormatError
 import v1.models.utils.JsonErrorValidators
 
-class IncomeSourceIdValidationSpec extends UnitSpec with JsonErrorValidators {
+class BusinessIdValidationSpec extends UnitSpec with JsonErrorValidators {
 
   "validate" should {
     "return no errors" when {
       "when a valid BusinessId is supplied" in {
         val validBusinessId = "XAIS123456789012"
-        val validationResult = IncomeSourceIdValidation.validate(validBusinessId)
+        val validationResult = BusinessIdValidation.validate(validBusinessId)
         validationResult.isEmpty shouldBe true
       }
     }
@@ -34,7 +34,7 @@ class IncomeSourceIdValidationSpec extends UnitSpec with JsonErrorValidators {
       "when an invalid BusinessId is supplied" in {
 
         val invalidBusinessId = "CJAA992121"
-        val validationResult = IncomeSourceIdValidation.validate(invalidBusinessId)
+        val validationResult = BusinessIdValidation.validate(invalidBusinessId)
         validationResult.isEmpty shouldBe false
         validationResult.length shouldBe 1
         validationResult.head shouldBe BusinessIdFormatError

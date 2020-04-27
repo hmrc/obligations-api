@@ -27,12 +27,12 @@ class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligations
   private def parameterFormatValidation: RetrieveEOPSObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
-      data.incomeSourceId.map(IncomeSourceIdValidation.validate).getOrElse(Nil),
+      data.businessId.map(BusinessIdValidation.validate).getOrElse(Nil),
       data.fromDate.map(DateValidation.validate(_, FromDateFormatError)).getOrElse(Nil),
       data.toDate.map(DateValidation.validate(_, ToDateFormatError)).getOrElse(Nil),
       data.status.map(StatusValidation.validate).getOrElse(Nil),
       data.typeOfBusiness.map(TypeOfBusinessValidation.validate).getOrElse(Nil),
-      IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(data.incomeSourceId, data.typeOfBusiness)
+      BusinessIdIncludedWithTypeOfBusinessValidation.validate(data.businessId, data.typeOfBusiness)
     )
   }
 

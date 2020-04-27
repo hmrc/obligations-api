@@ -45,12 +45,12 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
 
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],
-                    incomeSourceId: Option[String],
+                    businessId: Option[String],
                     fromDate: Option[String],
                     toDate: Option[String],
                     status: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-      val rawData = RetrievePeriodicObligationsRawData(nino, typeOfBusiness, incomeSourceId, fromDate, toDate, status)
+      val rawData = RetrievePeriodicObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
       val result =
         for {
           parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))

@@ -30,12 +30,12 @@ trait DesResponseMappingSupport {
   final def filterPeriodicValues(
                                   responseWrapper: ResponseWrapper[RetrievePeriodObligationsResponse],
                                   typeOfBusiness: Option[MtdBusiness],
-                                  incomeSourceId: Option[String]
+                                  businessId: Option[String]
                                 ): Either[ErrorWrapper, ResponseWrapper[RetrievePeriodObligationsResponse]] = {
     val filteredObligations = responseWrapper.responseData.obligations.filter {
       obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
     }.filter {
-      obligation => incomeSourceId.forall(_ == obligation.businessId)
+      obligation => businessId.forall(_ == obligation.businessId)
     }
 
     if (filteredObligations.nonEmpty) {
@@ -48,15 +48,15 @@ trait DesResponseMappingSupport {
   }
 
   final def filterEOPSValues(
-                                  responseWrapper: ResponseWrapper[RetrieveEOPSObligationsResponse],
-                                  typeOfBusiness: Option[MtdBusiness],
-                                  incomeSourceId: Option[String]
+                              responseWrapper: ResponseWrapper[RetrieveEOPSObligationsResponse],
+                              typeOfBusiness: Option[MtdBusiness],
+                              businessId: Option[String]
                                 ): Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]] = {
 
     val filteredObligations = responseWrapper.responseData.obligations.filter {
       obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
     }.filter {
-      obligation => incomeSourceId.forall(_ == obligation.businessId)
+      obligation => businessId.forall(_ == obligation.businessId)
     }
 
     if (filteredObligations.nonEmpty) {

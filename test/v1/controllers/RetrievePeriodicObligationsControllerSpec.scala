@@ -62,7 +62,7 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val nino = "AA123456A"
   private val typeOfBusiness = "self-employment"
-  private val incomeSourceId = "XAIS123456789012"
+  private val businessId = "XAIS123456789012"
   private val fromDate = "2019-01-01"
   private val toDate = "2019-06-06"
   private val status = "Open"
@@ -88,8 +88,8 @@ class RetrievePeriodicObligationsControllerSpec
       |}
       |""".stripMargin)
 
-  private val rawData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  private val requestData = RetrievePeriodicObligationsRequest(Nino(nino), Some(MtdBusiness.`self-employment`),Some(incomeSourceId), Some(fromDate), Some(toDate), Some(MtdStatus.Open))
+  private val rawData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  private val requestData = RetrievePeriodicObligationsRequest(Nino(nino), Some(MtdBusiness.`self-employment`),Some(businessId), Some(fromDate), Some(toDate), Some(MtdStatus.Open))
 
   "handleRequest" should {
     "return OK" when {
@@ -102,11 +102,11 @@ class RetrievePeriodicObligationsControllerSpec
         MockRetrievePeriodicObligationsService
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(
-            Obligation(MtdBusiness.`self-employment`, incomeSourceId, Seq(
+            Obligation(MtdBusiness.`self-employment`, businessId, Seq(
               ObligationDetail(fromDate, toDate, "2019-04-30", Some("2019-04-25"), MtdStatus.Open)
             ))))))))
 
-        val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+        val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
 
         status(result) shouldBe OK
         contentAsJson(result) shouldBe responseBody
@@ -123,7 +123,7 @@ class RetrievePeriodicObligationsControllerSpec
               .parse(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
-            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
@@ -161,7 +161,7 @@ class RetrievePeriodicObligationsControllerSpec
               .retrieve(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)

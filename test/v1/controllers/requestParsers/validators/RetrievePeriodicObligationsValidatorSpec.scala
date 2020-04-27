@@ -24,7 +24,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
   private val validTypeOfBusiness = "self-employment"
-  private val validIncomeSourceId = "XAIS123456789012"
+  private val validBusinessId = "XAIS123456789012"
   private val validFromDate = "2019-01-01"
   private val validToDate = "2019-12-30"
   private val validStatus = "Open"
@@ -37,7 +37,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
         validator.validate(RetrievePeriodicObligationsRawData(
           validNino,
           Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
+          Some(validBusinessId),
           Some(validFromDate),
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
@@ -64,7 +64,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
         validator.validate(RetrievePeriodicObligationsRawData(
           validNino,
           Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
+          Some(validBusinessId),
           Some(validFromDate),
           Some(validToDate),
           None)) shouldBe Nil
@@ -79,7 +79,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
         validator.validate(RetrievePeriodicObligationsRawData(
           validNino,
           Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
+          Some(validBusinessId),
           None,
           Some(validToDate),
           Some(validStatus))) shouldBe List(MissingFromDateError)
@@ -90,7 +90,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
         validator.validate(RetrievePeriodicObligationsRawData(
           validNino,
           Some(validTypeOfBusiness),
-          Some(validIncomeSourceId),
+          Some(validBusinessId),
           Some(validFromDate),
           None,
           Some(validStatus))) shouldBe List(MissingToDateError)
@@ -117,16 +117,16 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
              }
     }
     Seq(
-      ("A23131", validTypeOfBusiness, validIncomeSourceId, validFromDate, validToDate, validStatus, NinoFormatError),
-      (validNino, "Walrus", validIncomeSourceId, validFromDate, validToDate, validStatus, TypeOfBusinessFormatError),
+      ("A23131", validTypeOfBusiness, validBusinessId, validFromDate, validToDate, validStatus, NinoFormatError),
+      (validNino, "Walrus", validBusinessId, validFromDate, validToDate, validStatus, TypeOfBusinessFormatError),
       (validNino, validTypeOfBusiness, "Walrus", validFromDate, validToDate, validStatus, BusinessIdFormatError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "01-02-2019", validToDate, validStatus, FromDateFormatError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, validToDate, "01-02-2019", validStatus, ToDateFormatError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2017-01-01", "2018-01-01", validStatus, RuleFromDateNotSupportedError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2019-01-01", "2018-01-01", validStatus, ToDateBeforeFromDateError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2020-01-01", "2020-01-01", validStatus, RuleDateRangeInvalidError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, "2018-12-12", "2020-04-05", validStatus, RuleDateRangeInvalidError),
-      (validNino, validTypeOfBusiness, validIncomeSourceId, validFromDate, validToDate, "Walrus", StatusFormatError),
+      (validNino, validTypeOfBusiness, validBusinessId, "01-02-2019", validToDate, validStatus, FromDateFormatError),
+      (validNino, validTypeOfBusiness, validBusinessId, validToDate, "01-02-2019", validStatus, ToDateFormatError),
+      (validNino, validTypeOfBusiness, validBusinessId, "2017-01-01", "2018-01-01", validStatus, RuleFromDateNotSupportedError),
+      (validNino, validTypeOfBusiness, validBusinessId, "2019-01-01", "2018-01-01", validStatus, ToDateBeforeFromDateError),
+      (validNino, validTypeOfBusiness, validBusinessId, "2020-01-01", "2020-01-01", validStatus, RuleDateRangeInvalidError),
+      (validNino, validTypeOfBusiness, validBusinessId, "2018-12-12", "2020-04-05", validStatus, RuleDateRangeInvalidError),
+      (validNino, validTypeOfBusiness, validBusinessId, validFromDate, validToDate, "Walrus", StatusFormatError),
     ).foreach(args => (test _).tupled(args))
 
     "return multiple errors" when {

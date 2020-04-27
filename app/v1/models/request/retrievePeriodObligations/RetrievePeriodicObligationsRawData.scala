@@ -20,7 +20,7 @@ import v1.models.request.RawData
 
 case class RetrievePeriodicObligationsRawData(nino: String,
                                               typeOfBusiness: Option[String],
-                                              incomeSourceId: Option[String],
+                                              businessId: Option[String],
                                               fromDate: Option[String],
                                               toDate: Option[String],
                                               status: Option[String]) extends RawData
