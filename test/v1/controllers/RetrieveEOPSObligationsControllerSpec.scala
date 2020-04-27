@@ -89,7 +89,7 @@ class RetrieveEOPSObligationsControllerSpec
   private val rawData = RetrieveEOPSObligationsRawData(
     nino = nino,
     typeOfBusiness = Some(typeOfBusiness.toString),
-    incomeSourceId = Some(incomeSourceId),
+    businessId = Some(incomeSourceId),
     fromDate = Some(fromDate),
     toDate = Some(toDate),
     status = Some(status.toString)
@@ -117,7 +117,7 @@ class RetrieveEOPSObligationsControllerSpec
             obligations = Seq(
               Obligation(
                 typeOfBusiness = MtdBusiness.`self-employment`,
-                businessId = incomeSourceId,
+                incomeSourceId = incomeSourceId,
                 obligationDetails = Seq(
                   ObligationDetail(
                     periodStartDate = fromDate, periodEndDate = toDate, dueDate = "2020-04-05", receivedDate = None, status = status
@@ -214,10 +214,8 @@ class RetrieveEOPSObligationsControllerSpec
 
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
-          (BusinessIdFormatError, BAD_REQUEST),
           (FromDateFormatError, BAD_REQUEST),
           (ToDateFormatError, BAD_REQUEST),
-          (StatusFormatError, BAD_REQUEST),
           (RuleDateRangeInvalidError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (NoObligationsFoundError, NOT_FOUND),
