@@ -42,7 +42,7 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
       }
-      "a valid request is supplied with no incomeSourceId" in {
+      "a valid request is supplied with no businessId" in {
         validator.validate(RetrieveEOPSObligationsRawData(
           validNino,
           Some(validTypeOfBusiness),
@@ -51,7 +51,7 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
           Some(validToDate),
           Some(validStatus))) shouldBe Nil
       }
-      "a valid request is supplied with no incomeSourceId & typeOfBusiness" in {
+      "a valid request is supplied with no businessId & typeOfBusiness" in {
         validator.validate(RetrieveEOPSObligationsRawData(
           validNino,
           None,
@@ -99,17 +99,17 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
 
     def test(nino: String,
              typeOfBusiness: String,
-             incomeSourceId: String,
+             businessId: String,
              fromDate: String,
              toDate: String,
              status: String,
              error: MtdError): Unit = {
       s"return ${error.code} error" when {
-        s"RetrievePeriodicObligationsRawData($nino, $typeOfBusiness, $incomeSourceId, $fromDate, $toDate, $status) is supplied" in {
+        s"RetrievePeriodicObligationsRawData($nino, $typeOfBusiness, $businessId, $fromDate, $toDate, $status) is supplied" in {
           validator.validate(RetrieveEOPSObligationsRawData(
             nino,
             Some(typeOfBusiness),
-            Some(incomeSourceId),
+            Some(businessId),
             Some(fromDate),
             Some(toDate),
             Some(status))) shouldBe List(error)

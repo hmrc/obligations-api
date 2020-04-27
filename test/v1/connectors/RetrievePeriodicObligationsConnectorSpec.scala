@@ -31,10 +31,10 @@ import scala.concurrent.Future
 class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
 
   private val validNino = Nino("AA123456A")
-  private val validtypeOfBusiness = MtdBusiness.`foreign-property`
-  private val validincomeSourceId = "XAIS123456789012"
-  private val validfromDate = "2018-04-06"
-  private val validtoDate = "2019-04-05"
+  private val validTypeOfBusiness = MtdBusiness.`foreign-property`
+  private val validBusinessId = "XAIS123456789012"
+  private val validFromDate = "2018-04-06"
+  private val validToDate = "2019-04-05"
   private val validStatus = MtdStatus.Open
 
   class Test extends MockHttpClient with MockAppConfig {
@@ -50,13 +50,13 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
     "return a result" when {
       "a status is passed in and the downstream call is successful " in new Test {
         val request = RetrievePeriodicObligationsRequest(validNino,
-          Some(validtypeOfBusiness),
-          Some(validincomeSourceId),
-          Some(validfromDate),
-          Some(validtoDate),
+          Some(validTypeOfBusiness),
+          Some(validBusinessId),
+          Some(validFromDate),
+          Some(validToDate),
           Some(validStatus))
         val outcome = Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(Obligation(
-          validtypeOfBusiness, validincomeSourceId, Seq(ObligationDetail(validfromDate, validtoDate, validtoDate, Some(validfromDate), MtdStatus.Open)))))))
+          validTypeOfBusiness, validBusinessId, Seq(ObligationDetail(validFromDate, validToDate, validToDate, Some(validFromDate), MtdStatus.Open)))))))
 
         MockedHttpClient.
           get(
@@ -67,13 +67,13 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
       }
       "no status is passed in and the downstream call is successful" in new Test {
         val request = RetrievePeriodicObligationsRequest(validNino,
-          Some(validtypeOfBusiness),
-          Some(validincomeSourceId),
-          Some(validfromDate),
-          Some(validtoDate),
+          Some(validTypeOfBusiness),
+          Some(validBusinessId),
+          Some(validFromDate),
+          Some(validToDate),
           None)
         val outcome = Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(Obligation(
-          validtypeOfBusiness, validincomeSourceId, Seq(ObligationDetail(validfromDate, validtoDate, validtoDate, Some(validfromDate), MtdStatus.Open)))))))
+          validTypeOfBusiness, validBusinessId, Seq(ObligationDetail(validFromDate, validToDate, validToDate, Some(validFromDate), MtdStatus.Open)))))))
 
         MockedHttpClient.
           get(

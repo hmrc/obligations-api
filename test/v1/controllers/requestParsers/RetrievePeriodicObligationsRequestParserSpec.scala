@@ -30,16 +30,16 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val nino = "AA123456B"
   val typeOfBusiness = "self-employment"
   val convertedTypeOfBusiness = MtdBusiness.`self-employment`
-  val incomeSourceId = "XAIS123456789012"
+  val businessId = "XAIS123456789012"
   val fromDate = "2019-01-01"
   val toDate = "2020-01-01"
   val status = "Open"
   val convertedStatus = MtdStatus.Open
   val convertedStatusFulfilled = MtdStatus.Fulfilled
-  val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDatesData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
-  val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
+  val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(businessId), Some(fromDate), Some(toDate), Some(status))
   val todaysDate = LocalDate.now().toString
   val nextYearsDate = LocalDate.now().plusDays(366).toString
 
@@ -51,7 +51,7 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(data).returns(Nil)
-        parser.parseRequest(data) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatus)))
+        parser.parseRequest(data) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(convertedStatus)))
       }
     }
     "return an error wrapper" when {
@@ -67,7 +67,7 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
     "convert fromDate to today and toDate to 366 days ahead" when {
       "there are no dates input and the status is Fulfilled" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(todaysDatesData).returns(Nil)
-        parser.parseRequest(todaysDatesData) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+        parser.parseRequest(todaysDatesData) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
     }
   }
