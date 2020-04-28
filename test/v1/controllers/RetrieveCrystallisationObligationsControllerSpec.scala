@@ -151,6 +151,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
+          (NoObligationsFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
