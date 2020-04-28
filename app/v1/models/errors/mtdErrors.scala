@@ -32,7 +32,7 @@ object ToDateFormatError extends MtdError("FORMAT_TO_DATE", "The provided toDate
 object StatusFormatError extends MtdError("FORMAT_STATUS", "The provided status is invalid")
 object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided type of business is invalid")
 
-object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when an incomeSourceId is supplied.")
+object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when a businessId is supplied.")
 object MissingFromDateError extends MtdError("MISSING_FROM_DATE", "The From date parameter is missing")
 object MissingToDateError extends MtdError("MISSING_TO_DATE", "The To date parameter is missing")
 

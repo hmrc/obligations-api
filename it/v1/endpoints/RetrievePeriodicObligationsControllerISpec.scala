@@ -31,7 +31,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val typeOfBusiness = "self-employment"
-    val incomeSourceId = "XAIS123456789012"
+    val businessId = "XAIS123456789012"
     val fromDate = "2019-01-01"
     val toDate = "2019-06-06"
     val status = "Open"
@@ -364,7 +364,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status).get())
@@ -384,7 +384,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status).get())
@@ -404,7 +404,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status).get())
@@ -424,7 +424,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request().withQueryStringParameters(
           "typeOfBusiness" -> typeOfBusiness,
-          "incomeSourceId" -> incomeSourceId,
+          "businessId" -> businessId,
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status).get())
@@ -450,7 +450,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> typeOfBusiness,
-            "incomeSourceId" -> incomeSourceId,
+            "businessId" -> businessId,
             "toDate" -> toDate,
             "status" -> status).get())
 
@@ -469,7 +469,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> typeOfBusiness,
-            "incomeSourceId" -> incomeSourceId,
+            "businessId" -> businessId,
             "fromDate" -> fromDate,
             "status" -> status).get())
 
@@ -477,7 +477,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           response.json shouldBe Json.toJson(MissingToDateError)
         }
 
-        "typeOfBusiness is missing while there is an incomeSourceId" in new Test {
+        "typeOfBusiness is missing while there is an businessId" in new Test {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -487,7 +487,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           }
 
           val response: WSResponse = await(request().withQueryStringParameters(
-            "incomeSourceId" -> incomeSourceId,
+            "businessId" -> businessId,
             "fromDate" -> fromDate,
             "toDate" -> toDate,
             "status" -> status).get())
@@ -500,7 +500,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
       "validation error" when {
         def validationErrorTest(requestNino: String,
                                 requestTypeOfBusiness: String,
-                                requestIncomeSourceId: String,
+                                requestBusinessId: String,
                                 requestFromDate: String,
                                 requestToDate: String,
                                 requestStatus: String,
@@ -510,7 +510,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             override val nino: String = requestNino
             override val typeOfBusiness: String = requestTypeOfBusiness
-            override val incomeSourceId: String = requestIncomeSourceId
+            override val businessId: String = requestBusinessId
             override val fromDate: String = requestFromDate
             override val toDate: String = requestToDate
             override val status: String = requestStatus
@@ -523,7 +523,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(request().withQueryStringParameters(
               "typeOfBusiness" -> typeOfBusiness,
-              "incomeSourceId" -> incomeSourceId,
+              "businessId" -> businessId,
               "fromDate" -> fromDate,
               "toDate" -> toDate,
               "status" -> status).get())
@@ -558,7 +558,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(request().withQueryStringParameters(
               "typeOfBusiness" -> typeOfBusiness,
-              "incomeSourceId" -> incomeSourceId,
+              "businessId" -> businessId,
               "fromDate" -> fromDate,
               "toDate" -> toDate,
               "status" -> status).get())
@@ -595,7 +595,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> "uk-property",
-            "incomeSourceId" -> incomeSourceId,
+            "businessId" -> businessId,
             "fromDate" -> fromDate,
             "toDate" -> toDate,
             "status" -> status).get())
@@ -604,7 +604,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           response.json shouldBe Json.toJson(NoObligationsFoundError)
         }
 
-        "no selected incomeSourceId is found within the response object" in new Test {
+        "no selected businessId is found within the response object" in new Test {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
@@ -615,7 +615,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> typeOfBusiness,
-            "incomeSourceId" -> "XAIS123456789013",
+            "businessId" -> "XAIS123456789013",
             "fromDate" -> fromDate,
             "toDate" -> toDate,
             "status" -> status).get())

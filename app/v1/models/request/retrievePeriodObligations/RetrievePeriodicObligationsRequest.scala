@@ -22,7 +22,7 @@ import v1.models.domain.status.MtdStatus
 
 case class RetrievePeriodicObligationsRequest(nino: Nino,
                                               typeOfBusiness: Option[MtdBusiness],
-                                              incomeSourceId: Option[String],
+                                              businessId: Option[String],
                                               fromDate: Option[String],
                                               toDate: Option[String],
                                               status: Option[MtdStatus])
