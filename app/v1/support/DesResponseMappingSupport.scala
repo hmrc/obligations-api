@@ -37,6 +37,8 @@ trait DesResponseMappingSupport {
       obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
     }.filter {
       obligation => businessId.forall(_ == obligation.businessId)
+    }.filter {
+      obligation => obligation.obligationDetails.nonEmpty
     }
 
     if (filteredObligations.nonEmpty) {
@@ -58,6 +60,8 @@ trait DesResponseMappingSupport {
       obligation => typeOfBusiness.forall(_ == obligation.typeOfBusiness)
     }.filter {
       obligation => businessId.forall(_ == obligation.businessId)
+    }.filter {
+      obligation => obligation.obligationDetails.nonEmpty
     }
 
     if (filteredObligations.nonEmpty) {
