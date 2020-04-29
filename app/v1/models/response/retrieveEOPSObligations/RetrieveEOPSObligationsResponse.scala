@@ -17,8 +17,8 @@
 package v1.models.response.retrieveEOPSObligations
 
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
-import v1.models.domain.PeriodKey
 import v1.models.domain.business.DesBusiness
+import v1.models.domain.{PeriodKey, ReferenceType}
 import v1.models.response.common.des.DesObligation
 import v1.models.response.common.{Obligation, ObligationDetail}
 
@@ -29,12 +29,12 @@ object RetrieveEOPSObligationsResponse {
   implicit val reads: Reads[RetrieveEOPSObligationsResponse] = {
     (JsPath \ "obligations").read[Seq[DesObligation]].map( // go inside Reads
       _.collect { // go inside Seq
-        case ob if (ob.incomeSourceType != DesBusiness.ITSA) =>
+        case ob if (ob.incomeSourceType != DesBusiness.ITSA) && (ob.referenceType == ReferenceType.MTDBIS.toString) =>
           Obligation(
             ob.incomeSourceType.toMtd,
             ob.referenceNumber,
             ob.obligationDetails.collect {
-              case det if (det.periodKey == PeriodKey.EOPS.toString) =>
+              case det if det.periodKey == PeriodKey.EOPS.toString =>
                 ObligationDetail(
                   det.inboundCorrespondenceFromDate,
                   det.inboundCorrespondenceToDate,

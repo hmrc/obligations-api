@@ -43,7 +43,7 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) {
       ),
       api = APIDefinition(
         name = "Obligations (MTD)",
-        description = "An API for...",
+        description = "An API for providing obligations data",
         context = appConfig.apiGatewayContext,
         categories = Seq("INCOME_TAX_MTD"),
         versions = Seq(
