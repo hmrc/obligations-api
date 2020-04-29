@@ -24,7 +24,7 @@ import v1.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.{DesTaxYear, ObligationsTaxYear}
+import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
 
@@ -90,6 +90,15 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
         )
 
         input.foreach(args => (serviceError _).tupled(args))
+      }
+
+      "error when the connector returns an empty obligations list (JSON Reads filter out other obligations)" in new Test {
+        val responseModel = RetrieveCrystallisationObligationsResponse(Seq())
+
+        MockRetrieveCrystallisationObligationsConnector.doConnectorThing(requestData)
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+        await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
       }
     }
   }

@@ -38,7 +38,7 @@ class RetrieveEOPSObligationsRequestParser @Inject()(val validator: RetrieveEOPS
     val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
     val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
 
-    RetrieveEOPSObligationsRequest(Nino(data.nino), typeOfBusiness, data.incomeSourceId, fromDate, toDate, status)
+    RetrieveEOPSObligationsRequest(Nino(data.nino), typeOfBusiness, data.businessId, fromDate, toDate, status)
   }
 
 

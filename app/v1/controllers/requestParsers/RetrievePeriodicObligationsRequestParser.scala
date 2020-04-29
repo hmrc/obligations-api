@@ -37,6 +37,6 @@ class RetrievePeriodicObligationsRequestParser @Inject()(val validator: Retrieve
 
     val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
     val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
-    RetrievePeriodicObligationsRequest(Nino(data.nino), typeOfBusiness, data.incomeSourceId, fromDate, toDate, status)
+    RetrievePeriodicObligationsRequest(Nino(data.nino), typeOfBusiness, data.businessId, fromDate, toDate, status)
   }
 }

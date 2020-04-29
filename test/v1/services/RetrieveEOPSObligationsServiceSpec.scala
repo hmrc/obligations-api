@@ -36,7 +36,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
   private val nino = "AA123456A"
   private val typeOfBusiness = MtdBusiness.`self-employment`
-  private val incomeSourceId = "XAIS123456789012"
+  private val businessId = "XAIS123456789012"
   private val fromDate = "2018-04-06"
   private val toDate = "2019-04-05"
   private val status = MtdStatus.Open
@@ -44,7 +44,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
   private val fullResponseModel = RetrieveEOPSObligationsResponse(Seq(
     Obligation(MtdBusiness.`self-employment`,
-      incomeSourceId,
+      businessId,
       Seq(ObligationDetail(fromDate,
         toDate,
         fromDate,
@@ -52,7 +52,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
         MtdStatus.Open))
     ),
     Obligation(MtdBusiness.`foreign-property`,
-      incomeSourceId,
+      businessId,
       Seq(ObligationDetail(fromDate,
         toDate,
         fromDate,
@@ -60,7 +60,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
         MtdStatus.Open))
     ),
     Obligation(MtdBusiness.`uk-property`,
-      incomeSourceId,
+      businessId,
       Seq(ObligationDetail(fromDate,
         toDate,
         fromDate,
@@ -81,7 +81,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
   "service" when {
     "connector call is successful" must {
       "return mapped result with nothing filtered out" when {
-        "no typeOfBusiness or incomeSourceId are provided" in new Test {
+        "no typeOfBusiness or businessId are provided" in new Test {
           private val requestData = RetrieveEOPSObligationsRequest(
             Nino(nino),
             None,
@@ -113,7 +113,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
               private val filteredResponseModel = RetrieveEOPSObligationsResponse(Seq(
                 Obligation(business,
-                  incomeSourceId,
+                  businessId,
                   Seq(ObligationDetail(fromDate,
                     toDate,
                     fromDate,
@@ -131,18 +131,18 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
       }
 
       "filter out data with a different businessId" when {
-        "incomeSourceId is provided and not all of the response objects have that id" in new Test {
+        "businessId is provided and not all of the response objects have that id" in new Test {
           private val requestData = RetrieveEOPSObligationsRequest(
             Nino(nino),
             None,
-            Some(incomeSourceId),
+            Some(businessId),
             Some(fromDate),
             Some(toDate),
             Some(status))
 
           private val responseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`self-employment`,
-              incomeSourceId,
+              businessId,
               Seq(ObligationDetail(fromDate,
                 toDate,
                 fromDate,
@@ -150,7 +150,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
                 MtdStatus.Open))
             ),
             Obligation(MtdBusiness.`foreign-property`,
-              incomeSourceId,
+              businessId,
               Seq(ObligationDetail(fromDate,
                 toDate,
                 fromDate,
@@ -169,7 +169,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
           private val filteredResponseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`self-employment`,
-              incomeSourceId,
+              businessId,
               Seq(ObligationDetail(fromDate,
                 toDate,
                 fromDate,
@@ -177,7 +177,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
                 MtdStatus.Open))
             ),
             Obligation(MtdBusiness.`foreign-property`,
-              incomeSourceId,
+              businessId,
               Seq(ObligationDetail(fromDate,
                 toDate,
                 fromDate,
@@ -198,14 +198,14 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
           private val requestData = RetrieveEOPSObligationsRequest(
             Nino(nino),
             Some(MtdBusiness.`foreign-property`),
-            Some(incomeSourceId),
+            Some(businessId),
             Some(fromDate),
             Some(toDate),
             Some(status))
 
           private val responseModel = RetrieveEOPSObligationsResponse(Seq(
             Obligation(MtdBusiness.`uk-property`,
-              incomeSourceId,
+              businessId,
               Seq(ObligationDetail(fromDate,
                 toDate,
                 fromDate,
@@ -219,11 +219,11 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
-        "incomeSourceId filter is applied and there are no response objects with that incomeSourceId" in new Test {
+        "businessId filter is applied and there are no response objects with that businessId" in new Test {
           private val requestData = RetrieveEOPSObligationsRequest(
             Nino(nino),
             Some(MtdBusiness.`foreign-property`),
-            Some(incomeSourceId),
+            Some(businessId),
             Some(fromDate),
             Some(toDate),
             Some(status))
@@ -254,7 +254,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
             private val requestData = RetrieveEOPSObligationsRequest(
               Nino(nino),
               Some(typeOfBusiness),
-              Some(incomeSourceId),
+              Some(businessId),
               Some(fromDate),
               Some(toDate),
               Some(status))

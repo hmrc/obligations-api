@@ -11,10 +11,11 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            example:
-              description: The matching resource is not found.
-              value:
-                code: MATCHING_RESOURCE_NOT_FOUND
+            examples:
+              notFound:
+                description: The matching resource is not found.
+                value:
+                  code: MATCHING_RESOURCE_NOT_FOUND
   notFoundIncomeSource:
     responses:
       404:
@@ -451,3 +452,25 @@ traits:
                 description: The from date specified is before 2018-04-06.
                 value:
                   code: RULE_FROM_DATE_NOT_SUPPORTED
+  RuleFromDateNonSupportedEOPS:
+    responses:
+      400:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              RuleFromDateNonSupportedEOPS:
+                description: The from date specified is before 2017-04-06.
+                value:
+                  code: RULE_FROM_DATE_NOT_SUPPORTED
+  noObligationsFound:
+    responses:
+      404:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              noObligationsFound:
+                description: No obligations found using this filter.
+                value:
+                  code: NO_OBLIGATIONS_FOUND

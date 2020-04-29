@@ -59,7 +59,7 @@ class StandardDesHttpParserSpec extends UnitSpec {
       }
 
       "return an outbound error if a model object cannot be read from the response json" in {
-        val badFieldTypeJson: JsValue = Json.obj("incomeSourceId" -> 1234, "incomeSourceName" -> 1234)
+        val badFieldTypeJson: JsValue = Json.obj("businessId" -> 1234, "incomeSourceName" -> 1234)
         val httpResponse = HttpResponse(OK, Some(badFieldTypeJson), Map("CorrelationId" -> Seq(correlationId)))
         val expected = ResponseWrapper(correlationId, OutboundError(DownstreamError))
 

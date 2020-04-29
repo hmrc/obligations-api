@@ -18,13 +18,12 @@ package v1.controllers.requestParsers
 
 import java.time.LocalDate
 
-import play.api.libs.json.Json
 import support.UnitSpec
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.validators.MockRetrieveCrystallisationObligationsValidator
 import v1.models.errors._
-import v1.models.request.{DesTaxYear, ObligationsTaxYear, ObligationsTaxYearHelpers}
 import v1.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
+import v1.models.request.{ObligationsTaxYear, ObligationsTaxYearHelpers}
 
 class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
   val nino = "AA123456B"

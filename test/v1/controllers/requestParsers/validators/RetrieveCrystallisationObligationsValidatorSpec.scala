@@ -16,7 +16,6 @@
 
 package v1.controllers.requestParsers.validators
 
-import play.api.libs.json.Json
 import support.UnitSpec
 import v1.models.errors._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
