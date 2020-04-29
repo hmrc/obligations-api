@@ -22,6 +22,7 @@ import v1.models.domain.business.MtdBusiness
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
@@ -74,13 +75,13 @@ trait DesResponseMappingSupport {
   }
 
   final def filterCrystallisationValues(
-                                         responseWrapper: ResponseWrapper[RetrieveCrystallisationObligationsResponse]
+                                         responseWrapper: ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]
                                        ): Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]] = {
-    if(responseWrapper.responseData.obligationDetails.isEmpty) {
-      Left(ErrorWrapper(Some(responseWrapper.correlationId), NoObligationsFoundError))
-    }
-    else {
-       Right(responseWrapper)
+    responseWrapper.responseData.obligationDetails.toList match {
+      case desO :: Nil =>
+        Right(ResponseWrapper(responseWrapper.correlationId, desO.toMtd))
+      case Nil => Left(ErrorWrapper(Some(responseWrapper.correlationId), NoObligationsFoundError))
+      case _ :: _ => Left(ErrorWrapper(Some(responseWrapper.correlationId), DownstreamError))
     }
   }
 

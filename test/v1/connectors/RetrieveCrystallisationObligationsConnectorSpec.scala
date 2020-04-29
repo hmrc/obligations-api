@@ -19,11 +19,11 @@ package v1.connectors
 import mocks.MockAppConfig
 import uk.gov.hmrc.domain.Nino
 import v1.mocks.MockHttpClient
-import v1.models.domain.status.MtdStatus.Fulfilled
+import v1.models.domain.status.DesStatus.F
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v1.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
+import v1.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
 
 import scala.concurrent.Future
 
@@ -47,8 +47,8 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
 
     "return a result" when {
       "the downstream call is successful and a source is passed in" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, RetrieveCrystallisationObligationsResponse(
-          Seq(Obligation(fromDate, toDate, toDate, Fulfilled, Some(toDate)))))
+        val outcome = Right(ResponseWrapper(correlationId, DesRetrieveCrystallisationObligationsResponse(
+          Seq(DesObligation(fromDate, toDate, toDate, F, Some(toDate), "ITSA"))))
         )
         MockedHttpClient.
           get(

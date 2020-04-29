@@ -18,7 +18,8 @@ package v1.models.response.retrieveCrystallisationObligations.des
 
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.status.DesStatus
+import v1.models.domain.status.{DesStatus, MtdStatus}
+import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 class DesObligationSpec extends UnitSpec {
   "reads" should {
@@ -69,6 +70,15 @@ class DesObligationSpec extends UnitSpec {
         val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None, "ITSA")
 
         json.as[DesObligation] shouldBe model
+      }
+    }
+  }
+  "toMtd" should {
+    "return a RetrieveCrystallisationObligationsResponse model" when {
+      "passed a valid model" in {
+        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None, "ITSA")
+
+        model.toMtd shouldBe RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, None)
       }
     }
   }
