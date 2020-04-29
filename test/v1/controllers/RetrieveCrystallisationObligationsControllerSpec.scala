@@ -26,7 +26,7 @@ import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdId
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.{DesTaxYear, ObligationsTaxYear}
+import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations._
 import v1.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
 
@@ -151,6 +151,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
+          (NoObligationsFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 

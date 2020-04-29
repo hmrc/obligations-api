@@ -21,32 +21,32 @@ import play.api.mvc.Result
 import uk.gov.hmrc.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
-import v1.mocks.requestParsers.MockRetrievePeriodicObligationsRequestParser
-import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrievePeriodicObligationsService}
+import v1.mocks.requestParsers.MockRetrieveEOPSObligationsRequestParser
+import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveEOPSObligationsService}
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
-import v1.models.errors.{BusinessIdFormatError, DownstreamError, ErrorWrapper, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
+import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.request.retrieveEOPSObligations._
 import v1.models.response.common.{Obligation, ObligationDetail}
-import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
+import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RetrievePeriodicObligationsControllerSpec
+class RetrieveEOPSObligationsControllerSpec
   extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
-    with MockRetrievePeriodicObligationsService
-    with MockRetrievePeriodicObligationsRequestParser
+    with MockRetrieveEOPSObligationsService
+    with MockRetrieveEOPSObligationsRequestParser
     with MockHateoasFactory
     with MockAuditService {
 
   trait Test {
     val hc = HeaderCarrier()
 
-    val controller = new RetrievePeriodicObligationsController(
+    val controller = new RetrieveEOPSObligationsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       requestParser = mockRequestParser,
@@ -61,52 +61,80 @@ class RetrievePeriodicObligationsControllerSpec
   }
 
   private val nino = "AA123456A"
-  private val typeOfBusiness = "self-employment"
+  private val typeOfBusiness = MtdBusiness.`self-employment`
   private val businessId = "XAIS123456789012"
-  private val fromDate = "2019-01-01"
-  private val toDate = "2019-06-06"
-  private val status = "Open"
+  private val fromDate = "2018-04-06"
+  private val toDate = "2019-04-05"
+  private val status = MtdStatus.Open
   private val correlationId = "X-123"
 
   private val responseBody = Json.parse(
-    """{
+    s"""{
       |  "obligations": [
-      |     {
-      |       "typeOfBusiness": "self-employment",
-      |       "businessId": "XAIS123456789012",
-      |       "obligationDetails": [
-      |         {
-      |           "periodStartDate": "2019-01-01",
-      |           "periodEndDate": "2019-06-06",
-      |           "dueDate": "2019-04-30",
-      |           "receivedDate": "2019-04-25",
-      |           "status": "Open"
-      |         }
-      |       ]
+      |    {
+      |      "typeOfBusiness": "$typeOfBusiness",
+      |      "businessId": "$businessId",
+      |      "obligationDetails": [
+      |        {
+      |          "periodStartDate": "$fromDate",
+      |          "periodEndDate": "$toDate",
+      |          "dueDate": "2020-04-05",
+      |          "status": "$status"
+      |        }
+      |      ]
       |    }
       |  ]
-      |}
-      |""".stripMargin)
+      |}""".stripMargin)
 
-  private val rawData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  private val requestData = RetrievePeriodicObligationsRequest(Nino(nino), Some(MtdBusiness.`self-employment`),Some(businessId), Some(fromDate), Some(toDate), Some(MtdStatus.Open))
+  private val rawData = RetrieveEOPSObligationsRawData(
+    nino = nino,
+    typeOfBusiness = Some(typeOfBusiness.toString),
+    businessId = Some(businessId),
+    fromDate = Some(fromDate),
+    toDate = Some(toDate),
+    status = Some(status.toString)
+  )
+  private val requestData = RetrieveEOPSObligationsRequest(
+    nino = Nino(nino),
+    typeOfBusiness = Some(typeOfBusiness),
+    businessId = Some(businessId),
+    fromDate = Some(fromDate),
+    toDate = Some(toDate),
+    status = Some(status)
+  )
 
   "handleRequest" should {
     "return OK" when {
       "happy path" in new Test {
 
-        MockRetrievePeriodicObligationsRequestParser
+        MockRetrieveEOPSObligationsRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockRetrievePeriodicObligationsService
+        MockRetrieveEOPSObligationsService
           .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, RetrievePeriodObligationsResponse(Seq(
-            Obligation(MtdBusiness.`self-employment`, businessId, Seq(
-              ObligationDetail(fromDate, toDate, "2019-04-30", Some("2019-04-25"), MtdStatus.Open)
-            ))))))))
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, RetrieveEOPSObligationsResponse(
+            obligations = Seq(
+              Obligation(
+                typeOfBusiness = MtdBusiness.`self-employment`,
+                businessId = businessId,
+                obligationDetails = Seq(
+                  ObligationDetail(
+                    periodStartDate = fromDate, periodEndDate = toDate, dueDate = "2020-04-05", receivedDate = None, status = status
+                  )
+                )
+              )
+            )
+          )))))
 
-        val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+        val result: Future[Result] = controller.handleRequest(
+          nino = nino,
+          typeOfBusiness = Some(typeOfBusiness.toString),
+          businessId = Some(businessId),
+          fromDate = Some(fromDate),
+          toDate = Some(toDate),
+          status = Some(status.toString)
+        )(fakeRequest)
 
         status(result) shouldBe OK
         contentAsJson(result) shouldBe responseBody
@@ -119,11 +147,18 @@ class RetrievePeriodicObligationsControllerSpec
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
           s"a ${error.code} error is returned from the parser" in new Test {
 
-            MockRetrievePeriodicObligationsRequestParser
+            MockRetrieveEOPSObligationsRequestParser
               .parse(rawData)
               .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
 
-            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(
+              nino = nino,
+              typeOfBusiness = Some(typeOfBusiness.toString),
+              businessId = Some(businessId),
+              fromDate = Some(fromDate),
+              toDate = Some(toDate),
+              status = Some(status.toString)
+            )(fakeRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
@@ -143,7 +178,8 @@ class RetrievePeriodicObligationsControllerSpec
           (ToDateBeforeFromDateError, BAD_REQUEST),
           (MissingTypeOfBusinessError, BAD_REQUEST),
           (RuleDateRangeInvalidError, BAD_REQUEST),
-          (RuleFromDateNotSupportedError, BAD_REQUEST)
+          (RuleFromDateNotSupportedError, BAD_REQUEST),
+          (BadRequestError, BAD_REQUEST)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
@@ -151,17 +187,24 @@ class RetrievePeriodicObligationsControllerSpec
 
       "service errors occur" must {
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
-          s"a $mtdError error is returned from the service" in new Test {
+          s"a ${mtdError.code} error is returned from the service" in new Test {
 
-            MockRetrievePeriodicObligationsRequestParser
+            MockRetrieveEOPSObligationsRequestParser
               .parse(rawData)
               .returns(Right(requestData))
 
-            MockRetrievePeriodicObligationsService
+            MockRetrieveEOPSObligationsService
               .retrieve(requestData)
               .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
 
-            val result: Future[Result] = controller.handleRequest(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))(fakeRequest)
+            val result: Future[Result] = controller.handleRequest(
+              nino = nino,
+              typeOfBusiness = Some(typeOfBusiness.toString),
+              businessId = Some(businessId),
+              fromDate = Some(fromDate),
+              toDate = Some(toDate),
+              status = Some(status.toString)
+            )(fakeRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
@@ -171,9 +214,12 @@ class RetrievePeriodicObligationsControllerSpec
 
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
+          (FromDateFormatError, BAD_REQUEST),
+          (ToDateFormatError, BAD_REQUEST),
+          (RuleDateRangeInvalidError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
+          (NoObligationsFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR),
-          (NoObligationsFoundError, NOT_FOUND)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))

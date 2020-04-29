@@ -22,35 +22,33 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.Logging
-import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
+import v1.controllers.requestParsers.RetrieveEOPSObligationsRequestParser
 import v1.hateoas.HateoasFactory
 import v1.models.errors._
-import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
-import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, RetrievePeriodicObligationsService}
+import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
+import v1.services.{RetrieveEOPSObligationsService, _}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrievePeriodicObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                      val lookupService: MtdIdLookupService,
-                                                      requestParser: RetrievePeriodicObligationsRequestParser,
-                                                      service: RetrievePeriodicObligationsService,
-                                                      hateoasFactory: HateoasFactory,
-                                                      auditService: AuditService,
-                                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
+class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAuthService,
+                                                  val lookupService: MtdIdLookupService,
+                                                  requestParser: RetrieveEOPSObligationsRequestParser,
+                                                  service: RetrieveEOPSObligationsService,
+                                                  hateoasFactory: HateoasFactory,
+                                                  auditService: AuditService,
+                                                  cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
-    EndpointLogContext(controllerName = "RetrievePeriodicObligationsController", endpointName = "handleRequest")
+    EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
 
-  def handleRequest(nino: String,
-                    typeOfBusiness: Option[String],
-                    businessId: Option[String],
-                    fromDate: Option[String],
-                    toDate: Option[String],
-                    status: Option[String]): Action[AnyContent] =
+  def handleRequest(nino: String, typeOfBusiness: Option[String],
+                    businessId: Option[String], fromDate: Option[String],
+                    toDate: Option[String], status: Option[String]
+                   ): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-      val rawData = RetrievePeriodicObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
+      val rawData = RetrieveEOPSObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
       val result =
         for {
           parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
@@ -74,12 +72,11 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
     (errorWrapper.error: @unchecked) match {
       case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
            | FromDateFormatError | ToDateFormatError | StatusFormatError
-           | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
+           | MissingToDateError | MissingFromDateError | ToDateBeforeFromDateError
            | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
            | BadRequestError                                                                        => BadRequest(Json.toJson(errorWrapper))
       case NotFoundError | NoObligationsFoundError                                                  => NotFound(Json.toJson(errorWrapper))
       case DownstreamError                                                                          => InternalServerError(Json.toJson(errorWrapper))
     }
   }
-
 }

@@ -31,16 +31,16 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
   val nino = "AA123456B"
   val typeOfBusiness = "self-employment"
   val convertedTypeOfBusiness = MtdBusiness.`self-employment`
-  val incomeSourceId = "XAIS123456789012"
+  val businessId = "XAIS123456789012"
   val fromDate = "2019-01-01"
   val toDate = "2020-01-01"
   val status = "Open"
   val convertedStatusOpen = MtdStatus.Open
   val convertedStatusFulfilled = MtdStatus.Fulfilled
-  val data = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDatesData = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(incomeSourceId), None, None, Some("Fulfilled"))
-  val invalidNinoData = RetrieveEOPSObligationsRawData("Walrus", Some(typeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
-  val invalidMultipleData = RetrieveEOPSObligationsRawData("Walrus", Some("Beans"), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(status))
+  val data = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData = RetrieveEOPSObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
+  val invalidNinoData = RetrieveEOPSObligationsRawData("Walrus", Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val invalidMultipleData = RetrieveEOPSObligationsRawData("Walrus", Some("Beans"), Some(businessId), Some(fromDate), Some(toDate), Some(status))
   val todaysDate = LocalDate.now().toString
   val nextYearsDate = LocalDate.now().plusDays(366).toString
 
@@ -52,7 +52,7 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
         MockRetrieveEOPSObligationsValidator.validate(data).returns(Nil)
-        parser.parseRequest(data) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(fromDate), Some(toDate), Some(convertedStatusOpen)))
+        parser.parseRequest(data) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(convertedStatusOpen)))
       }
     }
     "return an error wrapper" when {
@@ -68,7 +68,7 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
     "convert fromDate to today and toDate to 366 days ahead" when {
       "there are no dates input and the status is Fulfilled" in new Test {
         MockRetrieveEOPSObligationsValidator.validate(todaysDatesData).returns(Nil)
-        parser.parseRequest(todaysDatesData) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(incomeSourceId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+        parser.parseRequest(todaysDatesData) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
     }
   }

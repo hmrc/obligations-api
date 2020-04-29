@@ -69,7 +69,7 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
     (errorWrapper.error: @unchecked) match {
       case NinoFormatError | TaxYearFormatError | RuleTaxYearNotSupportedError
            | RuleTaxYearRangeExceededError | BadRequestError                   => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError                                                       => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError | NoObligationsFoundError                             => NotFound(Json.toJson(errorWrapper))
       case DownstreamError                                                     => InternalServerError(Json.toJson(errorWrapper))
     }
   }

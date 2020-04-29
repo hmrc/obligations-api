@@ -20,29 +20,29 @@ import support.UnitSpec
 import v1.models.errors.MissingTypeOfBusinessError
 import v1.models.utils.JsonErrorValidators
 
-class IncomeSourceIdIncludedWithTypeOfBusinessValidationSpec extends UnitSpec with JsonErrorValidators {
+class BusinessIdIncludedWithTypeOfBusinessValidationSpec extends UnitSpec with JsonErrorValidators {
 
   "validate" should {
-    val incomeSourceId = Some("XAIS123456789012")
+    val businessId = Some("XAIS123456789012")
     val typeOfBusiness = Some("F")
 
     "return no errors" when {
-      "when an incomeSourceId and typeOfBusiness is supplied" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(incomeSourceId, typeOfBusiness)
+      "when a businessId and typeOfBusiness is supplied" in {
+        val validationResult = BusinessIdIncludedWithTypeOfBusinessValidation.validate(businessId, typeOfBusiness)
         validationResult.isEmpty shouldBe true
       }
-      "when neither an incomeSourceId or typeOfBusiness is supplied" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(None, None)
+      "when neither a businessId or typeOfBusiness is supplied" in {
+        val validationResult = BusinessIdIncludedWithTypeOfBusinessValidation.validate(None, None)
         validationResult.isEmpty shouldBe true
       }
-      "when a incomeSourceId is supplied but not a typeOfBusiness" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(None, typeOfBusiness)
+      "when a businessId is supplied but not a typeOfBusiness" in {
+        val validationResult = BusinessIdIncludedWithTypeOfBusinessValidation.validate(None, typeOfBusiness)
         validationResult.isEmpty shouldBe true
       }
     }
     "return a missing business Id Error" when {
-      "when the incomeSourceId is supplied but not a typeOfBusiness" in {
-        val validationResult = IncomeSourceIdIncludedWithTypeOfBusinessValidation.validate(incomeSourceId, None)
+      "when the businessId is supplied but not a typeOfBusiness" in {
+        val validationResult = BusinessIdIncludedWithTypeOfBusinessValidation.validate(businessId, None)
         validationResult.isEmpty shouldBe false
         validationResult.head shouldBe MissingTypeOfBusinessError
       }
