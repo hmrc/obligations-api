@@ -40,7 +40,7 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
 
     val result = for {
       desResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDesErrors(desErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](filterEOPSValues(desResponseWrapper, request.typeOfBusiness, request.incomeSourceId))
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterEOPSValues(desResponseWrapper, request.typeOfBusiness, request.businessId))
     } yield mtdResponseWrapper
     result.value
 

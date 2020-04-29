@@ -23,7 +23,6 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.models.request.DesTaxYear
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
@@ -183,6 +182,47 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
+
+        "no obligations found" when {
+          "the backend returns a 200 but nothing returned is ITSA" in new Test {
+
+            override val desResponse: JsValue = Json.parse(
+              """
+                | {
+                |    "obligations": [
+                |        {
+                |            "identification": {
+                |                "incomeSourceType": "EOPS",
+                |                "referenceNumber": "AB123456A",
+                |                "referenceType": "NINO"
+                |            },
+                |            "obligationDetails": [
+                |                {
+                |                    "status": "F",
+                |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                |                    "inboundCorrespondenceToDate": "2019-04-05",
+                |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+                |                    "inboundCorrespondenceDueDate": "2020-01-31",
+                |                    "periodKey": "EOPS"
+                |                }
+                |            ]
+                |        }
+                |    ]
+                |}
+    """.stripMargin)
+
+            override def setupStubs(): StubMapping = {
+              AuditStub.audit()
+              AuthStub.authorised()
+              MtdIdLookupStub.ninoFound(nino)
+              DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            }
+
+            val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
+            response.status shouldBe Status.NOT_FOUND
+            response.json shouldBe Json.toJson(NoObligationsFoundError)
+          }
+        }
       }
     }
   }

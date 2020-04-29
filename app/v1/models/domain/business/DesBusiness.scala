@@ -34,6 +34,10 @@ object DesBusiness {
     override def toMtd: MtdBusiness = MtdBusiness.`foreign-property`
   }
 
+  case object ITSA extends DesBusiness {
+    override def toMtd: MtdBusiness = MtdBusiness.`do-not-use`
+  }
+
   implicit val format: Format[DesBusiness] = Enums.format[DesBusiness]
   val parser: PartialFunction[String, DesBusiness] = Enums.parser[DesBusiness]
 }

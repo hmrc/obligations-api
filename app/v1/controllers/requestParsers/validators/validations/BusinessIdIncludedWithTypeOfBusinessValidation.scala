@@ -16,14 +16,14 @@
 
 package v1.controllers.requestParsers.validators.validations
 
-import v1.models.errors.{BusinessIdFormatError, MtdError}
+import v1.models.errors.{MissingTypeOfBusinessError, MtdError}
 
-object IncomeSourceIdValidation {
+object BusinessIdIncludedWithTypeOfBusinessValidation {
 
-  private val incomeSourceIdRegex = "^X[a-zA-Z0-9]{1}IS[0-9]{12}$"
-
-  def validate(incomeSourceId: String): List[MtdError] = {
-    if (incomeSourceId.matches(incomeSourceIdRegex)) NoValidationErrors else List(BusinessIdFormatError)
+  def validate(businessId: Option[String], typeOfBusiness: Option[String]): List[MtdError] = {
+    (businessId, typeOfBusiness) match {
+      case (Some(x), None) => List(MissingTypeOfBusinessError)
+      case _ => Nil
+    }
   }
-
 }
