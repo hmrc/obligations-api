@@ -1,6 +1,6 @@
 #%RAML 1.0
 ---
-title: Hello World
+title: Obligations
 version: 1.0
 
 protocols: [ HTTPS ]
@@ -52,5 +52,5 @@ uses:
       get: !include retrieve_period_obligations.raml
     /crystallisation:
       get: !include retrieve_crystallisation_obligations.raml
-    /end-of-period:
+    /end-of-period-statement:
       get: !include retrieve_eops_obligations.raml
