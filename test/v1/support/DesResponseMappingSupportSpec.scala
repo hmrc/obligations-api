@@ -25,6 +25,7 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 class DesResponseMappingSupportSpec extends UnitSpec {
 
@@ -102,7 +103,6 @@ class DesResponseMappingSupportSpec extends UnitSpec {
     }
   }
 
-
   "filterEOPSValues" should {
     "return an unfiltered model" when {
       "no filters are applied" in {
@@ -173,6 +173,80 @@ class DesResponseMappingSupportSpec extends UnitSpec {
           Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
         ))
         mapping.filterEOPSValues(ResponseWrapper(correlationId, model), None, Some("beans")) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+    }
+  }
+
+  "filterPeriodicValues" should {
+    "return an unfiltered model" when {
+      "no filters are applied" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled))),
+          Obligation(MtdBusiness.`uk-property`, "id124", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, None) shouldBe Right(ResponseWrapper(correlationId, model))
+      }
+      "no obligations are filtered out due to applied filters" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled))),
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), Some(MtdBusiness.`self-employment`), Some("id123")) shouldBe Right(ResponseWrapper(correlationId, model))
+      }
+    }
+    "return a filtered model" when {
+      "typeOfBusiness filter is applied and obligations with a different typeOfBusiness are found" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled))),
+          Obligation(MtdBusiness.`uk-property`, "id124", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        val filteredModel = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), Some(MtdBusiness.`self-employment`), None) shouldBe Right(ResponseWrapper(correlationId, filteredModel))
+      }
+      "businessId filter is applied and obligations with a different businessId are found" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled))),
+          Obligation(MtdBusiness.`uk-property`, "id124", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        val filteredModel = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, Some("id123")) shouldBe Right(ResponseWrapper(correlationId, filteredModel))
+      }
+      "a model with at least one obligation with no obligationDetails is supplied" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled))),
+          Obligation(MtdBusiness.`uk-property`, "id124", Seq()),
+          Obligation(MtdBusiness.`self-employment`, "id125", Seq())
+        ))
+        val filteredModel = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, None) shouldBe Right(ResponseWrapper(correlationId, filteredModel))
+      }
+    }
+    "return an error" when {
+      "a model with no obligations is supplied" in {
+        val model = RetrievePeriodObligationsResponse(Seq())
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, None) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+      "a model with no obligationDetails is supplied" in {
+        val model = RetrievePeriodObligationsResponse(Seq(Obligation(MtdBusiness.`uk-property`, "id123", Seq())))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, None) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+      "the typeOfBusiness filter filters out everything" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), Some(MtdBusiness.`uk-property`), None) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+      "the businessId filter filters out everything" in {
+        val model = RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
+        ))
+        mapping.filterPeriodicValues(ResponseWrapper(correlationId, model), None, Some("beans")) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
       }
     }
   }
