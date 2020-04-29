@@ -91,6 +91,15 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
 
         input.foreach(args => (serviceError _).tupled(args))
       }
+
+      "error when the connector returns an empty obligations list (JSON Reads filter out other obligations)" in new Test {
+        val responseModel = RetrieveCrystallisationObligationsResponse(Seq())
+
+        MockRetrieveCrystallisationObligationsConnector.doConnectorThing(requestData)
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+        await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
     }
   }
 }

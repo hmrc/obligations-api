@@ -40,7 +40,8 @@ class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCry
 
     val result = for {
       desResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDesErrors(desErrorMap))
-    } yield desResponseWrapper
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterCrystallisationValues(desResponseWrapper))
+    } yield mtdResponseWrapper
 
     result.value
   }
