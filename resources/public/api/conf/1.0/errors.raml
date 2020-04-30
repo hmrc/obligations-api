@@ -22,7 +22,7 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            example:
+            examples:
               description: The remote endpoint has indicated that the given income source could not be found
               value:
                 code: MATCHING_RESOURCE_NOT_FOUND
@@ -32,7 +32,7 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            example:
+            examples:
               description: The remote endpoint has indicated that no data can be found for the given NINO
               value:
                 code: MATCHING_RESOURCE_NOT_FOUND
@@ -42,7 +42,7 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            example:
+            examples:
               description: The remote endpoint has indicated that no data can be found for the given loss ID
               value:
                 code: MATCHING_RESOURCE_NOT_FOUND
@@ -52,7 +52,7 @@ traits:
         body:
           application/json:
             type: types.errorResponse
-            example:
+            examples:
               description: The remote endpoint has indicated that no data can be found for the given claim ID
               value:
                 code: MATCHING_RESOURCE_NOT_FOUND
