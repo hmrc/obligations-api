@@ -63,7 +63,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -203,7 +203,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS123456789012",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -258,7 +258,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS123456789012",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -325,7 +325,6 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
           "fromDate" -> fromDate,
           "toDate" -> toDate,
           "status" -> status
-
         ).get())
         response.status shouldBe Status.OK
         response.json shouldBe responseBody
@@ -342,7 +341,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS123456789012",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -397,7 +396,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "OTHER REFERENCE NUMBER",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -489,7 +488,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(request().withQueryStringParameters(
               requestTypeOfBusiness.map("typeOfBusiness" -> _).getOrElse(("", "")),
-              requestBusinessId.map( "businessId" -> _).getOrElse(("", "")),
+              requestBusinessId.map("businessId" -> _).getOrElse(("", "")),
               requestFromDate.map("fromDate" -> _).getOrElse(("", "")),
               requestToDate.map("toDate" -> _).getOrElse(("", "")),
               requestStatus.map("status" -> _).getOrElse(("", ""))
@@ -556,6 +555,167 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
+      }
+
+      "DES returns data that is filtered out" when {
+        "no MTDBIS obligations are returned" in new Test {
+          override val desResponse: JsValue = Json.parse(
+            """
+              |{
+              |    "obligations": [
+              |        {
+              |            "identification": {
+              |                "incomeSourceType": "ITSB",
+              |                "referenceNumber": "XAIS123456789012",
+              |                "referenceType": "OTHER"
+              |            },
+              |            "obligationDetails": [
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-01-01",
+              |                    "inboundCorrespondenceToDate": "2018-12-31",
+              |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "EOPS"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-01-01",
+              |                    "inboundCorrespondenceToDate": "2019-03-31",
+              |                    "inboundCorrespondenceDateReceived": "2019-04-25",
+              |                    "inboundCorrespondenceDueDate": "2019-04-30",
+              |                    "periodKey": "#001"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-04-01",
+              |                    "inboundCorrespondenceToDate": "2019-06-30",
+              |                    "inboundCorrespondenceDateReceived": "2019-07-01",
+              |                    "inboundCorrespondenceDueDate": "2019-07-31",
+              |                    "periodKey": "#002"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-07-01",
+              |                    "inboundCorrespondenceToDate": "2019-09-30",
+              |                    "inboundCorrespondenceDateReceived": "2019-10-08",
+              |                    "inboundCorrespondenceDueDate": "2019-10-31",
+              |                    "periodKey": "#003"
+              |                },
+              |                {
+              |                    "status": "O",
+              |                    "inboundCorrespondenceFromDate": "2019-10-01",
+              |                    "inboundCorrespondenceToDate": "2019-12-31",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "#004"
+              |                },
+              |                {
+              |                    "status": "O",
+              |                    "inboundCorrespondenceFromDate": "2019-01-01",
+              |                    "inboundCorrespondenceToDate": "2019-12-31",
+              |                    "inboundCorrespondenceDueDate": "2021-01-31",
+              |                    "periodKey": "EOPS"
+              |                }
+              |            ]
+              |        }
+              |    ]
+              |}""".stripMargin)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.NOT_FOUND
+          response.json shouldBe Json.toJson(NoObligationsFoundError)
+        }
+
+        "the incomeSourceType filter results in everything being filtered out" in new Test {
+          override val desResponse: JsValue = Json.parse(
+            """
+              |{
+              |    "obligations": [
+              |        {
+              |            "identification": {
+              |                "incomeSourceType": "ITSB",
+              |                "referenceNumber": "XAIS123456789012",
+              |                "referenceType": "MTDBIS"
+              |            },
+              |            "obligationDetails": [
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-01-01",
+              |                    "inboundCorrespondenceToDate": "2018-12-31",
+              |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "EOPS"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-01-01",
+              |                    "inboundCorrespondenceToDate": "2019-03-31",
+              |                    "inboundCorrespondenceDateReceived": "2019-04-25",
+              |                    "inboundCorrespondenceDueDate": "2019-04-30",
+              |                    "periodKey": "#001"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-04-01",
+              |                    "inboundCorrespondenceToDate": "2019-06-30",
+              |                    "inboundCorrespondenceDateReceived": "2019-07-01",
+              |                    "inboundCorrespondenceDueDate": "2019-07-31",
+              |                    "periodKey": "#002"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2019-07-01",
+              |                    "inboundCorrespondenceToDate": "2019-09-30",
+              |                    "inboundCorrespondenceDateReceived": "2019-10-08",
+              |                    "inboundCorrespondenceDueDate": "2019-10-31",
+              |                    "periodKey": "#003"
+              |                },
+              |                {
+              |                    "status": "O",
+              |                    "inboundCorrespondenceFromDate": "2019-10-01",
+              |                    "inboundCorrespondenceToDate": "2019-12-31",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "#004"
+              |                },
+              |                {
+              |                    "status": "O",
+              |                    "inboundCorrespondenceFromDate": "2019-01-01",
+              |                    "inboundCorrespondenceToDate": "2019-12-31",
+              |                    "inboundCorrespondenceDueDate": "2021-01-31",
+              |                    "periodKey": "EOPS"
+              |                }
+              |            ]
+              |        }
+              |    ]
+              |}""".stripMargin)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponse)
+          }
+
+          override val businessId = "XAIS123456789013"
+
+          val response: WSResponse = await(request().withQueryStringParameters(
+            "typeOfBusiness" -> typeOfBusiness,
+            "businessId" -> businessId,
+            "fromDate" -> fromDate,
+            "toDate" -> toDate,
+            "status" -> status
+
+          ).get())
+          response.status shouldBe Status.NOT_FOUND
+          response.json shouldBe Json.toJson(NoObligationsFoundError)
+        }
       }
     }
   }

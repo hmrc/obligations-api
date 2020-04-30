@@ -21,7 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.connectors.{DesOutcome, RetrieveCrystallisationObligationsConnector}
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +30,7 @@ trait MockRetrieveCrystallisationObligationsConnector extends MockFactory {
 
   object MockRetrieveCrystallisationObligationsConnector {
 
-    def doConnectorThing(requestData: RetrieveCrystallisationObligationsRequest): CallHandler[Future[DesOutcome[RetrieveCrystallisationObligationsResponse]]] = {
+    def doConnectorThing(requestData: RetrieveCrystallisationObligationsRequest): CallHandler[Future[DesOutcome[DesRetrieveCrystallisationObligationsResponse]]] = {
       (mockRetrieveCrystallisationObligationsConnector
         .retrieveCrystallisationObligations(_: RetrieveCrystallisationObligationsRequest)(_: HeaderCarrier, _: ExecutionContext))
         .expects(requestData, *, *)

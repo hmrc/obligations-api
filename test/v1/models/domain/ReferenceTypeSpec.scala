@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package v1.models.response.retrieveCrystallisationObligations
+package v1.models.domain
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
 
-case class Obligation(periodStartDate: String, periodEndDate: String, dueDate: String, status: MtdStatus, receivedDate: Option[String])
-
-object Obligation {
-  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
+class ReferenceTypeSpec extends UnitSpec with EnumJsonSpecSupport {
+  testRoundTrip[ReferenceType](
+    ("MTDBIS", ReferenceType.MTDBIS)
+  )
 }

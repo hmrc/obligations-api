@@ -22,7 +22,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 import v1.connectors.httpparsers.StandardDesHttpParser._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,12 +30,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient,
                                                             val appConfig: AppConfig) extends BaseDesConnector {
   def retrieveCrystallisationObligations(request: RetrieveCrystallisationObligationsRequest)
-                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[RetrieveCrystallisationObligationsResponse]] = {
+                                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[DesRetrieveCrystallisationObligationsResponse]] = {
 
     val url = s"enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.obligationsTaxYear.from}&to=${request.obligationsTaxYear.to}"
 
     get(
-      DesUri[RetrieveCrystallisationObligationsResponse](s"$url")
+      DesUri[DesRetrieveCrystallisationObligationsResponse](s"$url")
     )
   }
 }

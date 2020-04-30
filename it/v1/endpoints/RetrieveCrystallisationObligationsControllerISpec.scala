@@ -39,7 +39,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
     def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
 
-    def queryParams: Map[String, String] = Map (
+    def queryParams: Map[String, String] = Map(
       "from" -> "2017-04-06",
       "to" -> "2018-04-05"
     )
@@ -50,19 +50,16 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
-    val responseBody: JsValue = Json.parse(s"""
-                                              |{
-                                              |  "obligationDetails": [
-                                              |    {
-                                              |      "periodStartDate": "2018-04-06",
-                                              |      "periodEndDate": "2019-04-05",
-                                              |      "dueDate": "2020-01-31",
-                                              |      "status": "Fulfilled",
-                                              |      "receivedDate": "2020-01-25"
-                                              |    }
-                                              |  ]
-                                              |}
-                                              |""".stripMargin)
+    val responseBody: JsValue = Json.parse(
+      s"""
+         |{
+         |  "periodStartDate": "2018-04-06",
+         |  "periodEndDate": "2019-04-05",
+         |  "dueDate": "2020-01-31",
+         |  "status": "Fulfilled",
+         |  "receivedDate": "2020-01-25"
+         |}
+         |""".stripMargin)
 
     val desResponse: JsValue = Json.parse(
       """
@@ -182,6 +179,105 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
+
+        "more than one obligation is returned in the obligations array" in new Test {
+          override val desResponse: JsValue = Json.parse(
+            """
+              | {
+              |    "obligations": [
+              |        {
+              |            "identification": {
+              |                "incomeSourceType": "ITSA",
+              |                "referenceNumber": "AB123456A",
+              |                "referenceType": "NINO"
+              |            },
+              |            "obligationDetails": [
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-04-06",
+              |                    "inboundCorrespondenceToDate": "2019-04-05",
+              |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "ITSA"
+              |                }
+              |            ]
+              |        },
+              |        {
+              |            "identification": {
+              |                "incomeSourceType": "ITSA",
+              |                "referenceNumber": "AB123456B",
+              |                "referenceType": "NINO"
+              |            },
+              |            "obligationDetails": [
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-04-06",
+              |                    "inboundCorrespondenceToDate": "2019-04-05",
+              |                    "inboundCorrespondenceDateReceived": "2021-01-25",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "ITSA"
+              |                }
+              |            ]
+              |        }
+              |    ]
+              |}""".stripMargin)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.json shouldBe Json.toJson(DownstreamError)
+        }
+
+        "more than one obligation is returned in the obligationDetails array" in new Test {
+          override val desResponse: JsValue = Json.parse(
+            """
+              | {
+              |    "obligations": [
+              |        {
+              |            "identification": {
+              |                "incomeSourceType": "ITSA",
+              |                "referenceNumber": "AB123456A",
+              |                "referenceType": "NINO"
+              |            },
+              |            "obligationDetails": [
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-04-06",
+              |                    "inboundCorrespondenceToDate": "2019-04-05",
+              |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "ITSA"
+              |                },
+              |                {
+              |                    "status": "F",
+              |                    "inboundCorrespondenceFromDate": "2018-04-06",
+              |                    "inboundCorrespondenceToDate": "2019-04-05",
+              |                    "inboundCorrespondenceDateReceived": "2021-01-25",
+              |                    "inboundCorrespondenceDueDate": "2020-01-31",
+              |                    "periodKey": "ITSA"
+              |                }
+              |            ]
+              |        }
+              |    ]
+              |}""".stripMargin)
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            AuthStub.authorised()
+            MtdIdLookupStub.ninoFound(nino)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          }
+
+          val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
+          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.json shouldBe Json.toJson(DownstreamError)
+        }
 
         "no obligations found" when {
           "the backend returns a 200 but nothing returned is ITSA" in new Test {

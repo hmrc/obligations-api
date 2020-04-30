@@ -20,10 +20,12 @@ import support.UnitSpec
 import utils.Logging
 import v1.controllers.EndpointLogContext
 import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
+import v1.models.domain.status.{DesStatus, MtdStatus}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
@@ -173,6 +175,34 @@ class DesResponseMappingSupportSpec extends UnitSpec {
           Obligation(MtdBusiness.`self-employment`, "id123", Seq(ObligationDetail("", "", "", None, MtdStatus.Fulfilled)))
         ))
         mapping.filterEOPSValues(ResponseWrapper(correlationId, model), None, Some("beans")) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+    }
+  }
+  "filterCrystallisationValues" when {
+    "passed a valid DES model" should {
+      "return an MTD model" in {
+        val desModel = DesRetrieveCrystallisationObligationsResponse(Seq(
+          DesObligation("", "", "", DesStatus.F, None, "ITSA")
+        ))
+        val mtdModel = RetrieveCrystallisationObligationsResponse(
+          "", "", "", MtdStatus.Fulfilled, None
+        )
+        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desModel)) shouldBe Right(ResponseWrapper(correlationId, mtdModel))
+      }
+    }
+    "passed a DES model with nothing in the array" should {
+      "return a NO_OBLIGATIONS_FOUND error" in {
+        val desModel = DesRetrieveCrystallisationObligationsResponse(Seq())
+        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desModel)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+      }
+    }
+    "passed a DES model with more than one object in the array" should {
+      "return an INTERNAL_SERVER_ERROR error" in {
+        val desModel = DesRetrieveCrystallisationObligationsResponse(Seq(
+          DesObligation("", "", "", DesStatus.F, None, "ITSA"),
+          DesObligation("", "", "", DesStatus.O, None, "ITSA")
+        ))
+        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desModel)) shouldBe Left(ErrorWrapper(Some(correlationId), DownstreamError))
       }
     }
   }
