@@ -250,6 +250,55 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
           ))
         ))
       }
+      "passed obligations with multiple items in obligations where some of them are ITSA" in {
+        val desJson = Json.parse(
+          """
+            |{
+            |    "obligations": [
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "ITSA",
+            |                "referenceNumber": "XAIS12345678910",
+            |                "referenceType": "IncomeSourceId"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1920-01-31",
+            |                    "periodKey": "EOPS"
+            |                }
+            |            ]
+            |        },
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "ITSF",
+            |                "referenceNumber": "XAIS12345678911",
+            |                "referenceType": "IncomeSourceId"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "O",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1920-01-31",
+            |                    "periodKey": "EOPS"
+            |                }
+            |            ]
+            |        }
+            |    ]
+            |}
+            |""".stripMargin)
+
+        desJson.as[RetrieveEOPSObligationsResponse] shouldBe RetrieveEOPSObligationsResponse(Seq(
+          Obligation(MtdBusiness.`foreign-property`, "XAIS12345678911", Seq(
+            ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Open)
+          ))
+        ))
+      }
     }
   }
 

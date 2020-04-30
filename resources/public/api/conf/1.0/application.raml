@@ -1,5 +1,6 @@
 #%RAML 1.0
 ---
+
 title: Obligations (MTD)
 version: 1.0
 
@@ -52,5 +53,5 @@ uses:
       get: !include retrieve_period_obligations.raml
     /crystallisation:
       get: !include retrieve_crystallisation_obligations.raml
-    /end-of-period:
+    /end-of-period-statement:
       get: !include retrieve_eops_obligations.raml
