@@ -36,7 +36,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -67,7 +67,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -107,7 +107,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -124,7 +124,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -159,7 +159,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -184,7 +184,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -234,7 +234,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -262,7 +262,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -300,7 +300,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -317,7 +317,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -350,7 +350,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -375,7 +375,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -419,7 +419,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -447,7 +447,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -485,7 +485,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -502,7 +502,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -535,7 +535,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -560,7 +560,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -594,6 +594,74 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
         ))
       }
     }
+    "remove objects without MTDBIS referenceType" when {
+      "passed JSON with obligations that don't have MTDBIS referenceType" in {
+        val desJson = Json.parse(
+          """
+            |{
+            |    "obligations": [
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "ITSB",
+            |                "referenceNumber": "XAIS12345678910",
+            |                "referenceType": "OTHER"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1920-01-31",
+            |                    "periodKey": "#001"
+            |                },
+            |                {
+            |                    "status": "O",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1930-01-31",
+            |                    "periodKey": "#002"
+            |                }
+            |            ]
+            |        },
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "ITSF",
+            |                "referenceNumber": "XAIS12345678911",
+            |                "referenceType": "MTDBIS"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "O",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1920-01-31",
+            |                    "periodKey": "#001"
+            |                },
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "1930-01-31",
+            |                    "periodKey": "#002"
+            |                }
+            |            ]
+            |        }
+            |    ]
+            |}
+            |""".stripMargin)
+
+        desJson.as[RetrievePeriodObligationsResponse] shouldBe RetrievePeriodObligationsResponse(Seq(
+          Obligation(MtdBusiness.`foreign-property`, "XAIS12345678911", Seq(
+            ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Open),
+            ObligationDetail("2018-04-06", "2019-04-05", "1930-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)
+          ))
+        ))
+      }
+    }
     "remove objects with EOPS or ITSA periodKey within the same obligationDetails array" when {
       "passed obligations with only EOPS & ITSA periodKeys in the obligationDetails array and a single item in the obligations array" in {
         val desJson = Json.parse(
@@ -604,7 +672,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -641,7 +709,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -688,7 +756,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -713,7 +781,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -752,7 +820,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -785,7 +853,7 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {

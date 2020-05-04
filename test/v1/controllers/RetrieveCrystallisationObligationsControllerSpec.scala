@@ -28,7 +28,7 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations._
-import v1.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
+import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -64,15 +64,11 @@ class RetrieveCrystallisationObligationsControllerSpec
   private val correlationId = "X-123"
 
   private val responseBody = Json.parse("""{
-                                          |  "obligationDetails": [
-                                          |    {
-                                          |      "periodStartDate": "2018-04-06",
-                                          |      "periodEndDate": "2019-04-05",
-                                          |      "dueDate": "2020-01-31",
-                                          |      "status": "Fulfilled",
-                                          |      "receivedDate": "2020-01-25"
-                                          |    }
-                                          |  ]
+                                          |  "periodStartDate": "2018-04-06",
+                                          |  "periodEndDate": "2019-04-05",
+                                          |  "dueDate": "2020-01-31",
+                                          |  "status": "Fulfilled",
+                                          |  "receivedDate": "2020-01-25"
                                           |}
     """.stripMargin)
 
@@ -89,9 +85,11 @@ class RetrieveCrystallisationObligationsControllerSpec
 
         MockRetrieveCrystallisationObligationsService
           .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, RetrieveCrystallisationObligationsResponse(Seq(
-            Obligation("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25"))
-          ))))))
+          .returns(Future.successful(
+            Right(ResponseWrapper(correlationId, RetrieveCrystallisationObligationsResponse(
+              "2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25")
+            )))
+          ))
 
         val result: Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeRequest)
 

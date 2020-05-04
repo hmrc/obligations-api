@@ -16,38 +16,17 @@
 
 package v1.models.response.retrieveCrystallisationObligations
 
-import play.api.libs.json.{JsPath, Json, OWrites, Reads}
-import v1.models.domain.PeriodKey
-import v1.models.response.retrieveCrystallisationObligations.des.DesObligation
+import play.api.libs.json.{Json, OWrites}
+import v1.models.domain.status.MtdStatus
 
-case class RetrieveCrystallisationObligationsResponse(obligationDetails: Seq[Obligation])
+case class RetrieveCrystallisationObligationsResponse(
+                                                       periodStartDate: String,
+                                                       periodEndDate: String,
+                                                       dueDate: String,
+                                                       status: MtdStatus,
+                                                       receivedDate: Option[String]
+                                                     )
 
 object RetrieveCrystallisationObligationsResponse {
-
-  //bound case class to allow us to read from multiple lists of obligation details to merge together later
-  case class Detail(obligation: Seq[Obligation])
-
-  object Detail {
-    implicit val reads: Reads[Detail] = (JsPath \ "obligationDetails").read[Seq[DesObligation]]
-      .map(
-        _.collect {
-          case o if o.periodKey == PeriodKey.ITSA.toString =>
-            Obligation(
-              periodStartDate = o.inboundCorrespondenceFromDate,
-              periodEndDate = o.inboundCorrespondenceToDate,
-              dueDate = o.inboundCorrespondenceDueDate,
-              status = o.status.toMtd,
-              receivedDate = o.inboundCorrespondenceDateReceived
-            )
-        }
-      )
-      .map(Detail(_))
-  }
-
-  implicit val reads: Reads[RetrieveCrystallisationObligationsResponse] = {
-    (JsPath \ "obligations").read[Seq[Detail]]
-      .map(det => RetrieveCrystallisationObligationsResponse(det.flatMap(_.obligation))) // flatten nested arrays into one array
-  }
-
   implicit val writes: OWrites[RetrieveCrystallisationObligationsResponse] = Json.writes[RetrieveCrystallisationObligationsResponse]
 }

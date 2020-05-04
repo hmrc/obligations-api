@@ -21,387 +21,52 @@ import support.UnitSpec
 import v1.models.domain.status.MtdStatus
 
 class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
-  "reads" should {
-    "parse to a model" when {
-      "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25"))
-        ))
-      }
-      "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
-        ))
-      }
-      "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        },
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1921-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1921-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
-        ))
-      }
-      "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        },
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31", status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
-        ))
-      }
-    }
-  }
-
-  it should {
-    "filter out objects without ITSA periodKey" when {
-      "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq())
-      }
-      "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
-        ))
-      }
-      "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        },
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1921-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25"))
-        ))
-      }
-      "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        },
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[RetrieveCrystallisationObligationsResponse] shouldBe RetrieveCrystallisationObligationsResponse(Seq(
-          Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25")),
-          Obligation(periodStartDate = "2017-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Open, receivedDate = Some("2020-01-25"))
-        ))
-      }
-    }
-  }
-
   "writes" should {
-    "write a model to JSON" in {
-      Json.toJson(RetrieveCrystallisationObligationsResponse(Seq(
-        Obligation(periodStartDate = "2018-04-06", periodEndDate = "2019-04-05", dueDate = "1920-01-31",status = MtdStatus.Fulfilled, receivedDate = Some("2020-01-25"))
-      ))) shouldBe Json.parse(
-        """
-          |{
-          |  "obligationDetails": [
-          |    {
-          |      "periodStartDate": "2018-04-06",
-          |      "periodEndDate": "2019-04-05",
-          |      "dueDate": "1920-01-31",
-          |      "status": "Fulfilled",
-          |      "receivedDate": "2020-01-25"
-          |    }
-          |  ]
-          |}
-          |""".stripMargin)
+    "write to JSON" when {
+      "passed a model with status Fulfilled" in {
+        val json = Json.parse(
+          """
+            |{
+            |    "status": "Fulfilled",
+            |    "periodStartDate": "2018-04-06",
+            |    "periodEndDate": "2019-04-05",
+            |    "receivedDate": "2020-01-25",
+            |    "dueDate": "1920-01-31"
+            |}
+            |""".stripMargin)
+        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Fulfilled, Some("2020-01-25"))
+
+        Json.toJson(model) shouldBe json
+      }
+      "passed a model with status Open" in {
+        val json = Json.parse(
+          """
+            |{
+            |    "status": "Open",
+            |    "periodStartDate": "2018-04-06",
+            |    "periodEndDate": "2019-04-05",
+            |    "receivedDate": "2020-01-25",
+            |    "dueDate": "1920-01-31"
+            |}
+            |""".stripMargin)
+        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, Some("2020-01-25"))
+
+        Json.toJson(model) shouldBe json
+      }
+      "passed a model with no receivedDate" in {
+        val json = Json.parse(
+          """
+            |{
+            |    "status": "Open",
+            |    "periodStartDate": "2018-04-06",
+            |    "periodEndDate": "2019-04-05",
+            |    "dueDate": "1920-01-31"
+            |}
+            |""".stripMargin)
+        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, None)
+
+        Json.toJson(model) shouldBe json
+      }
     }
   }
 }
