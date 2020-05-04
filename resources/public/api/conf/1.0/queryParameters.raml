@@ -7,33 +7,33 @@ traits:
   typeOfBusiness:
     queryParameters:
       typeOfBusiness:
-        description: 'The type of business whose obligations are to be returned Must be one of: <ul><li>`self-employment`</li><li>`uk-property`</li><li>`foreign-property`</li></ul>. (If not specified) Default is to return obligations for all businesses, Must be provided if businessId is provided'
+        description: 'The type of business whose obligations are to be returned, must be one of: <ul><li>`self-employment`</li><li>`uk-property`</li><li>`foreign-property`</li></ul>. If the type is not specified the default is to return obligations for all businesses. The type must be provided if "incomeSourceId" is provided.'
         required: false
   businessId:
     queryParameters:
       businessId:
-        description: 'the unique identifier for the business whose obligations are to be returned. Must conform to the format ^X[a-zA-Z0-9]{1}IS[0-9]{12}$'
+        description: 'the unique identifier for the business whose obligations are to be returned. Must conform to the regular expression ^X[a-zA-Z0-9]{1}IS[0-9]{12}$'
         example: "XAIS123456789012"
         required: false
   fromDate:
     queryParameters:
       fromDate:
-        description: 'The start date of the range by which to filter obligations. Format YYYY-MM-DD. Mandatory if the “to” query parameter is supplied. If the “from” and “to” date parameters are not supplied, the date range will default to a year from today unless the status parameter is set to "Open".'
+        description: 'The start date of the range to filter obligations in the format YYYY-MM-DD. Mandatory if the “to” query parameter is supplied. If the “from” and “to” date parameters are not supplied, the date range will default to a year from today unless the status parameter is set to "Open".'
         example: "2018-04-06"
         required: false
   toDate:
     queryParameters:
       toDate:
-        description: 'The end date of the range by which to filter obligations, in the format YYYY-MM-DD. Mandatory if the “from” query parameter is supplied. If the “from” and “to” date parameters are not supplied, the date range will default to a year from today unless the status parameter is set to "Open"'
+        description: 'The end date of the range to filter obligations in the format YYYY-MM-DD. Mandatory if the “from” query parameter is supplied. If the “from” and “to” date parameters are not supplied, the date range will default to a year from today unless the status parameter is set to "Open"'
         example: "2019-04-05"
         required: false
   status:
     queryParameters:
       status:
-        description: 'Obligation status to return: Open or Fulfilled only. Omit status to retrieve all obligations.'
+        description: 'Obligation status to return: Open or Fulfilled only. To retrieve all obligations omit the status.'
         required: false
   taxYear:
     queryParameters:
       taxYear:
-        description: 'The tax year the data applies to. If not supplied will default to the last completed tax year, The earliest permitted tax year is 2017-18'
+        description: 'The tax year the data applies to. If not supplied it will default to the last completed tax year. The earliest permitted tax year is 2017-18'
         required: false
