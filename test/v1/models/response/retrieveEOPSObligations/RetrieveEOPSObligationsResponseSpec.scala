@@ -36,7 +36,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -67,7 +67,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -137,7 +137,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -154,7 +154,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -189,7 +189,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -214,7 +214,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -276,7 +276,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -313,7 +313,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -341,7 +341,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -379,7 +379,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -396,7 +396,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -429,7 +429,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -454,7 +454,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -498,7 +498,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -526,7 +526,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -564,7 +564,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -581,7 +581,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -614,7 +614,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -639,7 +639,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -683,7 +683,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -720,7 +720,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -767,7 +767,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -792,7 +792,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -831,7 +831,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSB",
             |                "referenceNumber": "XAIS12345678910",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {
@@ -864,7 +864,7 @@ class RetrieveEOPSObligationsResponseSpec extends UnitSpec with JsonErrorValidat
             |            "identification": {
             |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "XAIS12345678911",
-            |                "referenceType": "IncomeSourceId"
+            |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
             |                {

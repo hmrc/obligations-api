@@ -244,6 +244,23 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
+
+        "the connector call returns an empty Seq due to JSON reads filtering out all obligations" in new Test {
+          private val requestData = RetrieveEOPSObligationsRequest(
+            Nino(nino),
+            None,
+            None,
+            None,
+            None,
+            None)
+
+          private val responseModel = RetrieveEOPSObligationsResponse(Seq())
+
+          MockRetrieveEOPSObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+        }
       }
     }
     "connector call is unsuccessful" must {

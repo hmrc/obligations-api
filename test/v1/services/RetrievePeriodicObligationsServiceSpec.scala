@@ -244,6 +244,23 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
         }
+        "the connector returns an empty array due to JSON reads filtering out all obligations" in new Test {
+          private val requestData = RetrievePeriodicObligationsRequest(
+            Nino(validNino),
+            None,
+            None,
+            None,
+            None,
+            None
+          )
+
+          private val emptyResponseModel = RetrievePeriodObligationsResponse(Seq())
+
+          MockRetrievePeriodicObligationsConnector.doConnectorThing(requestData)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, emptyResponseModel))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+        }
       }
     }
     "connector call is unsuccessful" must {

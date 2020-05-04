@@ -18,6 +18,7 @@ package v1.models.response.retrieveCrystallisationObligations.des
 
 import play.api.libs.json.{Json, Reads}
 import v1.models.domain.status.DesStatus
+import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 case class DesObligation(
                            inboundCorrespondenceFromDate: String,
@@ -26,7 +27,15 @@ case class DesObligation(
                            status: DesStatus,
                            inboundCorrespondenceDateReceived: Option[String],
                            periodKey: String
-                         )
+                         ) {
+  def toMtd: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
+    periodStartDate = inboundCorrespondenceFromDate,
+    periodEndDate = inboundCorrespondenceToDate,
+    dueDate = inboundCorrespondenceDueDate,
+    status = status.toMtd,
+    receivedDate = inboundCorrespondenceDateReceived
+  )
+}
 
 object DesObligation {
   implicit val reads: Reads[DesObligation] = Json.reads[DesObligation]

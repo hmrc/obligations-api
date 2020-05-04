@@ -81,7 +81,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -132,7 +132,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -198,7 +198,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -215,7 +215,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -288,7 +288,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
@@ -313,7 +313,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
         |                "referenceNumber": "XAIS123456789012",
-        |                "referenceType": "IncomeSourceId"
+        |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
         |                {
