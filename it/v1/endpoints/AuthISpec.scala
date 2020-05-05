@@ -47,7 +47,7 @@ class AuthISpec extends IntegrationBaseSpec {
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA?from=2019-04-06&to=2020-04-05"
 
     val desResponse: JsValue = Json.parse(
       """
@@ -69,7 +69,7 @@ class AuthISpec extends IntegrationBaseSpec {
           MtdIdLookupStub.internalServerError(nino)
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
@@ -81,10 +81,10 @@ class AuthISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.POST, desUri, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponse)
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.CREATED
       }
     }
@@ -100,7 +100,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedNotLoggedIn()
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.FORBIDDEN
       }
     }
@@ -116,7 +116,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedOther()
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.FORBIDDEN
       }
     }
