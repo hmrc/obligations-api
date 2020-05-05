@@ -1,6 +1,3 @@
-POST        /:nino/:taxYear/sampleEndpoint        v1.controllers.SampleController.handleRequest(nino: String, taxYear: String)
-
-
 GET         /:nino/crystallisation                v1.controllers.RetrieveCrystallisationObligationsController.handleRequest(nino: String, taxYear: Option[String])
 GET         /:nino/income-and-expenditure         v1.controllers.RetrievePeriodicObligationsController.handleRequest(nino: String, typeOfBusiness: Option[String], businessId: Option[String], fromDate: Option[String], toDate: Option[String], status: Option[String])
 GET         /:nino/end-of-period-statement        v1.controllers.RetrieveEOPSObligationsController.handleRequest(nino: String, typeOfBusiness: Option[String], businessId: Option[String], fromDate: Option[String], toDate: Option[String], status: Option[String])

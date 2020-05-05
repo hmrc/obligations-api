@@ -22,43 +22,50 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.request.DesTaxYear
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
     val nino          = "AA123456A"
-    val taxYear       = "2017-18"
-    val data        = "someData"
-    val correlationId = "X-123"
-
-    val requestJson: String =
-      s"""
-         |{
-         |"data": "$data"
-         |}
-    """.stripMargin
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
-      buildRequest(s"/$nino/$taxYear/sampleEndpoint")
+      buildRequest(s"/$nino/crystallisation")
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
-    def desUri: String = s"/income-tax/nino/$nino/taxYear/${DesTaxYear.fromMtd(taxYear)}/someService"
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
 
     val desResponse: JsValue = Json.parse(
       """
         | {
-        | "responseData" : "someResponse"
-        | }
+        |    "obligations": [
+        |        {
+        |            "identification": {
+        |                "incomeSourceType": "ITSA",
+        |                "referenceNumber": "AB123456A",
+        |                "referenceType": "NINO"
+        |            },
+        |            "obligationDetails": [
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2018-04-06",
+        |                    "inboundCorrespondenceToDate": "2019-04-05",
+        |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+        |                    "inboundCorrespondenceDueDate": "2020-01-31",
+        |                    "periodKey": "ITSA"
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}
     """.stripMargin)
   }
 
-  "Calling the sample endpoint" when {
+  "Calling the crystallisation endpoint" when {
 
     "the NINO cannot be converted to a MTD ID" should {
 
@@ -70,23 +77,23 @@ class AuthISpec extends IntegrationBaseSpec {
           MtdIdLookupStub.internalServerError(nino)
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.INTERNAL_SERVER_ERROR
       }
     }
 
     "an MTD ID is successfully retrieve from the NINO and the user is authorised" should {
 
-      "return 201" in new Test {
+      "return 200" in new Test {
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.POST, desUri, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> "2019-04-06", "to" -> "2020-04-05"), Status.OK, desResponse)
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
-        response.status shouldBe Status.CREATED
+        val response: WSResponse = await(request().get())
+        response.status shouldBe Status.OK
       }
     }
 
@@ -101,7 +108,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedNotLoggedIn()
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.FORBIDDEN
       }
     }
@@ -117,7 +124,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuthStub.unauthorisedOther()
         }
 
-        val response: WSResponse = await(request().post(Json.parse(requestJson)))
+        val response: WSResponse = await(request().get())
         response.status shouldBe Status.FORBIDDEN
       }
     }
