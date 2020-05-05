@@ -47,13 +47,31 @@ class AuthISpec extends IntegrationBaseSpec {
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA?from=2019-04-06&to=2020-04-05"
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
 
     val desResponse: JsValue = Json.parse(
       """
         | {
-        | "responseData" : "someResponse"
-        | }
+        |    "obligations": [
+        |        {
+        |            "identification": {
+        |                "incomeSourceType": "ITSA",
+        |                "referenceNumber": "AB123456A",
+        |                "referenceType": "NINO"
+        |            },
+        |            "obligationDetails": [
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2018-04-06",
+        |                    "inboundCorrespondenceToDate": "2019-04-05",
+        |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+        |                    "inboundCorrespondenceDueDate": "2020-01-31",
+        |                    "periodKey": "ITSA"
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}
     """.stripMargin)
   }
 
@@ -76,16 +94,16 @@ class AuthISpec extends IntegrationBaseSpec {
 
     "an MTD ID is successfully retrieve from the NINO and the user is authorised" should {
 
-      "return 201" in new Test {
+      "return 200" in new Test {
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> "2019-04-06", "to" -> "2020-04-05"), Status.OK, desResponse)
         }
 
         val response: WSResponse = await(request().get())
-        response.status shouldBe Status.CREATED
+        response.status shouldBe Status.OK
       }
     }
 
