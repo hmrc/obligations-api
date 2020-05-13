@@ -40,7 +40,7 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
     |   "api":{
     |      "name":"Obligations (MTD)",
     |      "description":"An API for providing obligations data",
-    |      "context":"mtd/template",
+    |      "context":"obligations",
     |      "categories":[
     |         "INCOME_TAX_MTD"
     |      ],
