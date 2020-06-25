@@ -7,12 +7,12 @@ traits:
   typeOfBusiness:
     queryParameters:
       typeOfBusiness:
-        description: 'The type of business whose obligations are to be returned, must be one of: <ul><li>`self-employment`</li><li>`uk-property`</li><li>`foreign-property`</li></ul>. If the type is not specified the default is to return obligations for all businesses. The type must be provided if "incomeSourceId" is provided.'
+        description: 'The type of business whose obligations are to be returned, must be one of: <ul><li>`self-employment`</li><li>`uk-property`</li><li>`foreign-property`</li></ul>If the type is not specified the default is to return obligations for all businesses. The type must be provided if "incomeSourceId" is provided.'
         required: false
   businessId:
     queryParameters:
       businessId:
-        description: 'the unique identifier for the business whose obligations are to be returned. Must conform to the regular expression ^X[a-zA-Z0-9]{1}IS[0-9]{12}$'
+        description: 'The unique identifier for the business whose obligations are to be returned. Must conform to the regular expression ^X[a-zA-Z0-9]{1}IS[0-9]{12}$'
         example: "XAIS123456789012"
         required: false
   fromDate:
