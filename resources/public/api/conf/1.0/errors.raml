@@ -24,7 +24,7 @@ traits:
             type: types.errorResponse
             examples:
               notFoundIncomeSource:
-                description: The remote endpoint has indicated that the given income source could not be found
+                description: The remote endpoint has indicated that the given income source could not be found.
                 value:
                   code: MATCHING_RESOURCE_NOT_FOUND
   notFoundNino:
@@ -35,7 +35,7 @@ traits:
             type: types.errorResponse
             examples:
               notFoundNino:
-                description: The remote endpoint has indicated that no data can be found for the given NINO
+                description: The remote endpoint has indicated that no data can be found for the given NINO.
                 value:
                   code: MATCHING_RESOURCE_NOT_FOUND
   notFoundLossId:
@@ -46,7 +46,7 @@ traits:
             type: types.errorResponse
             examples:
               notFoundLossId:
-                description: The remote endpoint has indicated that no data can be found for the given loss ID
+                description: The remote endpoint has indicated that no data can be found for the given loss ID.
                 value:
                   code: MATCHING_RESOURCE_NOT_FOUND
   notFoundClaimId:
@@ -57,7 +57,7 @@ traits:
             type: types.errorResponse
             examples:
               notFoundClaimId:
-                description: The remote endpoint has indicated that no data can be found for the given claim ID
+                description: The remote endpoint has indicated that no data can be found for the given claim ID.
                 value:
                   code: MATCHING_RESOURCE_NOT_FOUND
   clientOrAgentNotAuthorised:
@@ -79,7 +79,7 @@ traits:
             type: types.errorResponse
             examples:
               formatNino:
-                description: The format of the supplied NINO field is not valid
+                description: The format of the supplied NINO field is not valid.
                 value:
                   code: FORMAT_NINO
   formatTaxYear:
@@ -90,7 +90,7 @@ traits:
             type: types.errorResponse
             examples:
               formatTaxYear:
-                description: The format of the supplied tax year field is not valid
+                description: The format of the supplied tax year field is not valid.
                 value:
                   code: FORMAT_TAX_YEAR
   incorrectOrEmptyBody:
@@ -101,7 +101,7 @@ traits:
             type: types.errorResponse
             examples:
               incorrectOrEmptyBody:
-                description: An empty or non-matching body was submitted
+                description: An empty or non-matching body was submitted.
                 value:
                   code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
   ruleTaxYearNotSupported:
@@ -134,7 +134,7 @@ traits:
             type: types.errorResponse
             examples:
               ruleTaxYearTooLong:
-                description: The tax year provided is more than one year in length
+                description: The tax year provided is more than one year in length.
                 value:
                   code: RULE_TAX_YEAR_TOO_LONG
   ruleTaxYearNotEnded:
@@ -189,7 +189,7 @@ traits:
             type: types.errorResponse
             examples:
               ruleSelfEmploymentId:
-                description: A self-employment ID can only be supplied for a self-employment business type
+                description: A self-employment ID can only be supplied for a self-employment business type.
                 value:
                   code: RULE_SELF_EMPLOYMENT_ID
   formatLossId:
