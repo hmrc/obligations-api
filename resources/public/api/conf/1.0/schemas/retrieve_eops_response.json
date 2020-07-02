@@ -11,7 +11,7 @@
         "type": "object",
         "properties": {
           "typeOfBusiness": {
-            "description": "The type of business whose obligations are to be returned, must be one of:\n\n\"self-employment\"\n\n\"uk-property\"\n\n\"foreign-property\"\n\nIf the type is not specified the default is to return obligations for all businesses.\n\nThe type must be provided if businessId is provided.",
+            "description": "Identifies the type of business income source. One of \"self-employment\", \"uk-property\" or \"foreign-property\".",
             "type": "string",
             "example": "self-employment"
           },
