@@ -57,7 +57,8 @@
                 "periodEndDate",
                 "dueDate",
                 "status"
-              ]
+              ],
+              "additionalProperties": false
             }
           }
         },
@@ -65,11 +66,13 @@
           "typeOfBusiness",
           "businessId",
           "obligationDetails"
-        ]
+        ],
+        "additionalProperties": false
       }
     }
   },
   "required": [
     "obligations"
-  ]
+  ],
+  "additionalProperties": false
 }
