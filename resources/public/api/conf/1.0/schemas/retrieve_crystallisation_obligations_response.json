@@ -35,5 +35,6 @@
     "periodEndDate",
     "dueDate",
     "status"
-  ]
+  ],
+  "additionalProperties": false
 }
