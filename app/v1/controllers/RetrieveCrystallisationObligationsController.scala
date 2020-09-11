@@ -21,9 +21,10 @@ import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
-import v1.hateoas.HateoasFactory
+import v1.models.audit.{AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail}
 import v1.models.errors._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
 import v1.services.{RetrieveCrystallisationObligationsService, _}
@@ -35,7 +36,6 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
                                                              val lookupService: MtdIdLookupService,
                                                              requestParser: RetrieveCrystallisationObligationsRequestParser,
                                                              service: RetrieveCrystallisationObligationsService,
-                                                             hateoasFactory: HateoasFactory,
                                                              auditService: AuditService,
                                                              cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging {
@@ -55,7 +55,12 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          Ok(Json.toJson(serviceResponse.responseData))
+          val response = Json.toJson(serviceResponse.responseData)
+
+          auditSubmission(RetrieveCrystallisationObligationsAuditDetail(request.userDetails, nino, taxYear,
+            serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
+
+          Ok(response)
             .withApiHeaders(serviceResponse.correlationId)
         }
 
@@ -73,4 +78,12 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
       case DownstreamError                                                     => InternalServerError(Json.toJson(errorWrapper))
     }
   }
+
+  private def auditSubmission(details: RetrieveCrystallisationObligationsAuditDetail)
+                             (implicit hc: HeaderCarrier,
+                              ec: ExecutionContext) = {
+    val event = AuditEvent("retrieveCrystallisationObligations", "retrieve-crystallisation-obligations", details)
+    auditService.auditEvent(event)
+  }
+
 }

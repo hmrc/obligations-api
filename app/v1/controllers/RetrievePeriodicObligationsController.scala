@@ -21,9 +21,10 @@ import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
-import v1.hateoas.HateoasFactory
+import v1.models.audit.{AuditEvent, AuditResponse, RetrievePeriodicAuditObligationsDetail}
 import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, RetrievePeriodicObligationsService}
@@ -35,7 +36,6 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
                                                       val lookupService: MtdIdLookupService,
                                                       requestParser: RetrievePeriodicObligationsRequestParser,
                                                       service: RetrievePeriodicObligationsService,
-                                                      hateoasFactory: HateoasFactory,
                                                       auditService: AuditService,
                                                       cc: ControllerComponents)(implicit ec: ExecutionContext)
   extends AuthorisedController(cc) with BaseController with Logging {
@@ -60,7 +60,12 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
               s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          Ok(Json.toJson(serviceResponse.responseData))
+          val response = Json.toJson(serviceResponse.responseData)
+
+          auditSubmission(RetrievePeriodicAuditObligationsDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
+            serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
+
+          Ok(response)
             .withApiHeaders(serviceResponse.correlationId)
         }
 
@@ -80,6 +85,13 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
       case NotFoundError | NoObligationsFoundError                                                  => NotFound(Json.toJson(errorWrapper))
       case DownstreamError                                                                          => InternalServerError(Json.toJson(errorWrapper))
     }
+  }
+
+  private def auditSubmission(details: RetrievePeriodicAuditObligationsDetail)
+                             (implicit hc: HeaderCarrier,
+                              ec: ExecutionContext) = {
+    val event = AuditEvent("retrievePeriodicObligations", "retrieve-periodic-obligations", details)
+    auditService.auditEvent(event)
   }
 
 }
