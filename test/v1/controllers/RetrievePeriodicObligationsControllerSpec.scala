@@ -51,7 +51,6 @@ class RetrievePeriodicObligationsControllerSpec
       lookupService = mockMtdIdLookupService,
       requestParser = mockRequestParser,
       service = mockService,
-      hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
       cc = cc
     )
