@@ -35,7 +35,6 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
     val fromDate = "2018-04-06"
     val toDate = "2019-04-05"
     val status = "Open"
-    val correlationId = "X-123"
 
     def setupStubs(): StubMapping
 

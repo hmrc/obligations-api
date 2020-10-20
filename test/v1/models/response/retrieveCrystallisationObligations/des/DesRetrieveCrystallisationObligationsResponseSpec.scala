@@ -41,7 +41,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -49,7 +49,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"), "ITSA")
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"))
         ))
       }
       "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
@@ -70,7 +70,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -78,7 +78,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -86,8 +86,8 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"), "ITSA"),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", status = DesStatus.O, Some("2020-01-25"), "ITSA")
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
+          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", status = DesStatus.O, Some("2020-01-25"))
         ))
       }
       "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
@@ -108,7 +108,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        },
@@ -125,7 +125,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1921-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -133,8 +133,8 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"), "ITSA"),
-          DesObligation("2018-04-06", "2019-04-05", "1921-01-31", status = DesStatus.O, Some("2020-01-25"), "ITSA")
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
+          DesObligation("2018-04-06", "2019-04-05", "1921-01-31", status = DesStatus.O, Some("2020-01-25"))
         ))
       }
       "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
@@ -155,7 +155,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -163,7 +163,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        },
@@ -180,7 +180,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                },
             |                {
             |                    "status": "O",
@@ -188,7 +188,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -196,17 +196,17 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"), "ITSA"),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA"),
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"), "ITSA"),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA")
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
+          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25")),
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
+          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"))
         ))
       }
     }
   }
 
   it should {
-    "filter out objects without ITSA periodKey" when {
+    "filter out objects without ITSA incomeSourceType" when {
       "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
         val desJson = Json.parse(
           """
@@ -214,7 +214,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    "obligations": [
             |        {
             |            "identification": {
-            |                "incomeSourceType": "ITSA",
+            |                "incomeSourceType": "OTHER INCOME SOURCE TYPE",
             |                "referenceNumber": "AB123456A",
             |                "referenceType": "NINO"
             |            },
@@ -225,7 +225,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -234,43 +234,6 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq())
       }
-      "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA")
-        ))
-      }
       "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
         val desJson = Json.parse(
           """
@@ -289,13 +252,13 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        },
             |        {
             |            "identification": {
-            |                "incomeSourceType": "ITSA",
+            |                "incomeSourceType": "OTHER INCOME SOURCE TYPE",
             |                "referenceNumber": "AB123456A",
             |                "referenceType": "NINO"
             |            },
@@ -306,7 +269,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |                    "inboundCorrespondenceToDate": "2019-04-05",
             |                    "inboundCorrespondenceDateReceived": "2020-01-25",
             |                    "inboundCorrespondenceDueDate": "1921-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
+            |                    "periodKey": "#001"
             |                }
             |            ]
             |        }
@@ -314,71 +277,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |}
             |""".stripMargin)
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"), "ITSA")
-        ))
-      }
-      "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
-        val desJson = Json.parse(
-          """
-            |{
-            |    "obligations": [
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        },
-            |        {
-            |            "identification": {
-            |                "incomeSourceType": "ITSA",
-            |                "referenceNumber": "AB123456A",
-            |                "referenceType": "NINO"
-            |            },
-            |            "obligationDetails": [
-            |                {
-            |                    "status": "F",
-            |                    "inboundCorrespondenceFromDate": "2018-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "OTHER PERIOD KEY"
-            |                },
-            |                {
-            |                    "status": "O",
-            |                    "inboundCorrespondenceFromDate": "2017-04-06",
-            |                    "inboundCorrespondenceToDate": "2019-04-05",
-            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-            |                    "inboundCorrespondenceDueDate": "1920-01-31",
-            |                    "periodKey": "ITSA"
-            |                }
-            |            ]
-            |        }
-            |    ]
-            |}
-            |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"), "ITSA"),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA"),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA")
+          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"))
         ))
       }
     }

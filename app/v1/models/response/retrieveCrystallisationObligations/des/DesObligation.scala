@@ -25,8 +25,7 @@ case class DesObligation(
                            inboundCorrespondenceToDate: String,
                            inboundCorrespondenceDueDate: String,
                            status: DesStatus,
-                           inboundCorrespondenceDateReceived: Option[String],
-                           periodKey: String
+                           inboundCorrespondenceDateReceived: Option[String]
                          ) {
   def toMtd: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
     periodStartDate = inboundCorrespondenceFromDate,

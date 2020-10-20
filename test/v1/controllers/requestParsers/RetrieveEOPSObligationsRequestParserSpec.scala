@@ -70,6 +70,10 @@ class RetrieveEOPSObligationsRequestParserSpec extends UnitSpec{
         MockRetrieveEOPSObligationsValidator.validate(todaysDatesData).returns(Nil)
         parser.parseRequest(todaysDatesData) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
       }
+      "there are no dates input and the status is empty" in new Test {
+        MockRetrieveEOPSObligationsValidator.validate(todaysDatesData.copy(status = None)).returns(Nil)
+        parser.parseRequest(todaysDatesData.copy(status = None)) shouldBe Right(RetrieveEOPSObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), None))
+      }
     }
   }
 }

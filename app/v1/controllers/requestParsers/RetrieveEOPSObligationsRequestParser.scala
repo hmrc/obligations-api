@@ -31,7 +31,7 @@ class RetrieveEOPSObligationsRequestParser @Inject()(val validator: RetrieveEOPS
   override protected def requestFor(data: RetrieveEOPSObligationsRawData): RetrieveEOPSObligationsRequest = {
 
     val (fromDate, toDate): (Option[String], Option[String]) = (data.fromDate, data.toDate, data.status) match {
-      case (None, None, Some("Fulfilled")) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
+      case (None, None, Some("Fulfilled")) | (None, None, None) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
       case _ => (data.fromDate, data.toDate)
     }
 

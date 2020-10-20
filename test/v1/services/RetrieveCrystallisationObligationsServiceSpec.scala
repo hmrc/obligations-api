@@ -54,7 +54,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
     "service call successsful" must {
       "return mapped result" in new Test {
         val desResponseModel = DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("earlier", "then", "before now", DesStatus.F, Some("now"), "ITSA")
+          DesObligation("earlier", "then", "before now", DesStatus.F, Some("now"))
         ))
         val responseModel = RetrieveCrystallisationObligationsResponse("earlier", "then", "before now", MtdStatus.Fulfilled, Some("now"))
 

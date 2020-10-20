@@ -36,7 +36,7 @@ class DesObligationSpec extends UnitSpec {
             |    "periodKey": "ITSA"
             |}
             |""".stripMargin)
-        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"), "ITSA")
+        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"))
 
         json.as[DesObligation] shouldBe model
       }
@@ -52,7 +52,7 @@ class DesObligationSpec extends UnitSpec {
             |    "periodKey": "ITSA"
             |}
             |""".stripMargin)
-        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"), "ITSA")
+        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"))
 
         json.as[DesObligation] shouldBe model
       }
@@ -67,7 +67,7 @@ class DesObligationSpec extends UnitSpec {
             |    "periodKey": "ITSA"
             |}
             |""".stripMargin)
-        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None, "ITSA")
+        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None)
 
         json.as[DesObligation] shouldBe model
       }
@@ -76,7 +76,7 @@ class DesObligationSpec extends UnitSpec {
   "toMtd" should {
     "return a RetrieveCrystallisationObligationsResponse model" when {
       "passed a valid model" in {
-        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None, "ITSA")
+        val model = DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.O, None)
 
         model.toMtd shouldBe RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, None)
       }
