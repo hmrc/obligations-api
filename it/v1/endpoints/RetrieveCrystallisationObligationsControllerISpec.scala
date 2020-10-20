@@ -78,7 +78,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         |                    "inboundCorrespondenceToDate": "2019-04-05",
         |                    "inboundCorrespondenceDateReceived": "2020-01-25",
         |                    "inboundCorrespondenceDueDate": "2020-01-31",
-        |                    "periodKey": "ITSA"
+        |                    "periodKey": "#001"
         |                }
         |            ]
         |        }
@@ -100,6 +100,62 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     "return a 200 status code" when {
 
       "any valid request is made" in new Test {
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+        }
+
+        val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
+        response.status shouldBe Status.OK
+        response.json shouldBe responseBody
+        response.header("Content-Type") shouldBe Some("application/json")
+      }
+
+      "DES returns more than one obligation but only one has incomeSourceId ITSA" in new Test {
+        override val desResponse: JsValue = Json.parse(
+          """
+            | {
+            |    "obligations": [
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "SOMETHING ELSE",
+            |                "referenceNumber": "AB123456A",
+            |                "referenceType": "NINO"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "2020-01-31",
+            |                    "periodKey": "#001"
+            |                }
+            |            ]
+            |        },
+            |        {
+            |            "identification": {
+            |                "incomeSourceType": "ITSA",
+            |                "referenceNumber": "AB123456A",
+            |                "referenceType": "NINO"
+            |            },
+            |            "obligationDetails": [
+            |                {
+            |                    "status": "F",
+            |                    "inboundCorrespondenceFromDate": "2018-04-06",
+            |                    "inboundCorrespondenceToDate": "2019-04-05",
+            |                    "inboundCorrespondenceDateReceived": "2020-01-25",
+            |                    "inboundCorrespondenceDueDate": "2020-01-31",
+            |                    "periodKey": "#002"
+            |                }
+            |            ]
+            |        }
+            |    ]
+            |}
+    """.stripMargin)
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
@@ -198,7 +254,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |                    "inboundCorrespondenceToDate": "2019-04-05",
               |                    "inboundCorrespondenceDateReceived": "2020-01-25",
               |                    "inboundCorrespondenceDueDate": "2020-01-31",
-              |                    "periodKey": "ITSA"
+              |                    "periodKey": "#001"
               |                }
               |            ]
               |        },
@@ -215,7 +271,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |                    "inboundCorrespondenceToDate": "2019-04-05",
               |                    "inboundCorrespondenceDateReceived": "2021-01-25",
               |                    "inboundCorrespondenceDueDate": "2020-01-31",
-              |                    "periodKey": "ITSA"
+              |                    "periodKey": "#002"
               |                }
               |            ]
               |        }
@@ -252,7 +308,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |                    "inboundCorrespondenceToDate": "2019-04-05",
               |                    "inboundCorrespondenceDateReceived": "2020-01-25",
               |                    "inboundCorrespondenceDueDate": "2020-01-31",
-              |                    "periodKey": "ITSA"
+              |                    "periodKey": "#001"
               |                },
               |                {
               |                    "status": "F",
@@ -260,7 +316,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |                    "inboundCorrespondenceToDate": "2019-04-05",
               |                    "inboundCorrespondenceDateReceived": "2021-01-25",
               |                    "inboundCorrespondenceDueDate": "2020-01-31",
-              |                    "periodKey": "ITSA"
+              |                    "periodKey": "#002"
               |                }
               |            ]
               |        }
@@ -299,7 +355,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                 |                    "inboundCorrespondenceToDate": "2019-04-05",
                 |                    "inboundCorrespondenceDateReceived": "2020-01-25",
                 |                    "inboundCorrespondenceDueDate": "2020-01-31",
-                |                    "periodKey": "EOPS"
+                |                    "periodKey": "#001"
                 |                }
                 |            ]
                 |        }
