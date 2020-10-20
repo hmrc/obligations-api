@@ -30,8 +30,6 @@ class RetrievePeriodicObligationsRequestParser @Inject()(val validator: Retrieve
 
   override protected def requestFor(data: RetrievePeriodicObligationsRawData): RetrievePeriodicObligationsRequest = {
 
-    println(scala.Console.YELLOW + data + scala.Console.RESET)
-
     val (fromDate, toDate): (Option[String], Option[String]) = (data.fromDate, data.toDate, data.status) match {
       case (None, None, Some("Fulfilled")) | (None, None, None) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
       case _ => (data.fromDate, data.toDate)
