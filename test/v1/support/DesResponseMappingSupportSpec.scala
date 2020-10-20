@@ -182,7 +182,7 @@ class DesResponseMappingSupportSpec extends UnitSpec {
     "passed a valid DES model" should {
       "return an MTD model" in {
         val desModel = DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("", "", "", DesStatus.F, None, "ITSA")
+          DesObligation("", "", "", DesStatus.F, None)
         ))
         val mtdModel = RetrieveCrystallisationObligationsResponse(
           "", "", "", MtdStatus.Fulfilled, None
@@ -199,8 +199,8 @@ class DesResponseMappingSupportSpec extends UnitSpec {
     "passed a DES model with more than one object in the array" should {
       "return an INTERNAL_SERVER_ERROR error" in {
         val desModel = DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("", "", "", DesStatus.F, None, "ITSA"),
-          DesObligation("", "", "", DesStatus.O, None, "ITSA")
+          DesObligation("", "", "", DesStatus.F, None),
+          DesObligation("", "", "", DesStatus.O, None)
         ))
         mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desModel)) shouldBe Left(ErrorWrapper(Some(correlationId), DownstreamError))
       }

@@ -48,7 +48,7 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
     "return a result" when {
       "the downstream call is successful and a source is passed in" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, DesRetrieveCrystallisationObligationsResponse(
-          Seq(DesObligation(fromDate, toDate, toDate, F, Some(toDate), "ITSA"))))
+          Seq(DesObligation(fromDate, toDate, toDate, F, Some(toDate)))))
         )
         MockedHttpClient.
           get(
