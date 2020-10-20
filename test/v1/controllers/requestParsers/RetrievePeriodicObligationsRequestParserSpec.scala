@@ -67,7 +67,15 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
     "convert fromDate to today and toDate to 366 days ahead" when {
       "there are no dates input and the status is Fulfilled" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(todaysDatesData).returns(Nil)
-        parser.parseRequest(todaysDatesData) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+        parser.parseRequest(todaysDatesData) shouldBe {
+          Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+        }
+      }
+      "there are no dates input and the status is empty" in new Test {
+        MockRetrievePeriodicObligationsValidator.validate(todaysDatesData.copy(status = None)).returns(Nil)
+        parser.parseRequest(todaysDatesData.copy(status = None)) shouldBe {
+          Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), None))
+        }
       }
     }
   }
