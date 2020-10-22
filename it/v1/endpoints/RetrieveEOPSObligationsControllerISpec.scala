@@ -31,7 +31,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val typeOfBusiness = "self-employment"
-    val businessId = "XAIS123456789012"
+    val businessId = "XAIS12345678901"
     val fromDate = "2018-04-06"
     val toDate = "2019-04-05"
     val status = "Open"
@@ -61,7 +61,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -122,7 +122,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
          |  "obligations": [
          |     {
          |       "typeOfBusiness": "self-employment",
-         |       "businessId": "XAIS123456789012",
+         |       "businessId": "XAIS12345678901",
          |       "obligationDetails": [
          |         {
          |           "periodStartDate": "2018-01-01",
@@ -201,7 +201,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |        {
             |            "identification": {
             |                "incomeSourceType": "ITSB",
-            |                "referenceNumber": "XAIS123456789012",
+            |                "referenceNumber": "XAIS12345678901",
             |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
@@ -256,7 +256,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |        {
             |            "identification": {
             |                "incomeSourceType": "ITSF",
-            |                "referenceNumber": "XAIS123456789012",
+            |                "referenceNumber": "XAIS12345678901",
             |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
@@ -339,7 +339,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             |        {
             |            "identification": {
             |                "incomeSourceType": "ITSB",
-            |                "referenceNumber": "XAIS123456789012",
+            |                "referenceNumber": "XAIS12345678901",
             |                "referenceType": "MTDBIS"
             |            },
             |            "obligationDetails": [
@@ -498,18 +498,18 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = Seq(
-          ("BEANS", Some("self-employment"), Some("XAIS123456789012"), Some("2018-04-06"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, NinoFormatError),
-          ("AA123456A", Some("slef-empolymnet"), Some("XAIS123456789012"), Some("2018-04-06"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, TypeOfBusinessFormatError),
+          ("BEANS", Some("self-employment"), Some("XAIS12345678901"), Some("2018-04-06"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, NinoFormatError),
+          ("AA123456A", Some("slef-empolymnet"), Some("XAIS12345678901"), Some("2018-04-06"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, TypeOfBusinessFormatError),
           ("AA123456A", Some("self-employment"), Some("beans"), Some("2018-04-06"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, BusinessIdFormatError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("bad-date"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, FromDateFormatError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2019-04-05"), Some("bad-date"), Some("Open"), Status.BAD_REQUEST, ToDateFormatError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2018-04-06"), Some("2019-04-05"), Some("Somewhat-Open"), Status.BAD_REQUEST, StatusFormatError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2019-04-05"), None, Some("Open"), Status.BAD_REQUEST, MissingToDateError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), None, Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, MissingFromDateError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, ToDateBeforeFromDateError),
-          ("AA123456A", None, Some("XAIS123456789012"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, MissingTypeOfBusinessError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2019-04-05"), Some("2021-04-05"), Some("Open"), Status.BAD_REQUEST, RuleDateRangeInvalidError),
-          ("AA123456A", Some("self-employment"), Some("XAIS123456789012"), Some("2016-04-05"), Some("2017-04-05"), Some("Open"), Status.BAD_REQUEST, RuleFromDateNotSupportedError)
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("bad-date"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, FromDateFormatError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), Some("bad-date"), Some("Open"), Status.BAD_REQUEST, ToDateFormatError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2018-04-06"), Some("2019-04-05"), Some("Somewhat-Open"), Status.BAD_REQUEST, StatusFormatError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), None, Some("Open"), Status.BAD_REQUEST, MissingToDateError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), None, Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, MissingFromDateError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, ToDateBeforeFromDateError),
+          ("AA123456A", None, Some("XAIS12345678901"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), Status.BAD_REQUEST, MissingTypeOfBusinessError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), Some("2021-04-05"), Some("Open"), Status.BAD_REQUEST, RuleDateRangeInvalidError),
+          ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2016-04-05"), Some("2017-04-05"), Some("Open"), Status.BAD_REQUEST, RuleFromDateNotSupportedError)
         )
 
 
@@ -565,7 +565,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
               |        {
               |            "identification": {
               |                "incomeSourceType": "ITSB",
-              |                "referenceNumber": "XAIS123456789012",
+              |                "referenceNumber": "XAIS12345678901",
               |                "referenceType": "OTHER"
               |            },
               |            "obligationDetails": [
@@ -640,7 +640,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
               |        {
               |            "identification": {
               |                "incomeSourceType": "ITSB",
-              |                "referenceNumber": "XAIS123456789012",
+              |                "referenceNumber": "XAIS12345678901",
               |                "referenceType": "MTDBIS"
               |            },
               |            "obligationDetails": [
@@ -702,7 +702,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             DesStub.onSuccess(DesStub.GET, desUri, Status.OK, desResponse)
           }
 
-          override val businessId = "XAIS123456789013"
+          override val businessId = "XAIS12345678903"
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> typeOfBusiness,

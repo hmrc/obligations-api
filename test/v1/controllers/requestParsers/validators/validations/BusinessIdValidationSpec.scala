@@ -25,7 +25,7 @@ class BusinessIdValidationSpec extends UnitSpec with JsonErrorValidators {
   "validate" should {
     "return no errors" when {
       "when a valid BusinessId is supplied" in {
-        val validBusinessId = "XAIS123456789012"
+        val validBusinessId = "XAIS12345678901"
         val validationResult = BusinessIdValidation.validate(validBusinessId)
         validationResult.isEmpty shouldBe true
       }

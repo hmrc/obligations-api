@@ -24,7 +24,7 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
 
   private val validNino = "AA123456A"
   private val validTypeOfBusiness = "self-employment"
-  private val validBusinessId = "XAIS123456789012"
+  private val validBusinessId = "XAIS12345678901"
   private val validFromDate = "2019-01-01"
   private val validToDate = "2019-12-30"
   private val validStatus = "Open"

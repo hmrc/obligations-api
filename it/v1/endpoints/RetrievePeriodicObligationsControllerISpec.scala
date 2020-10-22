@@ -31,7 +31,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
     val nino = "AA123456A"
     val typeOfBusiness = "self-employment"
-    val businessId = "XAIS123456789012"
+    val businessId = "XAIS12345678901"
     val fromDate = "2019-01-01"
     val toDate = "2019-06-06"
     val status = "Open"
@@ -59,7 +59,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -80,7 +80,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -103,7 +103,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -131,7 +131,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -162,7 +162,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -175,7 +175,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |    },
         |    {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -197,7 +197,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -214,7 +214,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -238,7 +238,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -258,7 +258,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |    },
         |    {
         |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS123456789012",
+        |       "businessId": "XAIS12345678901",
         |       "obligationDetails": [
         |         {
         |           "periodStartDate": "2019-01-01",
@@ -287,7 +287,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -312,7 +312,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |        {
         |            "identification": {
         |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS123456789012",
+        |                "referenceNumber": "XAIS12345678901",
         |                "referenceType": "MTDBIS"
         |            },
         |            "obligationDetails": [
@@ -532,15 +532,15 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           }
         }
         val input = Seq(
-          ("AA1", "self-employment", "XAIS123456789012", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, NinoFormatError),
+          ("AA1", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, NinoFormatError),
           ("AA123456A", "self-employment", "XAI", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, BusinessIdFormatError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2019-01", "2019-06-06", "Open", Status.BAD_REQUEST, FromDateFormatError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2019-06", "Open", Status.BAD_REQUEST, ToDateFormatError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2019-06-06", "Closed", Status.BAD_REQUEST, StatusFormatError),
-          ("AA123456A", "walrus", "XAIS123456789012", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, TypeOfBusinessFormatError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2019-06-06", "2019-01-01", "Open", Status.BAD_REQUEST, ToDateBeforeFromDateError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2017-01-01", "2018-01-01", "Open", Status.BAD_REQUEST, RuleFromDateNotSupportedError),
-          ("AA123456A", "self-employment", "XAIS123456789012", "2019-01-01", "2020-06-06", "Open", Status.BAD_REQUEST, RuleDateRangeInvalidError)
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01", "2019-06-06", "Open", Status.BAD_REQUEST, FromDateFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06", "Open", Status.BAD_REQUEST, ToDateFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Closed", Status.BAD_REQUEST, StatusFormatError),
+          ("AA123456A", "walrus", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, TypeOfBusinessFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-06-06", "2019-01-01", "Open", Status.BAD_REQUEST, ToDateBeforeFromDateError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2017-01-01", "2018-01-01", "Open", Status.BAD_REQUEST, RuleFromDateNotSupportedError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2020-06-06", "Open", Status.BAD_REQUEST, RuleDateRangeInvalidError)
         )
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -615,7 +615,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(request().withQueryStringParameters(
             "typeOfBusiness" -> typeOfBusiness,
-            "businessId" -> "XAIS123456789013",
+            "businessId" -> "XAIS12345678903",
             "fromDate" -> fromDate,
             "toDate" -> toDate,
             "status" -> status).get())
