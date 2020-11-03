@@ -19,7 +19,7 @@ package v1.models.audit
 import play.api.libs.json.Json
 import support.UnitSpec
 
-class RetrievePeriodicAuditObligationsDetailSpec extends UnitSpec {
+class RetrievePeriodicObligationsAuditDetailSpec extends UnitSpec {
 
   val nino = "ZG903729C"
   val invalidNino = "notANino"
@@ -62,7 +62,7 @@ class RetrievePeriodicAuditObligationsDetailSpec extends UnitSpec {
        |  }
        |}""".stripMargin)
 
-  val validBody = RetrievePeriodicAuditObligationsDetail(
+  val validBody = RetrievePeriodicObligationsAuditDetail(
     userType = "Agent",
     agentReferenceNumber = Some("012345678"),
     nino = nino,

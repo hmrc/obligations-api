@@ -24,7 +24,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, RetrievePeriodicAuditObligationsDetail}
+import v1.models.audit.{AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail}
 import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, RetrievePeriodicObligationsService}
@@ -62,7 +62,7 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
 
           val response = Json.toJson(serviceResponse.responseData)
 
-          auditSubmission(RetrievePeriodicAuditObligationsDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
+          auditSubmission(RetrievePeriodicObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
             serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
 
           Ok(response)
@@ -71,7 +71,11 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
 
       result.leftMap { errorWrapper =>
         val correlationId = getCorrelationId(errorWrapper)
-        errorResult(errorWrapper).withApiHeaders(correlationId)
+        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
+
+        auditSubmission(RetrievePeriodicObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
+          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
+        result
       }.merge
     }
 
@@ -87,7 +91,7 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
     }
   }
 
-  private def auditSubmission(details: RetrievePeriodicAuditObligationsDetail)
+  private def auditSubmission(details: RetrievePeriodicObligationsAuditDetail)
                              (implicit hc: HeaderCarrier,
                               ec: ExecutionContext) = {
     val event = AuditEvent("retrievePeriodicObligations", "retrieve-periodic-obligations", details)

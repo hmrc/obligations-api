@@ -69,7 +69,11 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
 
       result.leftMap { errorWrapper =>
         val correlationId = getCorrelationId(errorWrapper)
-        errorResult(errorWrapper).withApiHeaders(correlationId)
+        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
+
+        auditSubmission(RetrieveEOPSObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
+          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
+        result
       }.merge
     }
 

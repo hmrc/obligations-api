@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveEOPSObligationsRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveEOPSObligationsService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail}
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
@@ -84,6 +85,24 @@ class RetrieveEOPSObligationsControllerSpec
       |    }
       |  ]
       |}""".stripMargin)
+
+  def event(auditResponse: AuditResponse): AuditEvent[RetrieveEOPSObligationsAuditDetail] =
+    AuditEvent(
+      auditType = "retrieveEOPSObligations",
+      transactionName = "retrieve-eops-obligations",
+      detail = RetrieveEOPSObligationsAuditDetail(
+        userType = "Individual",
+        agentReferenceNumber = None,
+        nino,
+        Some("self-employment"),
+        Some(businessId),
+        Some(fromDate),
+        Some(toDate),
+        Some("Open"),
+        correlationId,
+        auditResponse
+      )
+    )
 
   private val rawData = RetrieveEOPSObligationsRawData(
     nino = nino,
@@ -208,6 +227,9 @@ class RetrieveEOPSObligationsControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 

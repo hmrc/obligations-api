@@ -19,7 +19,7 @@ package v1.models.audit
 import play.api.libs.json.{Json, Writes}
 import v1.models.auth.UserDetails
 
-case class RetrievePeriodicAuditObligationsDetail(userType: String,
+case class RetrievePeriodicObligationsAuditDetail(userType: String,
                                                   agentReferenceNumber: Option[String],
                                                   nino: String,
                                                   typeOfBusiness: Option[String],
@@ -30,8 +30,8 @@ case class RetrievePeriodicAuditObligationsDetail(userType: String,
                                                   `X-CorrelationId`: String,
                                                   response: AuditResponse)
 
-object RetrievePeriodicAuditObligationsDetail {
-  implicit val writes: Writes[RetrievePeriodicAuditObligationsDetail] = Json.writes[RetrievePeriodicAuditObligationsDetail]
+object RetrievePeriodicObligationsAuditDetail {
+  implicit val writes: Writes[RetrievePeriodicObligationsAuditDetail] = Json.writes[RetrievePeriodicObligationsAuditDetail]
 
   def apply(userDetails: UserDetails,
             nino: String,
@@ -41,9 +41,9 @@ object RetrievePeriodicAuditObligationsDetail {
             toDate: Option[String],
             status: Option[String],
             `X-CorrelationId`: String,
-            auditResponse: AuditResponse): RetrievePeriodicAuditObligationsDetail = {
+            auditResponse: AuditResponse): RetrievePeriodicObligationsAuditDetail = {
 
-    RetrievePeriodicAuditObligationsDetail(
+    RetrievePeriodicObligationsAuditDetail(
       userType = userDetails.userType,
       agentReferenceNumber = userDetails.agentReferenceNumber,
       nino = nino,
@@ -52,8 +52,8 @@ object RetrievePeriodicAuditObligationsDetail {
       fromDate = fromDate,
       toDate = toDate,
       status = status,
-      `X-CorrelationId`,
-      auditResponse
+      `X-CorrelationId` = `X-CorrelationId`,
+      response = auditResponse
     )
   }
 }

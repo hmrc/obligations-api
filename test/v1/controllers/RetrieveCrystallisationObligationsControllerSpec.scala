@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveCrystallisationObligationsService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail}
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
@@ -70,6 +71,20 @@ class RetrieveCrystallisationObligationsControllerSpec
                                           |  "receivedDate": "2020-01-25"
                                           |}
     """.stripMargin)
+
+  def event(auditResponse: AuditResponse): AuditEvent[RetrieveCrystallisationObligationsAuditDetail] =
+    AuditEvent(
+      auditType = "retrieveCrystallisationObligations",
+      transactionName = "retrieve-crystallisation-obligations",
+      detail = RetrieveCrystallisationObligationsAuditDetail(
+        userType = "Individual",
+        agentReferenceNumber = None,
+        nino,
+        Some(taxYear),
+        correlationId,
+        auditResponse
+      )
+    )
 
   private val rawData     = RetrieveCrystallisationObligationsRawData(nino, Some(taxYear))
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2017-04-06", "2018-04-05"))
@@ -142,6 +157,9 @@ class RetrieveCrystallisationObligationsControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 

@@ -52,8 +52,8 @@ object RetrieveEOPSObligationsAuditDetail {
       fromDate = fromDate,
       toDate = toDate,
       status = status,
-      `X-CorrelationId`,
-      auditResponse
+      `X-CorrelationId` = `X-CorrelationId`,
+      response = auditResponse
     )
   }
 }
