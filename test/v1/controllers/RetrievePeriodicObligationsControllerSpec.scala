@@ -23,9 +23,10 @@ import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrievePeriodicObligationsRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrievePeriodicObligationsService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail}
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
-import v1.models.errors.{BusinessIdFormatError, DownstreamError, ErrorWrapper, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
+import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
 import v1.models.response.common.{Obligation, ObligationDetail}
@@ -86,6 +87,24 @@ class RetrievePeriodicObligationsControllerSpec
       |  ]
       |}
       |""".stripMargin)
+
+  def event(auditResponse: AuditResponse): AuditEvent[RetrievePeriodicObligationsAuditDetail] =
+    AuditEvent(
+      auditType = "retrievePeriodicObligations",
+      transactionName = "retrieve-periodic-obligations",
+      detail = RetrievePeriodicObligationsAuditDetail(
+        userType = "Individual",
+        agentReferenceNumber = None,
+        nino,
+        Some(typeOfBusiness),
+        Some(businessId),
+        Some(fromDate),
+        Some(toDate),
+        Some(status),
+        correlationId,
+        auditResponse
+      )
+    )
 
   private val rawData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
   private val requestData = RetrievePeriodicObligationsRequest(Nino(nino), Some(MtdBusiness.`self-employment`),Some(businessId), Some(fromDate), Some(toDate), Some(MtdStatus.Open))
@@ -165,6 +184,9 @@ class RetrievePeriodicObligationsControllerSpec
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
             header("X-CorrelationId", result) shouldBe Some(correlationId)
+
+            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
+            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
           }
         }
 

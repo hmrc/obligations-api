@@ -40,8 +40,8 @@ object RetrieveCrystallisationObligationsAuditDetail {
       agentReferenceNumber = userDetails.agentReferenceNumber,
       nino = nino,
       taxYear = taxYear,
-      `X-CorrelationId`,
-      auditResponse
+      `X-CorrelationId` = `X-CorrelationId`,
+      response = auditResponse
     )
   }
 }

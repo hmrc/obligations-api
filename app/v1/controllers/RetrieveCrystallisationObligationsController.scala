@@ -66,7 +66,11 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
 
       result.leftMap { errorWrapper =>
         val correlationId = getCorrelationId(errorWrapper)
-        errorResult(errorWrapper).withApiHeaders(correlationId)
+        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
+
+        auditSubmission(RetrieveCrystallisationObligationsAuditDetail(request.userDetails, nino, taxYear,
+          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
+        result
       }.merge
     }
 
