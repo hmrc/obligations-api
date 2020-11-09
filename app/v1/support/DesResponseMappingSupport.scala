@@ -101,7 +101,7 @@ trait DesResponseMappingSupport {
         val mtdErrors = errorCodes.map(error => errorCodeMap.applyOrElse(error.code, defaultErrorCodeMapping))
 
         if (mtdErrors.contains(DownstreamError)) {
-          logger.info(
+          logger.warn(
             s"[${logContext.controllerName}] [${logContext.endpointName}] [CorrelationId - $correlationId]" +
               s" - downstream returned ${errorCodes.map(_.code).mkString(",")}. Revert to ISE")
           ErrorWrapper(Some(correlationId), DownstreamError, None)
