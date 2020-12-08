@@ -23,7 +23,7 @@ Run unit tests: `sbt test`
 
 Run integration tests: `sbt it:test`
 
-## Documentation
+## To view the RAML
 To view documentation locally ensure the Obligations API is running, and run api-documentation-frontend:
 
 ```
@@ -37,7 +37,7 @@ http://localhost:7793/api/conf/1.0/application.raml
 ```
 
 ## Reporting Issues
-You can create a GitHub issue [here](https://github.com/hmrc/individuals-expenses-api/issues)
+You can create a GitHub issue [here](https://github.com/hmrc/obligations-api/issues)
 
 ## API Reference / Documentation 
 Available on the [HMRC Developer Hub](https://https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/obligations-api/1.0)
