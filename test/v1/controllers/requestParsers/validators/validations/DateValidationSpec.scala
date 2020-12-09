@@ -27,12 +27,16 @@ class DateValidationSpec extends UnitSpec {
         val validationResult = DateValidation.validate("2019-01-01", FromDateFormatError)
         validationResult shouldBe Nil
       }
-      "return a format error" when {
-        "the date format is wrong" in {
-          val validationResult = DateValidation.validate("01-02-2019", FromDateFormatError)
-          validationResult.nonEmpty shouldBe true
-          validationResult.head shouldBe FromDateFormatError
-        }
+      "when an empty string is supplied" in {
+        val validationResult = DateValidation.validate("", FromDateFormatError)
+        validationResult shouldBe Nil
+      }
+    }
+    "return a format error" when {
+      "the date format is wrong" in {
+        val validationResult = DateValidation.validate("01-02-2019", FromDateFormatError)
+        validationResult.nonEmpty shouldBe true
+        validationResult.head shouldBe FromDateFormatError
       }
     }
   }
