@@ -11,14 +11,18 @@
             <td><p>N/A - DEFAULT</p></td>
             <td><p>Simulate a successful response.</p></td>
         </tr>
-                <tr>
-                    <td><p>OPEN</p></td>
-                    <td><p>Simulate a success response with an open obligation.</p></td>
-                </tr>
-                <tr>
-                    <td><p>FULFILLED</p></td>
-                    <td><p>Simulate a success response with a fulfilled obligation.</p></td>
-                </tr>
+        <tr>
+            <td><p>OPEN</p></td>
+            <td><p>Simulate a success response with an open obligation.</p></td>
+        </tr>
+        <tr>
+            <td><p>FULFILLED</p></td>
+            <td><p>Simulate a success response with a fulfilled obligation.</p></td>
+        </tr>
+        <tr>
+            <td><p>INSOLVENT_TRADER</p></td>
+            <td><p>Simulate a scenario where the remote endpoint indicates that the Trader is insolvent.</p></td>
+        </tr>
         <tr>
             <td><p>NOT_FOUND</p></td>
             <td><p>Simulate a scenario where no data is found.</p></td>

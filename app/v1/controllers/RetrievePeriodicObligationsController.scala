@@ -85,9 +85,10 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
            | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
-           | BadRequestError                                                                        => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError | NoObligationsFoundError                                                  => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError                                                                          => InternalServerError(Json.toJson(errorWrapper))
+           | BadRequestError                       => BadRequest(Json.toJson(errorWrapper))
+      case RuleInsolventTraderError                => Forbidden(Json.toJson(errorWrapper))
+      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
+      case DownstreamError                         => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

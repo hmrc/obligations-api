@@ -290,6 +290,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
           ("INVALID_DATE_FROM", FromDateFormatError),
           ("INVALID_DATE_TO", ToDateFormatError),
           ("INVALID_DATE_RANGE", RuleDateRangeInvalidError),
+          ("INSOLVENT_TRADER", RuleInsolventTraderError),
           ("NOT_FOUND_BPKEY", NotFoundError),
           ("NOT_FOUND", NotFoundError),
           ("SERVER_ERROR", DownstreamError),
