@@ -20,6 +20,10 @@
             <td><p>Simulate a success response with a fulfilled obligation.</p></td>
         </tr>
         <tr>
+            <td><p>INSOLVENT_TRADER</p></td>
+            <td><p>Simulate a scenario where the remote endpoint indicates that the Trader is insolvent.</p></td>
+        </tr>
+        <tr>
             <td><p>NOT_FOUND</p></td>
             <td><p>Simulate a scenario where no data is found.</p></td>
         </tr>
