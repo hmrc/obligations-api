@@ -71,6 +71,17 @@ traits:
                 description: 'The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.'
                 value:
                   code: CLIENT_OR_AGENT_NOT_AUTHORISED
+  ruleInsolventTrader:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              ruleInsolventTrader:
+                description: 'The request could not be completed as it relates to an insolvent trader, which are not supported by this API.'
+                value:
+                  code: RULE_INSOLVENT_TRADER
   formatNino:
     responses:
       400:
