@@ -229,6 +229,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           (Status.BAD_REQUEST, "INVALID_DATE_TO", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.BAD_REQUEST, "INVALID_DATE_RANGE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.FORBIDDEN, "NOT_FOUND_BPKEY", Status.NOT_FOUND, NotFoundError),
+          (Status.FORBIDDEN, "INSOLVENT_TRADER", Status.FORBIDDEN, RuleInsolventTraderError),
           (Status.BAD_REQUEST, "NOT_FOUND", Status.NOT_FOUND, NotFoundError),
           (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError)
