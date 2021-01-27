@@ -83,9 +83,10 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingToDateError | MissingFromDateError | ToDateBeforeFromDateError
            | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
-           | BadRequestError                                                                        => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError | NoObligationsFoundError                                                  => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError                                                                          => InternalServerError(Json.toJson(errorWrapper))
+           | BadRequestError                       => BadRequest(Json.toJson(errorWrapper))
+      case RuleInsolventTraderError                => Forbidden(Json.toJson(errorWrapper))
+      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
+      case DownstreamError                         => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

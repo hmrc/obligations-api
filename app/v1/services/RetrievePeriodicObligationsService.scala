@@ -53,6 +53,7 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
       "INVALID_DATE_FROM" -> FromDateFormatError,
       "INVALID_DATE_TO" -> ToDateFormatError,
       "INVALID_DATE_RANGE" -> RuleDateRangeInvalidError,
+      "INSOLVENT_TRADER" -> RuleInsolventTraderError,
       "NOT_FOUND" -> NotFoundError,
       "NOT_FOUND_BPKEY" -> NotFoundError,
       "SERVER_ERROR" -> DownstreamError,

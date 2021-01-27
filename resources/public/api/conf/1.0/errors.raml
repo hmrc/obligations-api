@@ -71,6 +71,17 @@ traits:
                 description: 'The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.'
                 value:
                   code: CLIENT_OR_AGENT_NOT_AUTHORISED
+  ruleInsolventTrader:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              ruleInsolventTrader:
+                description: 'The request could not be completed as it relates to an insolvent trader, which are not supported by this API.'
+                value:
+                  code: RULE_INSOLVENT_TRADER
   formatNino:
     responses:
       400:
@@ -335,135 +346,135 @@ traits:
                 description: There is no accounting period for the year of the claim.
                 value:
                   code: RULE_NO_ACCOUNTING_PERIOD
-  FormatTypeOfBusiness:
+  formatTypeOfBusiness:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              FormatTypeOfBusiness:
+              formatTypeOfBusiness:
                 description: The format of the type of business field is not valid.
                 value:
                   code: FORMAT_TYPE_OF_BUSINESS
-  FormatBusinessId:
+  formatBusinessId:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              FormatBusinessId:
+              formatBusinessId:
                 description: The format of the business ID field is not valid.
                 value:
                   code: FORMAT_BUSINESS_ID
-  FormatFromDate:
+  formatFromDate:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              FormatFromDate:
+              formatFromDate:
                 description: The format of the From date field is not valid.
                 value:
                   code: FORMAT_FROM_DATE
-  FormatToDate:
+  formatToDate:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              FormatToDate:
+              formatToDate:
                 description: The format of the To date field is not valid.
                 value:
                   code: FORMAT_TO_DATE
-  FormatStatus:
+  formatStatus:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              FormatStatus:
+              formatStatus:
                 description: The format of the status field is not valid.
                 value:
                   code: FORMAT_STATUS
-  MissingFromDate:
+  missingFromDate:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              MissingFromDate:
+              missingFromDate:
                 description: The From date parameter is missing.
                 value:
                   code: MISSING_FROM_DATE
-  MissingToDate:
+  missingToDate:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              MissingToDate:
+              missingToDate:
                 description: The To date parameter is missing.
                 value:
                   code: MISSING_TO_DATE
-  RangeToDateBeforeFromDate:
+  rangeToDateBeforeFromDate:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              RangeToDateBeforeFromDate:
+              rangeToDateBeforeFromDate:
                 description: The To date is before the From date.
                 value:
                   code: RANGE_TO_DATE_BEFORE_FROM_DATE
-  MissingTypeOfBusiness:
+  missingTypeOfBusiness:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              MissingTypeOfBusiness:
+              missingTypeOfBusiness:
                 description: The Type of Business parameter is missing.
                 value:
                   code: MISSING_TYPE_OF_BUSINESS
-  RuleDateRangeInvalid:
+  ruleDateRangeInvalid:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              RuleDateRangeInvalid:
+              ruleDateRangeInvalid:
                 description: The date range is longer than 366 days.
                 value:
                   code: RULE_DATE_RANGE_INVALID
-  RuleFromDateNonSupported:
+  ruleFromDateNonSupported:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              RuleFromDateNonSupported:
+              ruleFromDateNonSupported:
                 description: The From date specified is before 2018-04-06.
                 value:
                   code: RULE_FROM_DATE_NOT_SUPPORTED
-  RuleFromDateNonSupportedEOPS:
+  ruleFromDateNonSupportedEOPS:
     responses:
       400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              RuleFromDateNonSupportedEOPS:
+              ruleFromDateNonSupportedEOPS:
                 description: The From date specified is before 2017-04-06.
                 value:
                   code: RULE_FROM_DATE_NOT_SUPPORTED

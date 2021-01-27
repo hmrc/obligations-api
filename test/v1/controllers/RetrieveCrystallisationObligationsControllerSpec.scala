@@ -167,6 +167,7 @@ class RetrieveCrystallisationObligationsControllerSpec
           (NinoFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (NoObligationsFoundError, NOT_FOUND),
+          (RuleInsolventTraderError, FORBIDDEN),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 

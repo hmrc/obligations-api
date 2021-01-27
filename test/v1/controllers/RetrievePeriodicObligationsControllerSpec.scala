@@ -192,6 +192,7 @@ class RetrievePeriodicObligationsControllerSpec
 
         val input = Seq(
           (NinoFormatError, BAD_REQUEST),
+          (RuleInsolventTraderError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR),
           (NoObligationsFoundError, NOT_FOUND)

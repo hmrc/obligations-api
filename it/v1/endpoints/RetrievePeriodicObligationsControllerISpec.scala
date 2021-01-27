@@ -22,7 +22,7 @@ import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
-import v1.models.errors.{BusinessIdFormatError, DownstreamError, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
+import v1.models.errors.{BusinessIdFormatError, DownstreamError, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, RuleInsolventTraderError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
@@ -575,6 +575,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           (Status.BAD_REQUEST, "INVALID_DATE_TO", Status.BAD_REQUEST, ToDateFormatError),
           (Status.BAD_REQUEST, "INVALID_DATE_RANGE", Status.BAD_REQUEST, RuleDateRangeInvalidError),
           (Status.NOT_FOUND, "NOT_FOUND", Status.NOT_FOUND, NotFoundError),
+          (Status.FORBIDDEN, "INSOLVENT_TRADER", Status.FORBIDDEN, RuleInsolventTraderError),
           (Status.FORBIDDEN, "NOT_FOUND_BPKEY", Status.NOT_FOUND, NotFoundError),
           (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError)

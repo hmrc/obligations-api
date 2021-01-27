@@ -86,6 +86,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
           ("INVALID_DATE_TO", DownstreamError),
           ("INVALID_DATE_RANGE", DownstreamError),
           ("NOT_FOUND_BPKEY", NotFoundError),
+          ("INSOLVENT_TRADER", RuleInsolventTraderError),
           ("NOT_FOUND", NotFoundError),
           ("SERVER_ERROR", DownstreamError),
           ("SERVICE_UNAVAILABLE", DownstreamError)

@@ -51,6 +51,8 @@ object RuleTaxYearRangeExceededError
 
 object RuleDateRangeInvalidError extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid")
 
+object RuleInsolventTraderError extends MtdError("RULE_INSOLVENT_TRADER", "The remote endpoint has indicated that the Trader is insolvent")
+
 object RuleFromDateNotSupportedError extends MtdError("RULE_FROM_DATE_NOT_SUPPORTED", "The specified from date is not supported as too early")
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
