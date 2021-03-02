@@ -27,5 +27,9 @@
             <td><p>NOT_FOUND</p></td>
             <td><p>Simulate a scenario where no data is found.</p></td>
         </tr>
+        <tr>
+            <td><p>NO_OBLIGATIONS_FOUND</p></td>
+            <td><p>Simulate a scenario where no obligations are found.</p></td>
+        </tr>
     </tbody>
 </table>
