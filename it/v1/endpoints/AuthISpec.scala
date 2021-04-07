@@ -23,6 +23,7 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import java.time.Year
 
 class AuthISpec extends IntegrationBaseSpec {
 
@@ -65,6 +66,9 @@ class AuthISpec extends IntegrationBaseSpec {
     """.stripMargin)
   }
 
+  val taxYearEnd = Year.now.getValue
+  val taxYearStart = Year.now.getValue - 1
+
   "Calling the crystallisation endpoint" when {
 
     "the NINO cannot be converted to a MTD ID" should {
@@ -89,7 +93,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> "2019-04-06", "to" -> "2020-04-05"), Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> s"$taxYearStart-04-06", "to" -> s"$taxYearEnd-04-05"), Status.OK, desResponse)
         }
 
         val response: WSResponse = await(request().get())
