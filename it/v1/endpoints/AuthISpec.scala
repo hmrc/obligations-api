@@ -66,8 +66,8 @@ class AuthISpec extends IntegrationBaseSpec {
     """.stripMargin)
   }
 
-  val nextTaxYear = Year.now.getValue
-  val taxYear = nextTaxYear - 1
+  val taxYearEnd = Year.now.getValue
+  val taxYearStart = Year.now.getValue - 1
 
   "Calling the crystallisation endpoint" when {
 
@@ -93,7 +93,7 @@ class AuthISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> s"$taxYear-04-06", "to" -> s"$nextTaxYear-04-05"), Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, Map("from" -> s"$taxYearStart-04-06", "to" -> s"$taxYearEnd-04-05"), Status.OK, desResponse)
         }
 
         val response: WSResponse = await(request().get())
