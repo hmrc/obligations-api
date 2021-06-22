@@ -17,44 +17,59 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.domain.status.DesStatus.F
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v1.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
+import v1.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
 
 import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
 
-  private val validNino = Nino("AA123456A")
-  private val fromDate = "2018-04-06"
-  private val toDate = "2019-04-05"
+  private val validNino = "AA123456A"
+  private val fromDate  = "2018-04-06"
+  private val toDate    = "2019-04-05"
 
   class Test extends MockHttpClient with MockAppConfig {
-    val connector: RetrieveCrystallisationObligationsConnector = new RetrieveCrystallisationObligationsConnector(
-      http = mockHttpClient, appConfig = mockAppConfig)
-    val desRequestHeaders: Seq[(String, String)] = Seq("Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-    MockedAppConfig.desBaseUrl returns baseUrl
-    MockedAppConfig.desToken returns "des-token"
-    MockedAppConfig.desEnvironment returns "des-environment"
+
+    val connector: RetrieveCrystallisationObligationsConnector =
+      new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    MockAppConfig.desBaseUrl returns baseUrl
+    MockAppConfig.desToken returns "des-token"
+    MockAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
   "retrieve" should {
-    val request = RetrieveCrystallisationObligationsRequest(validNino, ObligationsTaxYear(fromDate, toDate))
+    val request = RetrieveCrystallisationObligationsRequest(Nino(validNino), ObligationsTaxYear(fromDate, toDate))
 
     "return a result" when {
       "the downstream call is successful and a source is passed in" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, DesRetrieveCrystallisationObligationsResponse(
-          Seq(DesObligation(fromDate, toDate, toDate, F, Some(toDate)))))
+        val outcome = Right(
+          ResponseWrapper(
+            correlationId,
+            DesRetrieveCrystallisationObligationsResponse(
+              Seq(DesObligation(
+                inboundCorrespondenceFromDate = fromDate,
+                inboundCorrespondenceToDate = toDate,
+                inboundCorrespondenceDueDate = toDate,
+                status = F,
+                inboundCorrespondenceDateReceived = Some(toDate)
+              )))
+          )
         )
-        MockedHttpClient.
-          get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/${request.nino}/ITSA?from=${request.obligationsTaxYear.from}&to=${request.obligationsTaxYear.to}",
-            requiredHeaders = "Environment" -> "des-environment", "Authorization" -> s"Bearer des-token"
-          ).returns(Future.successful(outcome))
+
+        MockedHttpClient
+          .get(
+            url = s"$baseUrl/enterprise/obligation-data/nino/$validNino/ITSA?from=$fromDate&to=$toDate",
+            config = dummyDesHeaderCarrierConfig,
+            requiredHeaders = requiredDesHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          )
+          .returns(Future.successful(outcome))
         await(connector.retrieveCrystallisationObligations(request)) shouldBe outcome
       }
     }

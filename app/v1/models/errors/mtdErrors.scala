@@ -16,30 +16,34 @@
 
 package v1.models.errors
 
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.{ Json, OWrites }
 
 case class MtdError(code: String, message: String)
 
 object MtdError {
-  implicit val writes: Writes[MtdError] = Json.writes[MtdError]
+  implicit val writes: OWrites[MtdError] = Json.writes[MtdError]
+
+  implicit def genericWrites[T <: MtdError]: OWrites[T] =
+    writes.contramap[T](c => c: MtdError)
 }
 
-object NinoFormatError extends MtdError("FORMAT_NINO", "The provided NINO is invalid")
-object TaxYearFormatError extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid")
-object BusinessIdFormatError extends MtdError("FORMAT_BUSINESS_ID", "The provided businessId is invalid")
-object FromDateFormatError extends MtdError("FORMAT_FROM_DATE", "The provided fromDate is invalid")
-object ToDateFormatError extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid")
-object StatusFormatError extends MtdError("FORMAT_STATUS", "The provided status is invalid")
+object NinoFormatError           extends MtdError("FORMAT_NINO", "The provided NINO is invalid")
+object TaxYearFormatError        extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid")
+object BusinessIdFormatError     extends MtdError("FORMAT_BUSINESS_ID", "The provided businessId is invalid")
+object FromDateFormatError       extends MtdError("FORMAT_FROM_DATE", "The provided fromDate is invalid")
+object ToDateFormatError         extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid")
+object StatusFormatError         extends MtdError("FORMAT_STATUS", "The provided status is invalid")
 object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided type of business is invalid")
 
-object MissingTypeOfBusinessError extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when a businessId is supplied.")
+object MissingTypeOfBusinessError
+    extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when a businessId is supplied.")
 object MissingFromDateError extends MtdError("MISSING_FROM_DATE", "The From date parameter is missing")
-object MissingToDateError extends MtdError("MISSING_TO_DATE", "The To date parameter is missing")
+object MissingToDateError   extends MtdError("MISSING_TO_DATE", "The To date parameter is missing")
 
 object ToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date must be after the From date")
 
-
 object NoObligationsFoundError extends MtdError("NO_OBLIGATIONS_FOUND", "No obligations found using this filter")
+
 // Rule Errors
 object RuleTaxYearNotSupportedError
     extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "Tax year not supported, because it precedes the earliest allowable tax year")
@@ -66,12 +70,12 @@ object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error")
 object ServiceUnavailableError extends MtdError("SERVICE_UNAVAILABLE", "Internal server error")
 
 //Authorisation Errors
-object UnauthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
+object UnauthorisedError       extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
 object InvalidBearerTokenError extends MtdError("UNAUTHORIZED", "Bearer token is missing or not authorized")
 
 // Accept header Errors
-object  InvalidAcceptHeaderError extends MtdError("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
+object InvalidAcceptHeaderError extends MtdError("ACCEPT_HEADER_INVALID", "The accept header is missing or invalid")
 
-object  UnsupportedVersionError extends MtdError("NOT_FOUND", "The requested resource could not be found")
+object UnsupportedVersionError extends MtdError("NOT_FOUND", "The requested resource could not be found")
 
 object InvalidBodyTypeError extends MtdError("INVALID_BODY_TYPE", "Expecting text/json or application/json body")

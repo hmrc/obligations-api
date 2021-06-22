@@ -19,27 +19,26 @@ package v1.controllers.requestParsers
 import java.time.LocalDate
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.RetrieveEOPSObligationsValidator
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
-import v1.models.request.retrieveEOPSObligations.{RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest}
+import v1.models.request.retrieveEOPSObligations.{ RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest }
 
 class RetrieveEOPSObligationsRequestParser @Inject()(val validator: RetrieveEOPSObligationsValidator)
-  extends RequestParser[RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest] {
+    extends RequestParser[RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest] {
 
   override protected def requestFor(data: RetrieveEOPSObligationsRawData): RetrieveEOPSObligationsRequest = {
 
     val (fromDate, toDate): (Option[String], Option[String]) = (data.fromDate, data.toDate, data.status) match {
       case (None, None, Some("Fulfilled")) | (None, None, None) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
-      case _ => (data.fromDate, data.toDate)
+      case _                                                    => (data.fromDate, data.toDate)
     }
 
     val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
-    val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
+    val status: Option[MtdStatus]           = data.status.map(MtdStatus.parser)
 
     RetrieveEOPSObligationsRequest(Nino(data.nino), typeOfBusiness, data.businessId, fromDate, toDate, status)
   }
-
 
 }

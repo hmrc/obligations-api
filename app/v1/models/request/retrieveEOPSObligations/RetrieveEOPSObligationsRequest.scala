@@ -16,7 +16,7 @@
 
 package v1.models.request.retrieveEOPSObligations
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 
@@ -25,5 +25,4 @@ case class RetrieveEOPSObligationsRequest(nino: Nino,
                                           businessId: Option[String],
                                           fromDate: Option[String],
                                           toDate: Option[String],
-                                          status: Option[MtdStatus]
-                                         )
+                                          status: Option[MtdStatus])

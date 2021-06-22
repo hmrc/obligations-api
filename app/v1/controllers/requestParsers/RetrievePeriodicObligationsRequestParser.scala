@@ -19,24 +19,24 @@ package v1.controllers.requestParsers
 import java.time.LocalDate
 
 import javax.inject.Inject
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.RetrievePeriodicObligationsValidator
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
-import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
 
 class RetrievePeriodicObligationsRequestParser @Inject()(val validator: RetrievePeriodicObligationsValidator)
-  extends RequestParser[RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest] {
+    extends RequestParser[RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest] {
 
   override protected def requestFor(data: RetrievePeriodicObligationsRawData): RetrievePeriodicObligationsRequest = {
 
     val (fromDate, toDate): (Option[String], Option[String]) = (data.fromDate, data.toDate, data.status) match {
       case (None, None, Some("Fulfilled")) | (None, None, None) => (Some(LocalDate.now().toString), Some(LocalDate.now().plusDays(366).toString))
-      case _ => (data.fromDate, data.toDate)
+      case _                                                    => (data.fromDate, data.toDate)
     }
 
     val typeOfBusiness: Option[MtdBusiness] = data.typeOfBusiness.map(MtdBusiness.parser)
-    val status: Option[MtdStatus] = data.status.map(MtdStatus.parser)
+    val status: Option[MtdStatus]           = data.status.map(MtdStatus.parser)
     RetrievePeriodicObligationsRequest(Nino(data.nino), typeOfBusiness, data.businessId, fromDate, toDate, status)
   }
 }

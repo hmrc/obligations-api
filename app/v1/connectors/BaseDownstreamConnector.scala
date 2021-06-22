@@ -17,23 +17,26 @@
 package v1.connectors
 
 import config.AppConfig
-import play.api.Logger
 import play.api.libs.json.Writes
-import uk.gov.hmrc.http.logging.Authorization
-import uk.gov.hmrc.http.{HeaderCarrier, HttpReads}
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient, HttpReads }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-trait BaseDesConnector {
+trait BaseDownstreamConnector {
   val http: HttpClient
   val appConfig: AppConfig
 
-  val logger = Logger(this.getClass)
-
-  private[connectors] def desHeaderCarrier(implicit hc: HeaderCarrier): HeaderCarrier =
-    hc.copy(authorization = Some(Authorization(s"Bearer ${appConfig.desToken}")))
-      .withExtraHeaders("Environment" -> appConfig.desEnv)
+  private def downstreamHeaderCarrier(additionalHeaders: Seq[String] = Seq.empty)(implicit hc: HeaderCarrier): HeaderCarrier =
+    HeaderCarrier(
+      extraHeaders = hc.extraHeaders ++
+        // Contract headers
+        Seq(
+          "Authorization" -> s"Bearer ${appConfig.desToken}",
+          "Environment"   -> appConfig.desEnv
+        ) ++
+        // Other headers (i.e Gov-Test-Scenario, Content-Type)
+        hc.headers(additionalHeaders ++ appConfig.desEnvironmentHeaders.getOrElse(Seq.empty))
+    )
 
   def post[Body: Writes, Resp](body: Body, uri: DesUri[Resp])(implicit ec: ExecutionContext,
                                                               hc: HeaderCarrier,
@@ -43,17 +46,16 @@ trait BaseDesConnector {
       http.POST(s"${appConfig.desBaseUrl}/${uri.value}", body)
     }
 
-    doPost(desHeaderCarrier(hc))
+    doPost(downstreamHeaderCarrier(Seq("Content-Type")))
   }
 
-  def get[Resp](uri: DesUri[Resp])(implicit ec: ExecutionContext,
-                                   hc: HeaderCarrier,
-                                   httpReads: HttpReads[DesOutcome[Resp]]): Future[DesOutcome[Resp]] = {
+  def get[Resp](
+      uri: DesUri[Resp])(implicit ec: ExecutionContext, hc: HeaderCarrier, httpReads: HttpReads[DesOutcome[Resp]]): Future[DesOutcome[Resp]] = {
 
     def doGet(implicit hc: HeaderCarrier): Future[DesOutcome[Resp]] =
       http.GET(s"${appConfig.desBaseUrl}/${uri.value}")
 
-    doGet(desHeaderCarrier(hc))
+    doGet(downstreamHeaderCarrier())
   }
 
 }

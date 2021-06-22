@@ -19,14 +19,14 @@ package v1.controllers.requestParsers
 import java.time.LocalDate
 
 import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.mocks.validators.MockRetrieveCrystallisationObligationsValidator
 import v1.models.errors._
-import v1.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
-import v1.models.request.{ObligationsTaxYear, ObligationsTaxYearHelpers}
+import v1.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
+import v1.models.request.{ ObligationsTaxYear, ObligationsTaxYearHelpers }
 
 class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
-  val nino = "AA123456B"
+  val nino                      = "AA123456B"
   val overriddenDate: LocalDate = LocalDate.parse("2019-04-06")
 
   val inputData =
@@ -64,7 +64,8 @@ class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
       "a single validation error occurs" in new Test {
         override val testDate: LocalDate = overriddenDate
 
-        MockRetrieveCrystallisationObligationsValidator.validate(inputData)
+        MockRetrieveCrystallisationObligationsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(inputData) shouldBe
@@ -74,7 +75,8 @@ class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
       "multiple validation errors occur" in new Test {
         override val testDate: LocalDate = overriddenDate
 
-        MockRetrieveCrystallisationObligationsValidator.validate(inputData)
+        MockRetrieveCrystallisationObligationsValidator
+          .validate(inputData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(inputData) shouldBe
