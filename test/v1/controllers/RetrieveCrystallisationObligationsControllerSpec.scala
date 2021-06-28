@@ -18,12 +18,12 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
-import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveCrystallisationObligationsService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail}
+import v1.mocks.services.{ MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveCrystallisationObligationsService }
+import v1.models.audit.{ AuditError, AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail }
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockRetrieveCrystallisationObligationsService
@@ -99,11 +99,18 @@ class RetrieveCrystallisationObligationsControllerSpec
 
         MockRetrieveCrystallisationObligationsService
           .retrieve(requestData)
-          .returns(Future.successful(
-            Right(ResponseWrapper(correlationId, RetrieveCrystallisationObligationsResponse(
-              "2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25")
-            )))
-          ))
+          .returns(
+            Future.successful(
+              Right(
+                ResponseWrapper(correlationId,
+                                RetrieveCrystallisationObligationsResponse(
+                                  "2018-04-06",
+                                  "2019-04-05",
+                                  "2020-01-31",
+                                  MtdStatus.Fulfilled,
+                                  Some("2020-01-25")
+                                )))
+            ))
 
         val result: Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeRequest)
 

@@ -17,7 +17,7 @@
 package v1.connectors
 
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
+import javax.inject.{ Inject, Singleton }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
 import v1.connectors.httpparsers.StandardDesHttpParser._
@@ -25,24 +25,25 @@ import v1.models.domain.status.MtdStatus
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient,
-                                                 val appConfig: AppConfig) extends BaseDesConnector {
-  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)
-                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[DesOutcome[RetrieveEOPSObligationsResponse]] = {
+class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+
+  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)(implicit hc: HeaderCarrier,
+                                                                       ec: ExecutionContext): Future[DesOutcome[RetrieveEOPSObligationsResponse]] = {
 
     val queryParams: String = Seq(
-      "from" -> request.fromDate,
-      "to" -> request.toDate,
+      "from"   -> request.fromDate,
+      "to"     -> request.toDate,
       "status" -> request.status
     ).collect {
-      case (k, Some(v: MtdStatus)) => s"$k=${v.toDes}"
-      case (k, Some(v: String)) => s"$k=$v"
-    }.mkString("&")
+        case (k, Some(v: MtdStatus)) => s"$k=${v.toDes}"
+        case (k, Some(v: String))    => s"$k=$v"
+      }
+      .mkString("&")
 
-    val url = s"enterprise/obligation-data/nino/${request.nino}/ITSA?$queryParams"
+    val url = s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?$queryParams"
 
     get(
       DesUri[RetrieveEOPSObligationsResponse](s"$url")

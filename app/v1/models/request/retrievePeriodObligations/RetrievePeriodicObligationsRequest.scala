@@ -16,7 +16,7 @@
 
 package v1.models.request.retrievePeriodObligations
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 

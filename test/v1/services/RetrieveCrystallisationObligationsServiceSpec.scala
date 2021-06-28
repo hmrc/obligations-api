@@ -17,32 +17,32 @@
 package v1.services
 
 import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
-import v1.models.domain.status.{DesStatus, MtdStatus}
+import v1.models.domain.status.{ DesStatus, MtdStatus }
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v1.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
+import v1.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
 
-  private val nino = "AA123456A"
-  private val fromDate = "2018-04-06"
-  private val toDate = "2019-04-05"
+  private val nino          = "AA123456A"
+  private val fromDate      = "2018-04-06"
+  private val toDate        = "2019-04-05"
   private val correlationId = "X-123"
 
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear(fromDate, toDate))
 
   trait Test extends MockRetrieveCrystallisationObligationsConnector {
-    implicit val hc: HeaderCarrier = HeaderCarrier()
+    implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new RetrieveCrystallisationObligationsService(
@@ -53,12 +53,14 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
   "service" when {
     "service call successsful" must {
       "return mapped result" in new Test {
-        val desResponseModel = DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("earlier", "then", "before now", DesStatus.F, Some("now"))
-        ))
+        val desResponseModel = DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("earlier", "then", "before now", DesStatus.F, Some("now"))
+          ))
         val responseModel = RetrieveCrystallisationObligationsResponse("earlier", "then", "before now", MtdStatus.Fulfilled, Some("now"))
 
-        MockRetrieveCrystallisationObligationsConnector.doConnectorThing(requestData)
+        MockRetrieveCrystallisationObligationsConnector
+          .doConnectorThing(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, desResponseModel))))
 
         await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, responseModel))
@@ -71,7 +73,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
 
-            MockRetrieveCrystallisationObligationsConnector.doConnectorThing(requestData)
+            MockRetrieveCrystallisationObligationsConnector
+              .doConnectorThing(requestData)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
             await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
@@ -98,7 +101,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends UnitSpec {
       "error when the connector returns an empty obligations list (JSON Reads filter out other obligations)" in new Test {
         val responseModel = DesRetrieveCrystallisationObligationsResponse(Seq())
 
-        MockRetrieveCrystallisationObligationsConnector.doConnectorThing(requestData)
+        MockRetrieveCrystallisationObligationsConnector
+          .doConnectorThing(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
         await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))

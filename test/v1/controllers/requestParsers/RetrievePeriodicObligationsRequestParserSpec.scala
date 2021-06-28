@@ -19,29 +19,31 @@ package v1.controllers.requestParsers
 import java.time.LocalDate
 
 import support.UnitSpec
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
-import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError}
-import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.errors.{ BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError }
+import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
 
 class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
-  val nino = "AA123456B"
-  val typeOfBusiness = "self-employment"
-  val convertedTypeOfBusiness = MtdBusiness.`self-employment`
-  val businessId = "XAIS123456789012"
-  val fromDate = "2019-01-01"
-  val toDate = "2020-01-01"
-  val status = "Open"
-  val convertedStatus = MtdStatus.Open
+  val nino                     = "AA123456B"
+  val typeOfBusiness           = "self-employment"
+  val convertedTypeOfBusiness  = MtdBusiness.`self-employment`
+  val businessId               = "XAIS123456789012"
+  val fromDate                 = "2019-01-01"
+  val toDate                   = "2020-01-01"
+  val status                   = "Open"
+  val convertedStatus          = MtdStatus.Open
   val convertedStatusFulfilled = MtdStatus.Fulfilled
-  val data = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDatesData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
-  val invalidNinoData = RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val data                     = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDatesData          = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
+
+  val invalidNinoData =
+    RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
   val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDate = LocalDate.now().toString
-  val nextYearsDate = LocalDate.now().plusDays(366).toString
+  val todaysDate          = LocalDate.now().toString
+  val nextYearsDate       = LocalDate.now().plusDays(366).toString
 
   trait Test extends MockRetrievePeriodicObligationsValidator {
     lazy val parser = new RetrievePeriodicObligationsRequestParser(mockValidator)
@@ -51,7 +53,13 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
     "return a RetrieveRequest" when {
       "the validator returns no errors" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(data).returns(Nil)
-        parser.parseRequest(data) shouldBe Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(convertedStatus)))
+        parser.parseRequest(data) shouldBe Right(
+          RetrievePeriodicObligationsRequest(Nino(nino),
+                                             Some(convertedTypeOfBusiness),
+                                             Some(businessId),
+                                             Some(fromDate),
+                                             Some(toDate),
+                                             Some(convertedStatus)))
       }
     }
     "return an error wrapper" when {
@@ -61,20 +69,33 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
       }
       "the validator returns multiple errors" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
-        parser.parseRequest(invalidMultipleData) shouldBe Left(ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
+        parser.parseRequest(invalidMultipleData) shouldBe Left(
+          ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
       }
     }
     "convert fromDate to today and toDate to 366 days ahead" when {
       "there are no dates input and the status is Fulfilled" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(todaysDatesData).returns(Nil)
         parser.parseRequest(todaysDatesData) shouldBe {
-          Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), Some(convertedStatusFulfilled)))
+          Right(
+            RetrievePeriodicObligationsRequest(Nino(nino),
+                                               Some(convertedTypeOfBusiness),
+                                               Some(businessId),
+                                               Some(todaysDate),
+                                               Some(nextYearsDate),
+                                               Some(convertedStatusFulfilled)))
         }
       }
       "there are no dates input and the status is empty" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(todaysDatesData.copy(status = None)).returns(Nil)
         parser.parseRequest(todaysDatesData.copy(status = None)) shouldBe {
-          Right(RetrievePeriodicObligationsRequest(Nino(nino), Some(convertedTypeOfBusiness), Some(businessId), Some(todaysDate), Some(nextYearsDate), None))
+          Right(
+            RetrievePeriodicObligationsRequest(Nino(nino),
+                                               Some(convertedTypeOfBusiness),
+                                               Some(businessId),
+                                               Some(todaysDate),
+                                               Some(nextYearsDate),
+                                               None))
         }
       }
     }
