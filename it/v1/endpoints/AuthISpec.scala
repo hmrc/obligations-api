@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,17 @@ import java.time.Year
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val nino          = "AA123456A"
+    val nino: String      = "AA123456A"
+    val taxYearEnd: Int   = Year.now.getValue
+    val taxYearStart: Int = Year.now.getValue - 1
+    val taxYear: String   = s"$taxYearStart-${taxYearEnd.toString.drop(2)}"
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
       buildRequest(s"/$nino/crystallisation")
+        .addQueryStringParameters("taxYear" -> taxYear)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
 
@@ -65,9 +69,6 @@ class AuthISpec extends IntegrationBaseSpec {
         |}
     """.stripMargin)
   }
-
-  val taxYearEnd = Year.now.getValue
-  val taxYearStart = Year.now.getValue - 1
 
   "Calling the crystallisation endpoint" when {
 
