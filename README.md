@@ -45,7 +45,7 @@ You can see our changelog [here](https://github.com/hmrc/income-tax-mtd-changelo
 You can create a GitHub issue [here](https://github.com/hmrc/income-tax-mtd-changelog/issues)
 
 ## API Reference / Documentation 
-Available on the [HMRC Developer Hub](https://https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/obligations-api/1.0)
+Available on the [HMRC Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/obligations-api/1.0)
 
 
 ## License
