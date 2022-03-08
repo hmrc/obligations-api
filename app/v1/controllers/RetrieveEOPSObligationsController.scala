@@ -87,6 +87,7 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
       case RuleInsolventTraderError                => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
       case DownstreamError                         => InternalServerError(Json.toJson(errorWrapper))
+      case _                                       => unhandledError(errorWrapper)
     }
   }
 
