@@ -80,7 +80,7 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
+    errorWrapper.error match {
       case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
