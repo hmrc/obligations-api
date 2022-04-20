@@ -9,7 +9,7 @@
     <tbody>
         <tr>
             <td><p>N/A - DEFAULT</p></td>
-            <td><p>Simulate a success response with a open obligation.</p></td>
+            <td><p>Simulate a success response with an open obligation.</p></td>
         </tr>
         <tr>
             <td><p>FULFILLED</p></td>
