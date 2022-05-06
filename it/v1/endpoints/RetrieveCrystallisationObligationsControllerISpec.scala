@@ -19,11 +19,12 @@ package v1.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
+import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -46,7 +47,10 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+      )
     }
 
     val responseBody: JsValue = Json.parse(s"""
@@ -194,7 +198,6 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           ("AA123456A", "2016-17", Status.BAD_REQUEST, RuleTaxYearNotSupportedError),
           ("AA123456A", "2017-19", Status.BAD_REQUEST, RuleTaxYearRangeExceededError)
         )
-
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
@@ -229,7 +232,6 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError)
         )
-
         input.foreach(args => (serviceErrorTest _).tupled(args))
 
         "more than one obligation is returned in the obligations array" in new Test {

@@ -21,6 +21,7 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
@@ -51,7 +52,10 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+      )
     }
 
     val desResponse: JsValue = Json.parse(
@@ -511,8 +515,6 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), Some("2021-04-05"), Some("Open"), Status.BAD_REQUEST, RuleDateRangeInvalidError),
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2016-04-05"), Some("2017-04-05"), Some("Open"), Status.BAD_REQUEST, RuleFromDateNotSupportedError)
         )
-
-
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
@@ -553,7 +555,6 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
           (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
           (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError)
         )
-
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
 
