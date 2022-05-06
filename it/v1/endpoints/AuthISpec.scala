@@ -21,8 +21,10 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+
 import java.time.Year
 
 class AuthISpec extends IntegrationBaseSpec {
@@ -39,7 +41,10 @@ class AuthISpec extends IntegrationBaseSpec {
       setupStubs()
       buildRequest(s"/$nino/crystallisation")
         .addQueryStringParameters("taxYear" -> taxYear)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+      )
     }
 
     def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
@@ -133,7 +138,5 @@ class AuthISpec extends IntegrationBaseSpec {
         response.status shouldBe Status.FORBIDDEN
       }
     }
-
   }
-
 }
