@@ -18,12 +18,12 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
 import v1.mocks.services.{ MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveCrystallisationObligationsService }
 import v1.models.audit.{ AuditError, AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail }
+import v1.models.domain.Nino
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
@@ -64,12 +64,12 @@ class RetrieveCrystallisationObligationsControllerSpec
   private val correlationId = "X-123"
 
   private val responseBody = Json.parse("""{
-                                          |  "periodStartDate": "2018-04-06",
-                                          |  "periodEndDate": "2019-04-05",
-                                          |  "dueDate": "2020-01-31",
-                                          |  "status": "Fulfilled",
-                                          |  "receivedDate": "2020-01-25"
-                                          |}
+      |  "periodStartDate": "2018-04-06",
+      |  "periodEndDate": "2019-04-05",
+      |  "dueDate": "2020-01-31",
+      |  "status": "Fulfilled",
+      |  "receivedDate": "2020-01-25"
+      |}
     """.stripMargin)
 
   def event(auditResponse: AuditResponse): AuditEvent[RetrieveCrystallisationObligationsAuditDetail] =
@@ -137,7 +137,7 @@ class RetrieveCrystallisationObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (RuleTaxYearNotSupportedError, BAD_REQUEST),
@@ -149,7 +149,7 @@ class RetrieveCrystallisationObligationsControllerSpec
 
       "service errors occur" must {
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
-          s"a $mtdError error is returned from the service" in new Test {
+          s"the service returns $mtdError" in new Test {
 
             MockRetrieveCrystallisationObligationsRequestParser
               .parse(rawData)
@@ -170,11 +170,11 @@ class RetrieveCrystallisationObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (NoObligationsFoundError, NOT_FOUND),
-          (RuleInsolventTraderError, FORBIDDEN),
+          (RuleInsolventTraderError, BAD_REQUEST),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 

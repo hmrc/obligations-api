@@ -18,13 +18,13 @@ package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.http.Status._
+import play.api.libs.json.{ JsValue, Json }
+import play.api.libs.ws.{ WSRequest, WSResponse }
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -50,7 +50,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        )
     }
 
     val responseBody: JsValue = Json.parse(s"""
@@ -106,11 +106,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBody
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -161,11 +161,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBody
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -192,11 +192,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           }
         }
 
-        val input = Seq(
-          ("AA1123A", "2017-18", Status.BAD_REQUEST, NinoFormatError),
-          ("AA123456A", "20177", Status.BAD_REQUEST, TaxYearFormatError),
-          ("AA123456A", "2016-17", Status.BAD_REQUEST, RuleTaxYearNotSupportedError),
-          ("AA123456A", "2017-19", Status.BAD_REQUEST, RuleTaxYearRangeExceededError)
+        val input = List(
+          ("AA1123A", "2017-18", BAD_REQUEST, NinoFormatError),
+          ("AA123456A", "20177", BAD_REQUEST, TaxYearFormatError),
+          ("AA123456A", "2016-17", BAD_REQUEST, RuleTaxYearNotSupportedError),
+          ("AA123456A", "2017-19", BAD_REQUEST, RuleTaxYearRangeExceededError)
         )
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -218,19 +218,19 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           }
         }
 
-        val input = Seq(
-          (Status.BAD_REQUEST, "INVALID_IDNUMBER", Status.BAD_REQUEST, NinoFormatError),
-          (Status.BAD_REQUEST, "INVALID_IDTYPE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_STATUS", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_REGIME", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_DATE_FROM", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_DATE_TO", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_DATE_RANGE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.FORBIDDEN, "NOT_FOUND_BPKEY", Status.NOT_FOUND, NotFoundError),
-          (Status.FORBIDDEN, "INSOLVENT_TRADER", Status.FORBIDDEN, RuleInsolventTraderError),
-          (Status.BAD_REQUEST, "NOT_FOUND", Status.NOT_FOUND, NotFoundError),
-          (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError)
+        val input = List(
+          (BAD_REQUEST, "INVALID_IDNUMBER", BAD_REQUEST, NinoFormatError),
+          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_DATE_FROM", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_DATE_TO", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_DATE_RANGE", INTERNAL_SERVER_ERROR, DownstreamError),
+          (FORBIDDEN, "NOT_FOUND_BPKEY", NOT_FOUND, NotFoundError),
+          (FORBIDDEN, "INSOLVENT_TRADER", BAD_REQUEST, RuleInsolventTraderError),
+          (BAD_REQUEST, "NOT_FOUND", NOT_FOUND, NotFoundError),
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)
         )
         input.foreach(args => (serviceErrorTest _).tupled(args))
 
@@ -279,11 +279,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.status shouldBe INTERNAL_SERVER_ERROR
           response.json shouldBe Json.toJson(DownstreamError)
         }
 
@@ -323,11 +323,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
-          response.status shouldBe Status.INTERNAL_SERVER_ERROR
+          response.status shouldBe INTERNAL_SERVER_ERROR
           response.json shouldBe Json.toJson(DownstreamError)
         }
 
@@ -362,11 +362,11 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+              DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
             }
 
             val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
-            response.status shouldBe Status.NOT_FOUND
+            response.status shouldBe NOT_FOUND
             response.json shouldBe Json.toJson(NoObligationsFoundError)
           }
         }

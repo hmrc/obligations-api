@@ -18,25 +18,25 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveEOPSObligationsRequestParser
-import v1.mocks.services.{ MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveEOPSObligationsService }
-import v1.models.audit.{ AuditError, AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail }
+import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveEOPSObligationsService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail}
+import v1.models.domain.Nino
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveEOPSObligations._
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrieveEOPSObligationsControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockRetrieveEOPSObligationsService
@@ -60,30 +60,31 @@ class RetrieveEOPSObligationsControllerSpec
     MockedEnrolmentsAuthService.authoriseUser()
   }
 
-  private val nino           = "AA123456A"
+  private val nino = "AA123456A"
   private val typeOfBusiness = MtdBusiness.`self-employment`
-  private val businessId     = "XAIS123456789012"
-  private val fromDate       = "2018-04-06"
-  private val toDate         = "2019-04-05"
-  private val status         = MtdStatus.Open
-  private val correlationId  = "X-123"
+  private val businessId = "XAIS123456789012"
+  private val fromDate = "2018-04-06"
+  private val toDate = "2019-04-05"
+  private val status = MtdStatus.Open
+  private val correlationId = "X-123"
 
-  private val responseBody = Json.parse(s"""{
-      |  "obligations": [
-      |    {
-      |      "typeOfBusiness": "$typeOfBusiness",
-      |      "businessId": "$businessId",
-      |      "obligationDetails": [
-      |        {
-      |          "periodStartDate": "$fromDate",
-      |          "periodEndDate": "$toDate",
-      |          "dueDate": "2020-04-05",
-      |          "status": "$status"
-      |        }
-      |      ]
-      |    }
-      |  ]
-      |}""".stripMargin)
+  private val responseBody = Json.parse(
+    s"""{
+       |  "obligations": [
+       |    {
+       |      "typeOfBusiness": "$typeOfBusiness",
+       |      "businessId": "$businessId",
+       |      "obligationDetails": [
+       |        {
+       |          "periodStartDate": "$fromDate",
+       |          "periodEndDate": "$toDate",
+       |          "dueDate": "2020-04-05",
+       |          "status": "$status"
+       |        }
+       |      ]
+       |    }
+       |  ]
+       |}""".stripMargin)
 
   def event(auditResponse: AuditResponse): AuditEvent[RetrieveEOPSObligationsAuditDetail] =
     AuditEvent(
@@ -190,7 +191,7 @@ class RetrieveEOPSObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
           (TypeOfBusinessFormatError, BAD_REQUEST),
           (BusinessIdFormatError, BAD_REQUEST),
@@ -239,12 +240,12 @@ class RetrieveEOPSObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
           (FromDateFormatError, BAD_REQUEST),
           (ToDateFormatError, BAD_REQUEST),
           (RuleDateRangeInvalidError, BAD_REQUEST),
-          (RuleInsolventTraderError, FORBIDDEN),
+          (RuleInsolventTraderError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (NoObligationsFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR),

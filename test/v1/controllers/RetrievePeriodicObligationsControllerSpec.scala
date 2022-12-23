@@ -18,25 +18,25 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrievePeriodicObligationsRequestParser
-import v1.mocks.services.{ MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrievePeriodicObligationsService }
-import v1.models.audit.{ AuditError, AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail }
+import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrievePeriodicObligationsService}
+import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail}
+import v1.models.domain.Nino
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrievePeriodicObligationsControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockRetrievePeriodicObligationsService
@@ -60,15 +60,16 @@ class RetrievePeriodicObligationsControllerSpec
     MockedEnrolmentsAuthService.authoriseUser()
   }
 
-  private val nino           = "AA123456A"
+  private val nino = "AA123456A"
   private val typeOfBusiness = "self-employment"
-  private val businessId     = "XAIS123456789012"
-  private val fromDate       = "2019-01-01"
-  private val toDate         = "2019-06-06"
-  private val status         = "Open"
-  private val correlationId  = "X-123"
+  private val businessId = "XAIS123456789012"
+  private val fromDate = "2019-01-01"
+  private val toDate = "2019-06-06"
+  private val status = "Open"
+  private val correlationId = "X-123"
 
-  private val responseBody = Json.parse("""{
+  private val responseBody = Json.parse(
+    """{
       |  "obligations": [
       |     {
       |       "typeOfBusiness": "self-employment",
@@ -107,11 +108,11 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val rawData = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
   private val requestData = RetrievePeriodicObligationsRequest(Nino(nino),
-                                                               Some(MtdBusiness.`self-employment`),
-                                                               Some(businessId),
-                                                               Some(fromDate),
-                                                               Some(toDate),
-                                                               Some(MtdStatus.Open))
+    Some(MtdBusiness.`self-employment`),
+    Some(businessId),
+    Some(fromDate),
+    Some(toDate),
+    Some(MtdStatus.Open))
 
   "handleRequest" should {
     "return OK" when {
@@ -126,10 +127,10 @@ class RetrievePeriodicObligationsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(
             correlationId,
             RetrievePeriodObligationsResponse(Seq(Obligation(MtdBusiness.`self-employment`,
-                                                             businessId,
-                                                             Seq(
-                                                               ObligationDetail(fromDate, toDate, "2019-04-30", Some("2019-04-25"), MtdStatus.Open)
-                                                             ))))
+              businessId,
+              Seq(
+                ObligationDetail(fromDate, toDate, "2019-04-30", Some("2019-04-25"), MtdStatus.Open)
+              ))))
           ))))
 
         val result: Future[Result] =
@@ -159,7 +160,7 @@ class RetrievePeriodicObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
           (TypeOfBusinessFormatError, BAD_REQUEST),
           (BusinessIdFormatError, BAD_REQUEST),
@@ -201,9 +202,9 @@ class RetrievePeriodicObligationsControllerSpec
           }
         }
 
-        val input = Seq(
+        val input = List(
           (NinoFormatError, BAD_REQUEST),
-          (RuleInsolventTraderError, FORBIDDEN),
+          (RuleInsolventTraderError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (DownstreamError, INTERNAL_SERVER_ERROR),
           (NoObligationsFoundError, NOT_FOUND)
