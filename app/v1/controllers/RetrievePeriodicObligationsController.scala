@@ -18,10 +18,10 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.Logging
 import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
 import v1.models.audit.{AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail}
@@ -29,6 +29,7 @@ import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, RetrievePeriodicObligationsService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -84,18 +85,18 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
       case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
-           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
-           | BadRequestError                       => BadRequest(Json.toJson(errorWrapper))
-      case RuleInsolventTraderError                => Forbidden(Json.toJson(errorWrapper))
+           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError | RuleInsolventTraderError
+           | BadRequestError => BadRequest(Json.toJson(errorWrapper))
+
       case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError                         => InternalServerError(Json.toJson(errorWrapper))
-      case _                                       => unhandledError(errorWrapper)
+      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case _ => unhandledError(errorWrapper)
     }
   }
 
   private def auditSubmission(details: RetrievePeriodicObligationsAuditDetail)
                              (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext) = {
+                              ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("retrievePeriodicObligations", "retrieve-periodic-obligations", details)
     auditService.auditEvent(event)
   }

@@ -18,17 +18,18 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.Logging
 import v1.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
 import v1.models.audit.{AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail}
 import v1.models.errors._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
-import v1.services.{RetrieveCrystallisationObligationsService, _}
+import v1.services._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -77,17 +78,17 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case NinoFormatError | TaxYearFormatError | RuleTaxYearNotSupportedError
-           | RuleTaxYearRangeExceededError | BadRequestError => BadRequest(Json.toJson(errorWrapper))
-      case RuleInsolventTraderError                          => Forbidden(Json.toJson(errorWrapper))
-      case NotFoundError | NoObligationsFoundError           => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError                                   => InternalServerError(Json.toJson(errorWrapper))
-      case _                                                 => unhandledError(errorWrapper)
+           | RuleTaxYearRangeExceededError | RuleInsolventTraderError | BadRequestError => BadRequest(Json.toJson(errorWrapper))
+
+      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
+      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case _ => unhandledError(errorWrapper)
     }
   }
 
   private def auditSubmission(details: RetrieveCrystallisationObligationsAuditDetail)
                              (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext) = {
+                              ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("retrieveCrystallisationObligations", "retrieve-crystallisation-obligations", details)
     auditService.auditEvent(event)
   }

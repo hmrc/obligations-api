@@ -18,25 +18,24 @@ package v1.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status
-import play.api.libs.json.{JsValue, Json}
-import play.api.libs.ws.{WSRequest, WSResponse}
+import play.api.http.Status._
+import play.api.libs.json.{ JsValue, Json }
+import play.api.libs.ws.{ WSRequest, WSResponse }
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors.{BusinessIdFormatError, DownstreamError, FromDateFormatError, MissingFromDateError, MissingToDateError, MissingTypeOfBusinessError, MtdError, NinoFormatError, NoObligationsFoundError, NotFoundError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, RuleInsolventTraderError, StatusFormatError, ToDateBeforeFromDateError, ToDateFormatError, TypeOfBusinessFormatError}
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.models.errors._
+import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino = "AA123456A"
+    val nino           = "AA123456A"
     val typeOfBusiness = "self-employment"
-    val businessId = "XAIS12345678901"
-    val fromDate = "2019-01-01"
-    val toDate = "2019-06-06"
-    val status = "Open"
-    val correlationId = "X-123"
+    val businessId     = "XAIS12345678901"
+    val fromDate       = "2019-01-01"
+    val toDate         = "2019-06-06"
+    val status         = "Open"
 
     def setupStubs(): StubMapping
 
@@ -44,9 +43,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
     def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
 
-    def queryParams: Map[String, String] = Map (
+    def queryParams: Map[String, String] = Map(
       "from" -> "2019-01-01",
-      "to" -> "2019-06-06"
+      "to"   -> "2019-06-06"
     )
 
     def request(): WSRequest = {
@@ -55,11 +54,10 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
-      )
+        )
     }
 
-    val responseBody = Json.parse(
-      """{
+    val responseBody = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -102,8 +100,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
-    val responseBodyOneObjectMultipleDetails = Json.parse(
-      """{
+    val responseBodyOneObjectMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -161,8 +158,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
-    val responseBodyMultipleObjectsOneDetail = Json.parse(
-      """{
+    val responseBodyMultipleObjectsOneDetail = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -237,8 +233,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
-    val responseBodyMultipleObjectsMultipleDetails = Json.parse(
-      """{
+    val responseBodyMultipleObjectsMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -363,17 +358,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
         }
 
-        val response: WSResponse = await(request().withQueryStringParameters(
-          "typeOfBusiness" -> typeOfBusiness,
-          "businessId" -> businessId,
-          "fromDate" -> fromDate,
-          "toDate" -> toDate,
-          "status" -> status).get())
+        val response: WSResponse = await(
+          request()
+            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                       "businessId"     -> businessId,
+                                       "fromDate"       -> fromDate,
+                                       "toDate"         -> toDate,
+                                       "status"         -> status)
+            .get())
 
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBody
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -383,17 +380,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponseOneObjectMultipleDetails)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseOneObjectMultipleDetails)
         }
 
-        val response: WSResponse = await(request().withQueryStringParameters(
-          "typeOfBusiness" -> typeOfBusiness,
-          "businessId" -> businessId,
-          "fromDate" -> fromDate,
-          "toDate" -> toDate,
-          "status" -> status).get())
+        val response: WSResponse = await(
+          request()
+            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                       "businessId"     -> businessId,
+                                       "fromDate"       -> fromDate,
+                                       "toDate"         -> toDate,
+                                       "status"         -> status)
+            .get())
 
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBodyOneObjectMultipleDetails
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -403,17 +402,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponseMultipleObjectsOneDetail)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsOneDetail)
         }
 
-        val response: WSResponse = await(request().withQueryStringParameters(
-          "typeOfBusiness" -> typeOfBusiness,
-          "businessId" -> businessId,
-          "fromDate" -> fromDate,
-          "toDate" -> toDate,
-          "status" -> status).get())
+        val response: WSResponse = await(
+          request()
+            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                       "businessId"     -> businessId,
+                                       "fromDate"       -> fromDate,
+                                       "toDate"         -> toDate,
+                                       "status"         -> status)
+            .get())
 
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBodyMultipleObjectsOneDetail
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -423,17 +424,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponseMultipleObjectsMultipleDetails)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsMultipleDetails)
         }
 
-        val response: WSResponse = await(request().withQueryStringParameters(
-          "typeOfBusiness" -> typeOfBusiness,
-          "businessId" -> businessId,
-          "fromDate" -> fromDate,
-          "toDate" -> toDate,
-          "status" -> status).get())
+        val response: WSResponse = await(
+          request()
+            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                       "businessId"     -> businessId,
+                                       "fromDate"       -> fromDate,
+                                       "toDate"         -> toDate,
+                                       "status"         -> status)
+            .get())
 
-        response.status shouldBe Status.OK
+        response.status shouldBe OK
         response.json shouldBe responseBodyMultipleObjectsMultipleDetails
         response.header("Content-Type") shouldBe Some("application/json")
       }
@@ -449,16 +452,15 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
-          val response: WSResponse = await(request().withQueryStringParameters(
-            "typeOfBusiness" -> typeOfBusiness,
-            "businessId" -> businessId,
-            "toDate" -> toDate,
-            "status" -> status).get())
+          val response: WSResponse = await(
+            request()
+              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness, "businessId" -> businessId, "toDate" -> toDate, "status" -> status)
+              .get())
 
-          response.status shouldBe Status.BAD_REQUEST
+          response.status shouldBe BAD_REQUEST
           response.json shouldBe Json.toJson(MissingFromDateError)
         }
 
@@ -468,16 +470,15 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
-          val response: WSResponse = await(request().withQueryStringParameters(
-            "typeOfBusiness" -> typeOfBusiness,
-            "businessId" -> businessId,
-            "fromDate" -> fromDate,
-            "status" -> status).get())
+          val response: WSResponse = await(
+            request()
+              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness, "businessId" -> businessId, "fromDate" -> fromDate, "status" -> status)
+              .get())
 
-          response.status shouldBe Status.BAD_REQUEST
+          response.status shouldBe BAD_REQUEST
           response.json shouldBe Json.toJson(MissingToDateError)
         }
 
@@ -487,16 +488,13 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
-          val response: WSResponse = await(request().withQueryStringParameters(
-            "businessId" -> businessId,
-            "fromDate" -> fromDate,
-            "toDate" -> toDate,
-            "status" -> status).get())
+          val response: WSResponse = await(
+            request().withQueryStringParameters("businessId" -> businessId, "fromDate" -> fromDate, "toDate" -> toDate, "status" -> status).get())
 
-          response.status shouldBe Status.BAD_REQUEST
+          response.status shouldBe BAD_REQUEST
           response.json shouldBe Json.toJson(MissingTypeOfBusinessError)
         }
       }
@@ -512,12 +510,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
                                 expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
+            override val nino: String           = requestNino
             override val typeOfBusiness: String = requestTypeOfBusiness
-            override val businessId: String = requestBusinessId
-            override val fromDate: String = requestFromDate
-            override val toDate: String = requestToDate
-            override val status: String = requestStatus
+            override val businessId: String     = requestBusinessId
+            override val fromDate: String       = requestFromDate
+            override val toDate: String         = requestToDate
+            override val status: String         = requestStatus
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
@@ -525,26 +523,29 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
               MtdIdLookupStub.ninoFound(nino)
             }
 
-            val response: WSResponse = await(request().withQueryStringParameters(
-              "typeOfBusiness" -> typeOfBusiness,
-              "businessId" -> businessId,
-              "fromDate" -> fromDate,
-              "toDate" -> toDate,
-              "status" -> status).get())
+            val response: WSResponse = await(
+              request()
+                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                           "businessId"     -> businessId,
+                                           "fromDate"       -> fromDate,
+                                           "toDate"         -> toDate,
+                                           "status"         -> status)
+                .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
           }
         }
-        val input = Seq(
-          ("AA1", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, NinoFormatError),
-          ("AA123456A", "self-employment", "XAI", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, BusinessIdFormatError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01", "2019-06-06", "Open", Status.BAD_REQUEST, FromDateFormatError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06", "Open", Status.BAD_REQUEST, ToDateFormatError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Closed", Status.BAD_REQUEST, StatusFormatError),
-          ("AA123456A", "walrus", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", Status.BAD_REQUEST, TypeOfBusinessFormatError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2019-06-06", "2019-01-01", "Open", Status.BAD_REQUEST, ToDateBeforeFromDateError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2017-01-01", "2018-01-01", "Open", Status.BAD_REQUEST, RuleFromDateNotSupportedError),
-          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2020-06-06", "Open", Status.BAD_REQUEST, RuleDateRangeInvalidError)
+
+        val input = List(
+          ("AA1", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", BAD_REQUEST, NinoFormatError),
+          ("AA123456A", "self-employment", "XAI", "2019-01-01", "2019-06-06", "Open", BAD_REQUEST, BusinessIdFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01", "2019-06-06", "Open", BAD_REQUEST, FromDateFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06", "Open", BAD_REQUEST, ToDateFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Closed", BAD_REQUEST, StatusFormatError),
+          ("AA123456A", "walrus", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", BAD_REQUEST, TypeOfBusinessFormatError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-06-06", "2019-01-01", "Open", BAD_REQUEST, ToDateBeforeFromDateError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2017-01-01", "2018-01-01", "Open", BAD_REQUEST, RuleFromDateNotSupportedError),
+          ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2020-06-06", "Open", BAD_REQUEST, RuleDateRangeInvalidError)
         )
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -560,29 +561,32 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
               DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
-            val response: WSResponse = await(request().withQueryStringParameters(
-              "typeOfBusiness" -> typeOfBusiness,
-              "businessId" -> businessId,
-              "fromDate" -> fromDate,
-              "toDate" -> toDate,
-              "status" -> status).get())
+            val response: WSResponse = await(
+              request()
+                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                           "businessId"     -> businessId,
+                                           "fromDate"       -> fromDate,
+                                           "toDate"         -> toDate,
+                                           "status"         -> status)
+                .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
           }
         }
-        val input = Seq(
-          (Status.BAD_REQUEST, "INVALID_IDNUMBER", Status.BAD_REQUEST ,NinoFormatError),
-          (Status.BAD_REQUEST, "INVALID_IDTYPE", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_STATUS", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_REGIME", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.BAD_REQUEST, "INVALID_DATE_FROM", Status.BAD_REQUEST, FromDateFormatError),
-          (Status.BAD_REQUEST, "INVALID_DATE_TO", Status.BAD_REQUEST, ToDateFormatError),
-          (Status.BAD_REQUEST, "INVALID_DATE_RANGE", Status.BAD_REQUEST, RuleDateRangeInvalidError),
-          (Status.NOT_FOUND, "NOT_FOUND", Status.NOT_FOUND, NotFoundError),
-          (Status.FORBIDDEN, "INSOLVENT_TRADER", Status.FORBIDDEN, RuleInsolventTraderError),
-          (Status.FORBIDDEN, "NOT_FOUND_BPKEY", Status.NOT_FOUND, NotFoundError),
-          (Status.INTERNAL_SERVER_ERROR, "SERVER_ERROR", Status.INTERNAL_SERVER_ERROR, DownstreamError),
-          (Status.SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", Status.INTERNAL_SERVER_ERROR, DownstreamError)
+
+        val input = List(
+          (BAD_REQUEST, "INVALID_IDNUMBER", BAD_REQUEST, NinoFormatError),
+          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_DATE_FROM", BAD_REQUEST, FromDateFormatError),
+          (BAD_REQUEST, "INVALID_DATE_TO", BAD_REQUEST, ToDateFormatError),
+          (BAD_REQUEST, "INVALID_DATE_RANGE", BAD_REQUEST, RuleDateRangeInvalidError),
+          (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
+          (FORBIDDEN, "INSOLVENT_TRADER", BAD_REQUEST, RuleInsolventTraderError),
+          (FORBIDDEN, "NOT_FOUND_BPKEY", NOT_FOUND, NotFoundError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
         )
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
@@ -594,17 +598,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
-          val response: WSResponse = await(request().withQueryStringParameters(
-            "typeOfBusiness" -> "uk-property",
-            "businessId" -> businessId,
-            "fromDate" -> fromDate,
-            "toDate" -> toDate,
-            "status" -> status).get())
+          val response: WSResponse = await(
+            request()
+              .withQueryStringParameters("typeOfBusiness" -> "uk-property",
+                                         "businessId"     -> businessId,
+                                         "fromDate"       -> fromDate,
+                                         "toDate"         -> toDate,
+                                         "status"         -> status)
+              .get())
 
-          response.status shouldBe Status.NOT_FOUND
+          response.status shouldBe NOT_FOUND
           response.json shouldBe Json.toJson(NoObligationsFoundError)
         }
 
@@ -614,17 +620,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
             AuditStub.audit()
             AuthStub.authorised()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, Status.OK, desResponse)
+            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
-          val response: WSResponse = await(request().withQueryStringParameters(
-            "typeOfBusiness" -> typeOfBusiness,
-            "businessId" -> "XAIS12345678903",
-            "fromDate" -> fromDate,
-            "toDate" -> toDate,
-            "status" -> status).get())
+          val response: WSResponse = await(
+            request()
+              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
+                                         "businessId"     -> "XAIS12345678903",
+                                         "fromDate"       -> fromDate,
+                                         "toDate"         -> toDate,
+                                         "status"         -> status)
+              .get())
 
-          response.status shouldBe Status.NOT_FOUND
+          response.status shouldBe NOT_FOUND
           response.json shouldBe Json.toJson(NoObligationsFoundError)
         }
       }

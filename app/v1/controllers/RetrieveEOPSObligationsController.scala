@@ -18,10 +18,10 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.Logging
 import v1.controllers.requestParsers.RetrieveEOPSObligationsRequestParser
 import v1.models.audit.{AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail}
@@ -29,6 +29,7 @@ import v1.models.errors._
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 import v1.services._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -82,18 +83,18 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
       case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
            | FromDateFormatError | ToDateFormatError | StatusFormatError
            | MissingToDateError | MissingFromDateError | ToDateBeforeFromDateError
-           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError
-           | BadRequestError                       => BadRequest(Json.toJson(errorWrapper))
-      case RuleInsolventTraderError                => Forbidden(Json.toJson(errorWrapper))
+           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError | RuleInsolventTraderError
+           | BadRequestError => BadRequest(Json.toJson(errorWrapper))
+
       case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError                         => InternalServerError(Json.toJson(errorWrapper))
-      case _                                       => unhandledError(errorWrapper)
+      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case _ => unhandledError(errorWrapper)
     }
   }
 
   private def auditSubmission(details: RetrieveEOPSObligationsAuditDetail)
                              (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext) = {
+                              ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("retrieveEOPSObligations", "retrieve-eops-obligations", details)
     auditService.auditEvent(event)
   }

@@ -17,10 +17,10 @@
 package v1.services
 
 import support.UnitSpec
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockRetrieveEOPSObligationsConnector
+import v1.models.domain.Nino
 import v1.models.domain.business.MtdBusiness
 import v1.models.domain.status.MtdStatus
 import v1.models.errors._
@@ -186,7 +186,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
             await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
           }
 
-        val input = Seq(
+        val input = List(
           ("INVALID_IDNUMBER", NinoFormatError),
           ("INVALID_IDTYPE", DownstreamError),
           ("INVALID_STATUS", DownstreamError),

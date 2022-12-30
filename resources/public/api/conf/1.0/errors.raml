@@ -73,7 +73,7 @@ traits:
                   code: CLIENT_OR_AGENT_NOT_AUTHORISED
   ruleInsolventTrader:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse
@@ -149,27 +149,16 @@ traits:
                 value:
                   code: RULE_TAX_YEAR_TOO_LONG
   ruleTaxYearNotEnded:
-      responses:
-        400:
-          body:
-            application/json:
-              type: types.errorResponse
-              examples:
-                ruleTaxYearNotEnded:
-                  description: A brought forward loss is entered before the end of the tax year in which it was generated.
-                  value:
-                    code: RULE_TAX_YEAR_NOT_ENDED
-  ruleNoChangeTypeOfClaim:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse
             examples:
-              ruleNoChangeTypeOfClaim:
-                description: The remote endpoint has indicated that the requested type of claim is already active.
+              ruleTaxYearNotEnded:
+                description: A brought forward loss is entered before the end of the tax year in which it was generated.
                 value:
-                  code: RULE_ALREADY_EXISTS
+                  code: RULE_TAX_YEAR_NOT_ENDED
   formatLossType:
     responses:
       400:
@@ -247,39 +236,6 @@ traits:
                 description: The format of the type of claim is not valid.
                 value:
                   code: FORMAT_TYPE_OF_CLAIM
-  ruleTypeOfClaim400:
-    responses:
-      400:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleTypeOfClaim:
-                description: The type of claim supplied is not valid.
-                value:
-                  code: RULE_TYPE_OF_CLAIM_INVALID
-  ruleTypeOfClaim403:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleTypeOfClaim:
-                description: The type of claim supplied is not valid.
-                value:
-                  code: RULE_TYPE_OF_CLAIM_INVALID
-  rulePeriodNotEnded:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              rulePeriodNotEnded:
-                description: The loss claim has been made too soon.
-                value:
-                  code: RULE_PERIOD_NOT_ENDED
   formatClaimId:
     responses:
       400:
@@ -291,61 +247,6 @@ traits:
                 description: The format of the supplied claim ID is not valid.
                 value:
                   code: FORMAT_CLAIM_ID
-  ruleDuplicateSubmission:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleDuplicateSubmission:
-                description: A brought forward loss already exists for this income source.
-                value:
-                  code: RULE_DUPLICATE_SUBMISSION
-  ruleDuplicateClaimSubmission:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleDuplicateSubmission:
-                description: The type of claim is the same as a previous submission.
-                value:
-                  code: RULE_DUPLICATE_SUBMISSION
-  ruleDeleteAfterCrystallisation:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleDeleteAfterCrystallisation:
-                description: An existing brought forward loss cannot be deleted after it has been crystallised.  The requested resource is locked.
-                value:
-                  code: RULE_DELETE_AFTER_CRYSTALLISATION
-  ruleNoChangeLossAmount:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleNoChangeLossAmount:
-                description: The loss amount supplied is the same as the existing stored loss amount.
-                value:
-                  code: RULE_NO_CHANGE
-  ruleNoAccountingPeriod:
-    responses:
-      403:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleNoAccountingPeriod:
-                description: There is no accounting period for the year of the claim.
-                value:
-                  code: RULE_NO_ACCOUNTING_PERIOD
   formatTypeOfBusiness:
     responses:
       400:
