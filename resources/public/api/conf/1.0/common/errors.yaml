@@ -1,0 +1,141 @@
+components:
+  examples:
+
+    # 400
+
+    formatNino:
+      description: |
+        The format of the supplied NINO field is not valid.
+      value:
+        code: FORMAT_NINO
+        message: The provided NINO is invalid
+
+    formatTaxYear:
+      description: |
+        The format of the tax year field is not valid.
+      value:
+        code: FORMAT_TAX_YEAR
+        message: The provided tax year is invalid
+
+    ruleTaxYearNotSupported:
+      description: |
+        The tax year requested is before 2017-18.
+      value:
+        code: RULE_TAX_YEAR_NOT_SUPPORTED
+        message: The specified tax year is not supported as too early
+
+    ruleTaxYearTooLong:
+      description: |
+        The tax year provided is more than one year in length.
+      value:
+        code: RULE_TAX_YEAR_TOO_LONG
+        message: The specified tax year is too long
+
+    formatTypeOfBusiness:
+      description: |
+        The format of the type of business field is not valid.
+      value:
+        code: FORMAT_TYPE_OF_BUSINESS
+        message: The provided typeOfBusiness field is invalid
+
+    formatBusinessId:
+      description: |
+        The format of the business ID field is not valid.
+      value:
+        code: FORMAT_BUSINESS_ID
+        message: The provided businessId is invalid
+
+    formatFromDate:
+      description: |
+        The format of the From date field is not valid.
+      value:
+        code: FORMAT_FROM_DATE
+        message: The provided fromDate is invalid
+
+    formatToDate:
+      description: |
+        The format of the To date field is not valid.
+      value:
+        code: FORMAT_TO_DATE
+        message: The provided toDate is invalid
+
+    formatStatus:
+      description: |
+        The format of the status field is not valid.
+      value:
+        code: FORMAT_STATUS
+        message: The provided status is invalid
+
+    missingFromDate:
+      description: |
+        The From date parameter is missing.
+      value:
+        code: MISSING_FROM_DATE
+        message: The From date parameter is missing
+
+    missingToDate:
+      description: |
+        The To date parameter is missing.
+      value:
+        code: MISSING_TO_DATE
+        message: The To date parameter is missing
+
+    rangeToDateBeforeFromDate:
+      description: |
+        The To date is before the From date.
+      value:
+        code: RANGE_TO_DATE_BEFORE_FROM_DATE
+        message: The To date must be after the From date
+
+    missingTypeOfBusiness:
+      description: |
+        The Type of Business Parameter is missing.
+      value:
+        code: MISSING_TYPE_OF_BUSINESS
+        message: The type of business query parameter must be provided when an incomeSourceId is supplied
+
+    ruleDateRangeInvalid:
+      description: |
+        The date range is longer than 366 days.
+      value:
+        code: RULE_DATE_RANGE_INVALID
+        message: The specified date range is invalid
+
+    ruleFromDateNotSupported:
+      description: |
+        The From date specified is before 2017-04-06.
+      value:
+        code: RULE_FROM_DATE_NOT_SUPPORTED
+        message: The specified From date is not supported as too early
+#
+    # 403
+
+    clientOrAgentNotAuthorised:
+      description: |
+        The client or agent is not authorised. This is because: the client is not subscribed to MTD, the agent is not subscribed to Agent Services, or the client has not authorised the agent to act on their behalf.
+      value:
+        code: CLIENT_OR_AGENT_NOT_AUTHORISED
+        message: The client or agent is not authorised
+
+    # 404
+
+    notFound:
+      description: |
+        The supplied income source could not be found.
+      value:
+        code: MATCHING_RESOURCE_NOT_FOUND
+        message: Matching resource not found
+
+    noObligationsFound:
+      description: |
+        No obligations found using this filter.
+      value:
+        code: NO_OBLIGATIONS_FOUND
+        message: No obligations found using this filter
+
+    ruleInsolventTrader:
+      description: |
+        The request could not be completed as it relates to an insolvent trader, which are not supported by this API.
+      value:
+        code: RULE_INSOLVENT_TRADER
+        message: The remote endpoint has indicated that the Trader is insolvent.
