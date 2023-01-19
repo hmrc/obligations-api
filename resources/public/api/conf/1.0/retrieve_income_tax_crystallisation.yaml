@@ -1,7 +1,7 @@
 get:
-  summary: Retrieve Income Tax (Self Assessment) Crystallisation Obligations
+  summary: Retrieve Income Tax (Self Assessment) Final Declaration Obligations
   description: |
-    This endpoint allows a developer to retrieve the Crystallisation obligations for a user's Income Tax account. The account identifier (National Insurance number) must be provided.
+    This endpoint allows a developer to retrieve the final declaration (previously known as crystallisation) obligations for a customer’s Income Tax account. The account identifier (National Insurance number) must be provided.
     
     ### Test data
     <p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>
@@ -53,14 +53,6 @@ get:
             <p>Simulate a scenario where no data is found.</p>
           </td>
         </tr>
-        <tr>
-          <td>
-            <p>NO_OBLIGATIONS_FOUND</p>
-          </td>
-          <td>
-            <p>Simulate a scenario where no obligations are found.</p>
-          </td>
-        </tr>
       </tbody>
     </table>
  
@@ -69,7 +61,6 @@ get:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
     - $ref: './common/queryParameters.yaml#/components/parameters/taxYear'
     - $ref: './common/headers.yaml#/components/parameters/acceptJson'
-    - $ref: './common/headers.yaml#/components/parameters/contentTypeJson'
     - $ref: './common/headers.yaml#/components/parameters/authorization'
     - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 
@@ -108,7 +99,8 @@ get:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
             RULE_TAX_YEAR_TOO_LONG:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearTooLong'
-
+            RULE_INSOLVENT_TRADER:
+              $ref: './common/errors.yaml#/components/examples/ruleInsolventTrader'
     "403":
       description: Forbidden
       content:
@@ -130,5 +122,3 @@ get:
               $ref: './common/errors.yaml#/components/examples/notFound'
             NO_OBLIGATIONS_FOUND:
               $ref: './common/errors.yaml#/components/examples/noObligationsFound'
-            RULE_INSOLVENT_TRADER:
-              $ref: './common/errors.yaml#/components/examples/ruleInsolventTrader'

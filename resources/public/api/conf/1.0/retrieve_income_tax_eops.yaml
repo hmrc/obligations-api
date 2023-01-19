@@ -65,7 +65,6 @@ get:
     - $ref: './common/queryParameters.yaml#/components/parameters/toDate'
     - $ref: './common/queryParameters.yaml#/components/parameters/status'
     - $ref: './common/headers.yaml#/components/parameters/acceptJson'
-    - $ref: './common/headers.yaml#/components/parameters/contentTypeJson'
     - $ref: './common/headers.yaml#/components/parameters/authorization'
     - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 

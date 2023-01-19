@@ -48,9 +48,9 @@ components:
             read:self-assessment: Grant read access
 
 paths:
-  /obligations/income-tax/{nino}/crystallisation?taxYear={taxYear}:
-    $ref: './retrieve_income_tax_crystallisation.yaml'
-  /obligations/income-tax/{nino}/end-of-period-statement?typeOfBusiness={typeofBusiness}&incomeSourceId={incomeSourceId}&fromDate={fromDate}&toDate={toDate}&status={status}:
-    $ref: './retrieve_income_tax_eops.yaml'
-  /obligations/income-tax/{nino}/income-and-expenditure:
+  /obligations/details/{nino}/income-and-expenditure:
     $ref: './retrieve_income_tax_income_expenditure.yaml'
+  /obligations/details/{nino}/crystallisation:
+    $ref: './retrieve_income_tax_crystallisation.yaml'
+  /obligations/details/{nino}/end-of-period-statement:
+    $ref: './retrieve_income_tax_eops.yaml'

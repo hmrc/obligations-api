@@ -103,7 +103,7 @@ components:
 
     ruleFromDateNotSupported:
       description: |
-        The From date specified is before 2017-04-06.
+        The From date specified is before 2018-04-06.
       value:
         code: RULE_FROM_DATE_NOT_SUPPORTED
         message: The specified From date is not supported as too early
@@ -138,4 +138,4 @@ components:
         The request could not be completed as it relates to an insolvent trader, which are not supported by this API.
       value:
         code: RULE_INSOLVENT_TRADER
-        message: The remote endpoint has indicated that the Trader is insolvent.
+        message: The remote endpoint has indicated that the Trader is insolvent
