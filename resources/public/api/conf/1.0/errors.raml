@@ -368,17 +368,6 @@ traits:
                 description: The From date specified is before 2018-04-06.
                 value:
                   code: RULE_FROM_DATE_NOT_SUPPORTED
-  ruleFromDateNonSupportedEOPS:
-    responses:
-      400:
-        body:
-          application/json:
-            type: types.errorResponse
-            examples:
-              ruleFromDateNonSupportedEOPS:
-                description: The From date specified is before 2017-04-06.
-                value:
-                  code: RULE_FROM_DATE_NOT_SUPPORTED
   noObligationsFound:
     responses:
       404:
