@@ -55,7 +55,7 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
       val requestHandler = RequestHandler
         .withParser(parser)
         .withService(service.retrieve)
-        .withNoContentResult(OK)
+        .withPlainJsonResult()
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "retrievePeriodicObligations",

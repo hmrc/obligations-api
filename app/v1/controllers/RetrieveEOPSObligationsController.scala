@@ -55,7 +55,7 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
       val requestHandler = RequestHandler
         .withParser(parser)
         .withService(service.retrieve)
-        .withNoContentResult(OK)
+        .withPlainJsonResult()
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "retrieveEOPSObligations",

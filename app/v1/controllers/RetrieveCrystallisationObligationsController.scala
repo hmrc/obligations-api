@@ -50,7 +50,7 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
       val requestHandler = RequestHandler
         .withParser(parser)
         .withService(service.retrieve)
-        .withNoContentResult(OK)
+        .withPlainJsonResult()
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "RetrieveCrystallisationObligations",
