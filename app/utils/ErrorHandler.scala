@@ -16,6 +16,8 @@
 
 package utils
 
+import api.models.errors
+import api.models.errors._
 import javax.inject._
 import play.api._
 import play.api.http.Status._
@@ -28,7 +30,6 @@ import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 import uk.gov.hmrc.play.bootstrap.config.HttpAuditEvent
 import uk.gov.hmrc.play.bootstrap.backend.http.JsonErrorHandler
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import v1.models.errors._
 
 import scala.concurrent._
 
@@ -59,9 +60,9 @@ class ErrorHandler @Inject()(
         Future.successful(NotFound(Json.toJson(NotFoundError)))
       case _ =>
         val errorCode = statusCode match {
-          case UNAUTHORIZED           => UnauthorisedError
+          case UNAUTHORIZED           => ClientNotAuthorisedError
           case UNSUPPORTED_MEDIA_TYPE => InvalidBodyTypeError
-          case _                      => MtdError("INVALID_REQUEST", message)
+          case _                      => MtdError("INVALID_REQUEST", message, BAD_REQUEST)
         }
 
         auditConnector.sendEvent(
@@ -84,14 +85,14 @@ class ErrorHandler @Inject()(
 
     val (status, errorCode, eventType) = ex match {
       case _: NotFoundException      => (NOT_FOUND, NotFoundError, "ResourceNotFound")
-      case _: AuthorisationException => (UNAUTHORIZED, UnauthorisedError, "ClientError")
+      case _: AuthorisationException => (UNAUTHORIZED, ClientNotAuthorisedError, "ClientError")
       case _: JsValidationException  => (BAD_REQUEST, BadRequestError, "ServerValidationError")
       case e: HttpException          => (e.responseCode, BadRequestError, "ServerValidationError")
       case e: UpstreamErrorResponse if UpstreamErrorResponse.Upstream4xxResponse.unapply(e).isDefined =>
         (e.reportAs, BadRequestError, "ServerValidationError")
       case e: UpstreamErrorResponse if UpstreamErrorResponse.Upstream5xxResponse.unapply(e).isDefined =>
-        (e.reportAs, DownstreamError, "ServerInternalError")
-      case _ => (INTERNAL_SERVER_ERROR, DownstreamError, "ServerInternalError")
+        (e.reportAs, errors.InternalError, "ServerInternalError")
+      case _ => (INTERNAL_SERVER_ERROR, errors.InternalError, "ServerInternalError")
     }
 
     auditConnector.sendEvent(

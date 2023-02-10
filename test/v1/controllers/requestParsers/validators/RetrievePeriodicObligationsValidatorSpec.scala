@@ -16,58 +16,51 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.models.errors._
 import support.UnitSpec
-import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
 
 class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
+  private val validNino           = "AA123456A"
   private val validTypeOfBusiness = "self-employment"
-  private val validBusinessId = "XAIS12345678901"
-  private val validFromDate = "2019-01-01"
-  private val validToDate = "2019-12-30"
-  private val validStatus = "Open"
+  private val validBusinessId     = "XAIS12345678901"
+  private val validFromDate       = "2019-01-01"
+  private val validToDate         = "2019-12-30"
+  private val validStatus         = "Open"
 
   val validator = new RetrievePeriodicObligationsValidator()
 
   "running a validation" should {
     "return no errors" when {
       "a valid request is supplied" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validBusinessId),
-          Some(validFromDate),
-          Some(validToDate),
-          Some(validStatus))) shouldBe Nil
+        validator.validate(
+          RetrievePeriodicObligationsRawData(validNino,
+                                             Some(validTypeOfBusiness),
+                                             Some(validBusinessId),
+                                             Some(validFromDate),
+                                             Some(validToDate),
+                                             Some(validStatus))) shouldBe Nil
       }
       "a valid request is supplied with no businessId" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          None,
-          Some(validFromDate),
-          Some(validToDate),
-          Some(validStatus))) shouldBe Nil
+        validator.validate(RetrievePeriodicObligationsRawData(validNino,
+                                                              Some(validTypeOfBusiness),
+                                                              None,
+                                                              Some(validFromDate),
+                                                              Some(validToDate),
+                                                              Some(validStatus))) shouldBe Nil
       }
       "a valid request is supplied with no businessId & typeOfBusiness" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          None,
-          None,
-          Some(validFromDate),
-          Some(validToDate),
-          Some(validStatus))) shouldBe Nil
+        validator.validate(RetrievePeriodicObligationsRawData(validNino, None, None, Some(validFromDate), Some(validToDate), Some(validStatus))) shouldBe Nil
       }
       "a valid request is supplied with no status" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validBusinessId),
-          Some(validFromDate),
-          Some(validToDate),
-          None)) shouldBe Nil
+        validator.validate(
+          RetrievePeriodicObligationsRawData(validNino,
+                                             Some(validTypeOfBusiness),
+                                             Some(validBusinessId),
+                                             Some(validFromDate),
+                                             Some(validToDate),
+                                             None)) shouldBe Nil
       }
       "a valid request is supplied with none of the optional fields" in {
         validator.validate(RetrievePeriodicObligationsRawData(validNino, None, None, None, None, None)) shouldBe Nil
@@ -76,45 +69,37 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
 
     "return a missing fromDate error" when {
       "the fromDate is missing while toDate exists" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validBusinessId),
-          None,
-          Some(validToDate),
-          Some(validStatus))) shouldBe List(MissingFromDateError)
+        validator.validate(RetrievePeriodicObligationsRawData(validNino,
+                                                              Some(validTypeOfBusiness),
+                                                              Some(validBusinessId),
+                                                              None,
+                                                              Some(validToDate),
+                                                              Some(validStatus))) shouldBe List(MissingFromDateError)
       }
     }
     "return a missing toDate error" when {
       "the toDate is missing while fromDate exists" in {
-        validator.validate(RetrievePeriodicObligationsRawData(
-          validNino,
-          Some(validTypeOfBusiness),
-          Some(validBusinessId),
-          Some(validFromDate),
-          None,
-          Some(validStatus))) shouldBe List(MissingToDateError)
+        validator.validate(
+          RetrievePeriodicObligationsRawData(validNino,
+                                             Some(validTypeOfBusiness),
+                                             Some(validBusinessId),
+                                             Some(validFromDate),
+                                             None,
+                                             Some(validStatus))) shouldBe List(MissingToDateError)
       }
     }
 
-    def test(nino: String,
-             typeOfBusiness: String,
-             businessId: String,
-             fromDate: String,
-             toDate: String,
-             status: String,
-             error: MtdError): Unit = {
-             s"return ${error.code} error" when {
-               s"RetrievePeriodicObligationsRawData($nino, $typeOfBusiness, $businessId, $fromDate, $toDate, $status) is supplied" in {
-                 validator.validate(RetrievePeriodicObligationsRawData(
-                   nino,
-                   Some(typeOfBusiness),
-                   Some(businessId),
-                   Some(fromDate),
-                   Some(toDate),
-                   Some(status))) shouldBe List(error)
-               }
-             }
+    def test(nino: String, typeOfBusiness: String, businessId: String, fromDate: String, toDate: String, status: String, error: MtdError): Unit = {
+      s"return ${error.code} error" when {
+        s"RetrievePeriodicObligationsRawData($nino, $typeOfBusiness, $businessId, $fromDate, $toDate, $status) is supplied" in {
+          validator.validate(RetrievePeriodicObligationsRawData(nino,
+                                                                Some(typeOfBusiness),
+                                                                Some(businessId),
+                                                                Some(fromDate),
+                                                                Some(toDate),
+                                                                Some(status))) shouldBe List(error)
+        }
+      }
     }
     Seq(
       ("A23131", validTypeOfBusiness, validBusinessId, validFromDate, validToDate, validStatus, NinoFormatError),
@@ -132,7 +117,7 @@ class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
     "return multiple errors" when {
       "request supplied has multiple errors" in {
         validator.validate(RetrievePeriodicObligationsRawData("Walrus", Some("Body"), Some("One"), Some("Thing"), Some("Where"), Some("Times"))) shouldBe
-        List(NinoFormatError, BusinessIdFormatError, FromDateFormatError, ToDateFormatError, StatusFormatError, TypeOfBusinessFormatError)
+          List(NinoFormatError, BusinessIdFormatError, FromDateFormatError, ToDateFormatError, StatusFormatError, TypeOfBusinessFormatError)
       }
     }
   }

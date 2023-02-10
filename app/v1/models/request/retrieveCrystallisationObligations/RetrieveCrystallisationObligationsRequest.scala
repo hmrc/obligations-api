@@ -16,7 +16,7 @@
 
 package v1.models.request.retrieveCrystallisationObligations
 
-import v1.models.domain.Nino
+import api.models.domain.Nino
 import v1.models.request.ObligationsTaxYear
 
 case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: ObligationsTaxYear)

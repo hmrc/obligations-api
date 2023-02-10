@@ -16,6 +16,8 @@
 
 package v1.endpoints
 
+import api.models.errors
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
@@ -23,7 +25,6 @@ import play.api.libs.json.{ JsValue, Json }
 import play.api.libs.ws.{ WSRequest, WSResponse }
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
@@ -220,17 +221,17 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
         val input = List(
           (BAD_REQUEST, "INVALID_IDNUMBER", BAD_REQUEST, NinoFormatError),
-          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_DATE_FROM", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_DATE_TO", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_DATE_RANGE", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_DATE_FROM", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_DATE_TO", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_DATE_RANGE", INTERNAL_SERVER_ERROR, errors.InternalError),
           (FORBIDDEN, "NOT_FOUND_BPKEY", NOT_FOUND, NotFoundError),
           (FORBIDDEN, "INSOLVENT_TRADER", BAD_REQUEST, RuleInsolventTraderError),
           (BAD_REQUEST, "NOT_FOUND", NOT_FOUND, NotFoundError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, errors.InternalError)
         )
         input.foreach(args => (serviceErrorTest _).tupled(args))
 
@@ -284,7 +285,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
           val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
           response.status shouldBe INTERNAL_SERVER_ERROR
-          response.json shouldBe Json.toJson(DownstreamError)
+          response.json shouldBe Json.toJson(errors.InternalError)
         }
 
         "more than one obligation is returned in the obligationDetails array" in new Test {
@@ -328,7 +329,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
           val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
           response.status shouldBe INTERNAL_SERVER_ERROR
-          response.json shouldBe Json.toJson(DownstreamError)
+          response.json shouldBe Json.toJson(errors.InternalError)
         }
 
         "no obligations found" when {

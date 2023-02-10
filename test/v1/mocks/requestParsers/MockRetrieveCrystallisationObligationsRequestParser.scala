@@ -16,19 +16,21 @@
 
 package v1.mocks.requestParsers
 
+import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
-import v1.models.errors.ErrorWrapper
-import v1.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
+import v1.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
 
 trait MockRetrieveCrystallisationObligationsRequestParser extends MockFactory {
 
-  val mockRequestParser: RetrieveCrystallisationObligationsRequestParser = mock[RetrieveCrystallisationObligationsRequestParser]
+  val mockRetrieveCrystallisationObligationsRequestParser: RetrieveCrystallisationObligationsRequestParser =
+    mock[RetrieveCrystallisationObligationsRequestParser]
 
   object MockRetrieveCrystallisationObligationsRequestParser {
+
     def parse(data: RetrieveCrystallisationObligationsRawData): CallHandler[Either[ErrorWrapper, RetrieveCrystallisationObligationsRequest]] = {
-      (mockRequestParser.parseRequest(_: RetrieveCrystallisationObligationsRawData)).expects(data)
+      (mockRetrieveCrystallisationObligationsRequestParser.parseRequest(_: RetrieveCrystallisationObligationsRawData)(_: String)).expects(data, *)
     }
   }
 

@@ -16,45 +16,44 @@
 
 package v1.services
 
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.data.EitherT
 import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.RetrievePeriodicObligationsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.support.DesResponseMappingSupport
 
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector) extends DesResponseMappingSupport with Logging {
+class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrievePeriodicObligationsRequest)(implicit hc: HeaderCarrier,
-                                                            ec: ExecutionContext,
-                                                            logContext: EndpointLogContext): Future[RetrievePeriodicObligationsServiceOutcome] = {
+  def retrieve(request: RetrievePeriodicObligationsRequest)(implicit ctx: RequestContext,
+                                                            ec: ExecutionContext): Future[RetrievePeriodicObligationsServiceOutcome] = {
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDesErrors(desErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](filterPeriodicValues(desResponseWrapper, request.typeOfBusiness, request.businessId))
+      downstreamResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterPeriodicValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
     } yield mtdResponseWrapper
+
     result.value
+
   }
 
-  private val desErrorMap =
+  private val downstreamErrorMap: Map[String, MtdError] =
     Map(
-      "INVALID_IDTYPE"      -> DownstreamError,
+      "INVALID_IDTYPE"      -> InternalError,
       "INVALID_IDNUMBER"    -> NinoFormatError,
-      "INVALID_STATUS"      -> DownstreamError,
-      "INVALID_REGIME"      -> DownstreamError,
+      "INVALID_STATUS"      -> InternalError,
+      "INVALID_REGIME"      -> InternalError,
       "INVALID_DATE_FROM"   -> FromDateFormatError,
       "INVALID_DATE_TO"     -> ToDateFormatError,
       "INVALID_DATE_RANGE"  -> RuleDateRangeInvalidError,
       "INSOLVENT_TRADER"    -> RuleInsolventTraderError,
       "NOT_FOUND"           -> NotFoundError,
       "NOT_FOUND_BPKEY"     -> NotFoundError,
-      "SERVER_ERROR"        -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
+      "SERVER_ERROR"        -> InternalError,
+      "SERVICE_UNAVAILABLE" -> InternalError
     )
 }

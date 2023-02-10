@@ -16,17 +16,16 @@
 
 package v1.models.response.retrieveCrystallisationObligations.des
 
+import api.models.domain.status.{ DesStatus, MtdStatus }
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.status.{DesStatus, MtdStatus}
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 class DesObligationSpec extends UnitSpec {
   "reads" should {
     "read to a model" when {
       "passed JSON with status F" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "F",
             |    "inboundCorrespondenceFromDate": "2018-04-06",
@@ -41,8 +40,7 @@ class DesObligationSpec extends UnitSpec {
         json.as[DesObligation] shouldBe model
       }
       "passed JSON with status O" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "O",
             |    "inboundCorrespondenceFromDate": "2018-04-06",
@@ -57,8 +55,7 @@ class DesObligationSpec extends UnitSpec {
         json.as[DesObligation] shouldBe model
       }
       "passed JSON with no inboundCorrespondenceDateReceived" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "O",
             |    "inboundCorrespondenceFromDate": "2018-04-06",

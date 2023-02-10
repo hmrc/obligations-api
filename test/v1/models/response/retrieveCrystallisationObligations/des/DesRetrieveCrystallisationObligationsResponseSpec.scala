@@ -16,16 +16,15 @@
 
 package v1.models.response.retrieveCrystallisationObligations.des
 
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.status.DesStatus
 
 class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
   "reads" should {
     "parse to a model" when {
       "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -48,13 +47,13 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"))
-        ))
+        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25"))
+          ))
       }
       "passed obligations with multiple items in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -85,14 +84,14 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", status = DesStatus.O, Some("2020-01-25"))
-        ))
+        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
+            DesObligation("2017-04-06", "2019-04-05", "1920-01-31", status = DesStatus.O, Some("2020-01-25"))
+          ))
       }
       "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -132,14 +131,14 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
-          DesObligation("2018-04-06", "2019-04-05", "1921-01-31", status = DesStatus.O, Some("2020-01-25"))
-        ))
+        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", status = DesStatus.F, Some("2020-01-25")),
+            DesObligation("2018-04-06", "2019-04-05", "1921-01-31", status = DesStatus.O, Some("2020-01-25"))
+          ))
       }
       "passed obligations with multiple items in the obligationDetails array and multiple items in the obligations arrays" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -195,12 +194,13 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25")),
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
-          DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"))
-        ))
+        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
+            DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25")),
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25")),
+            DesObligation("2017-04-06", "2019-04-05", "1920-01-31", DesStatus.O, Some("2020-01-25"))
+          ))
       }
     }
   }
@@ -208,8 +208,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
   it should {
     "filter out objects without ITSA incomeSourceType" when {
       "passed obligations with a single item in the obligationDetails array and a single item in the obligations array" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -235,8 +234,7 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
         desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq())
       }
       "passed obligations with a single item in the obligationDetails array and multiple items in the obligations array" in {
-        val desJson = Json.parse(
-          """
+        val desJson = Json.parse("""
             |{
             |    "obligations": [
             |        {
@@ -276,9 +274,10 @@ class DesRetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
             |    ]
             |}
             |""".stripMargin)
-        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(Seq(
-          DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"))
-        ))
+        desJson.as[DesRetrieveCrystallisationObligationsResponse] shouldBe DesRetrieveCrystallisationObligationsResponse(
+          Seq(
+            DesObligation("2018-04-06", "2019-04-05", "1920-01-31", DesStatus.F, Some("2020-01-25"))
+          ))
       }
     }
   }

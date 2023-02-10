@@ -16,9 +16,9 @@
 
 package v1.models.request.retrievePeriodObligations
 
-import v1.models.domain.Nino
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
 
 case class RetrievePeriodicObligationsRequest(nino: Nino,
                                               typeOfBusiness: Option[MtdBusiness],

@@ -16,16 +16,16 @@
 
 package v1.models.response.retrieveCrystallisationObligations
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import api.models.domain.status.MtdStatus
+import play.api.libs.json.{ Json, OWrites }
 
 case class RetrieveCrystallisationObligationsResponse(
-                                                       periodStartDate: String,
-                                                       periodEndDate: String,
-                                                       dueDate: String,
-                                                       status: MtdStatus,
-                                                       receivedDate: Option[String]
-                                                     )
+    periodStartDate: String,
+    periodEndDate: String,
+    dueDate: String,
+    status: MtdStatus,
+    receivedDate: Option[String]
+)
 
 object RetrieveCrystallisationObligationsResponse {
   implicit val writes: OWrites[RetrieveCrystallisationObligationsResponse] = Json.writes[RetrieveCrystallisationObligationsResponse]

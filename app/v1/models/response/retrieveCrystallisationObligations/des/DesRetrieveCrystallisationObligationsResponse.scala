@@ -16,9 +16,9 @@
 
 package v1.models.response.retrieveCrystallisationObligations.des
 
+import api.models.domain.PeriodKey
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads}
-import v1.models.domain.PeriodKey
+import play.api.libs.json.{ JsPath, Reads }
 
 case class DesRetrieveCrystallisationObligationsResponse(obligationDetails: Seq[DesObligation])
 
@@ -30,12 +30,13 @@ object DesRetrieveCrystallisationObligationsResponse {
   object Detail {
     implicit val reads: Reads[Detail] = (
       (JsPath \ "identification" \ "incomeSourceType").readNullable[String] and
-      (JsPath \ "obligationDetails").read[Seq[DesObligation]]
-      )(Detail.apply _)
+        (JsPath \ "obligationDetails").read[Seq[DesObligation]]
+    )(Detail.apply _)
   }
 
   implicit val reads: Reads[DesRetrieveCrystallisationObligationsResponse] = {
-    (JsPath \ "obligations").read[Seq[Detail]]
+    (JsPath \ "obligations")
+      .read[Seq[Detail]]
       .map(_.filter(_.incomeSourceType.contains(PeriodKey.ITSA.toString)))
       .map(det => DesRetrieveCrystallisationObligationsResponse(det.flatMap(_.obligation))) // flatten nested arrays into one array
   }

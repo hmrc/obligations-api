@@ -16,24 +16,32 @@
 
 package v1.mocks.connectors
 
+import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{DesOutcome, RetrievePeriodicObligationsConnector}
+import v1.connectors.RetrievePeriodicObligationsConnector
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait MockRetrievePeriodicObligationsConnector extends MockFactory {
   val mockRetrievePeriodicObligationsConnector: RetrievePeriodicObligationsConnector = mock[RetrievePeriodicObligationsConnector]
 
   object MockRetrievePeriodicObligationsConnector {
 
-    def doConnectorThing(requestData: RetrievePeriodicObligationsRequest): CallHandler[Future[DesOutcome[RetrievePeriodObligationsResponse]]] = {
-      (mockRetrievePeriodicObligationsConnector
-        .retrievePeriodicObligations(_: RetrievePeriodicObligationsRequest)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(requestData, *, *)
+    def doConnectorThing(
+        requestData: RetrievePeriodicObligationsRequest): CallHandler[Future[DownstreamOutcome[RetrievePeriodObligationsResponse]]] = {
+      (
+        mockRetrievePeriodicObligationsConnector
+          .retrievePeriodicObligations(_: RetrievePeriodicObligationsRequest)(
+            _: HeaderCarrier,
+            _: ExecutionContext,
+            _: String
+          )
+        )
+        .expects(requestData, *, *, *)
     }
   }
 }

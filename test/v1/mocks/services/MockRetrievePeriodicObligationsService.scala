@@ -16,17 +16,16 @@
 
 package v1.mocks.services
 
+import api.controllers.RequestContext
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
-import v1.models.errors.ErrorWrapper
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 import v1.services.RetrievePeriodicObligationsService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait MockRetrievePeriodicObligationsService extends MockFactory {
 
@@ -34,10 +33,11 @@ trait MockRetrievePeriodicObligationsService extends MockFactory {
 
   object MockRetrievePeriodicObligationsService {
 
-    def retrieve(requestData: RetrievePeriodicObligationsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrievePeriodObligationsResponse]]]] = {
+    def retrieve(requestData: RetrievePeriodicObligationsRequest)
+      : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrievePeriodObligationsResponse]]]] = {
       (mockService
-        .retrieve(_: RetrievePeriodicObligationsRequest)(_: HeaderCarrier, _: ExecutionContext, _:EndpointLogContext))
-        .expects(requestData, *, *, *)
+        .retrieve(_: RetrievePeriodicObligationsRequest)(_: RequestContext, _: ExecutionContext))
+        .expects(requestData, *, *)
     }
   }
 

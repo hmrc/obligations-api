@@ -16,8 +16,8 @@
 
 package v1.models.response.common
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.business.MtdBusiness
+import api.models.domain.business.MtdBusiness
+import play.api.libs.json.{ Json, OWrites }
 
 case class Obligation(typeOfBusiness: MtdBusiness, businessId: String, obligationDetails: Seq[ObligationDetail])
 

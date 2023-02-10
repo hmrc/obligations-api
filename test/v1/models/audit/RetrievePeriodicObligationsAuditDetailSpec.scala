@@ -16,17 +16,17 @@
 
 package v1.models.audit
 
+import api.models.audit.AuditResponse
 import play.api.libs.json.Json
 import support.UnitSpec
 
 class RetrievePeriodicObligationsAuditDetailSpec extends UnitSpec {
 
-  val nino = "ZG903729C"
+  val nino        = "ZG903729C"
   val invalidNino = "notANino"
-  val businessId = "XAIS123456789012"
+  val businessId  = "XAIS123456789012"
 
-  val validJson = Json.parse(
-    s"""{
+  val validJson = Json.parse(s"""{
        |    "userType": "Agent",
        |    "agentReferenceNumber":"012345678",
        |    "nino": "$nino",
@@ -74,8 +74,7 @@ class RetrievePeriodicObligationsAuditDetailSpec extends UnitSpec {
     `X-CorrelationId` = "a1e8057e-fbbc-47a8-a8b478d9f015c253",
     response = AuditResponse(
       200,
-      Right(Some(Json.parse(
-        """
+      Right(Some(Json.parse("""
           |{
           |    "obligations": [
           |        {

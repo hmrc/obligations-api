@@ -16,12 +16,11 @@
 
 package v1.connectors
 
-import mocks.MockAppConfig
-import v1.models.domain.Nino
-import v1.mocks.MockHttpClient
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
-import v1.models.outcomes.ResponseWrapper
+import api.connectors.ConnectorSpec
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
+import api.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
@@ -30,83 +29,39 @@ import scala.concurrent.Future
 
 class RetrieveEOPSObligationsConnectorSpec extends ConnectorSpec {
 
-  private val validNino           = "AA123456A"
-  private val validTypeOfBusiness = MtdBusiness.`foreign-property`
-  private val validBusinessId     = "XAIS123456789012"
-  private val validFromDate       = "2018-04-06"
-  private val validToDate         = "2019-04-05"
-  private val validStatus         = MtdStatus.Open
+  "RetrieveEOPSObligationsConnector" should {
+    "return the expected response for a non-TYS request" when {
+      "a valid request is made" in new DesTest with Test {
+        val outcome: Right[Nothing, ResponseWrapper[RetrieveEOPSObligationsResponse]] =
+          Right(ResponseWrapper(correlationId, response))
 
-  class Test extends MockHttpClient with MockAppConfig {
-    val connector: RetrieveEOPSObligationsConnector = new RetrieveEOPSObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-    val desRequestHeaders: Seq[(String, String)]    = Seq("Environment" -> "des-environment", "Authorization" -> s"Bearer des-token")
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
-  }
-
-  "retrieve" should {
-    "return a result" when {
-      "a status is passed in and the downstream call is successful" in new Test {
-        val request = RetrieveEOPSObligationsRequest(Nino(validNino),
-                                                     Some(validTypeOfBusiness),
-                                                     Some(validBusinessId),
-                                                     Some(validFromDate),
-                                                     Some(validToDate),
-                                                     Some(validStatus))
-
-        val outcome = Right(
-          ResponseWrapper(
-            correlationId,
-            RetrieveEOPSObligationsResponse(Seq(Obligation(
-              typeOfBusiness = validTypeOfBusiness,
-              businessId = validBusinessId,
-              obligationDetails = Seq(ObligationDetail(validFromDate, validToDate, validToDate, Some(validFromDate), MtdStatus.Open))
-            )))
-          ))
-
-        MockedHttpClient
-          .get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/$validNino/ITSA?from=$validFromDate&to=$validToDate&status=${validStatus.toDes}",
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = requiredDesHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
-          .returns(Future.successful(outcome))
-
-        await(connector.retrieveEOPSObligations(request)) shouldBe outcome
-      }
-      "no status is passed in and the downstream call is successful" in new Test {
-        val request =
-          RetrieveEOPSObligationsRequest(Nino(validNino),
-                                         Some(validTypeOfBusiness),
-                                         Some(validBusinessId),
-                                         Some(validFromDate),
-                                         Some(validToDate),
-                                         None)
-
-        val outcome = Right(
-          ResponseWrapper(
-            correlationId,
-            RetrieveEOPSObligationsResponse(Seq(Obligation(
-              typeOfBusiness = validTypeOfBusiness,
-              businessId = validBusinessId,
-              obligationDetails = Seq(ObligationDetail(validFromDate, validToDate, validToDate, Some(validFromDate), MtdStatus.Open))
-            )))
-          ))
-
-        MockedHttpClient
-          .get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/$validNino/ITSA?from=$validFromDate&to=$validToDate",
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = requiredDesHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate&status=${status.toDes}")
           .returns(Future.successful(outcome))
 
         await(connector.retrieveEOPSObligations(request)) shouldBe outcome
       }
     }
+  }
+
+  trait Test {
+    _: ConnectorTest =>
+
+    protected val nino                        = "AA123456A"
+    protected val typeOfBusiness: MtdBusiness = MtdBusiness.`foreign-property`
+    protected val businessId                  = "XAIS123456789012"
+    protected val fromDate                    = "2018-04-06"
+    protected val toDate                      = "2019-04-05"
+    protected val status: MtdStatus           = MtdStatus.Open
+
+    val connector: RetrieveEOPSObligationsConnector = new RetrieveEOPSObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    lazy val request: RetrieveEOPSObligationsRequest =
+      RetrieveEOPSObligationsRequest(Nino(nino), Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+    lazy val response: RetrieveEOPSObligationsResponse = RetrieveEOPSObligationsResponse(
+      Seq(
+        Obligation(
+          typeOfBusiness = typeOfBusiness,
+          businessId = businessId,
+          obligationDetails = Seq(ObligationDetail(fromDate, toDate, toDate, Some(fromDate), MtdStatus.Open))
+        )))
   }
 }

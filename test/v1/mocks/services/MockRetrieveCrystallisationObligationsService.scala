@@ -16,28 +16,28 @@
 
 package v1.mocks.services
 
+import api.controllers.RequestContext
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
-import v1.models.errors.ErrorWrapper
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 import v1.services.RetrieveCrystallisationObligationsService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait MockRetrieveCrystallisationObligationsService extends MockFactory {
 
-  val mockService: RetrieveCrystallisationObligationsService = mock[RetrieveCrystallisationObligationsService]
+  val mockRetrieveCrystallisationObligationsService: RetrieveCrystallisationObligationsService = mock[RetrieveCrystallisationObligationsService]
 
   object MockRetrieveCrystallisationObligationsService {
 
-    def retrieve(requestData: RetrieveCrystallisationObligationsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
-      (mockService
-        .retrieve(_: RetrieveCrystallisationObligationsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
-        .expects(requestData, *, *, *)
+    def retrieve(requestData: RetrieveCrystallisationObligationsRequest)
+      : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
+      (mockRetrieveCrystallisationObligationsService
+        .retrieve(_: RetrieveCrystallisationObligationsRequest)(_: RequestContext, _: ExecutionContext))
+        .expects(requestData, *, *)
     }
   }
 

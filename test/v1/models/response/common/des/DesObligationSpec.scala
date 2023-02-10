@@ -16,10 +16,10 @@
 
 package v1.models.response.common.des
 
+import api.models.domain.business.DesBusiness
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.business.DesBusiness
-import v1.models.domain.status.DesStatus
 
 class DesObligationSpec extends UnitSpec {
 
@@ -28,8 +28,7 @@ class DesObligationSpec extends UnitSpec {
   "reads" should {
     "read to a model" when {
       "passed JSON with incomeSourceType ITSB" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |"identification": {
             |                "incomeSourceType": "ITSB",
@@ -56,8 +55,7 @@ class DesObligationSpec extends UnitSpec {
         json.as[DesObligation] shouldBe model
       }
       "passed JSON with incomeSourceType ITSP" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |"identification": {
             |                "incomeSourceType": "ITSP",
@@ -84,8 +82,7 @@ class DesObligationSpec extends UnitSpec {
         json.as[DesObligation] shouldBe model
       }
       "passed JSON with incomeSourceType ITSF" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |"identification": {
             |                "incomeSourceType": "ITSF",

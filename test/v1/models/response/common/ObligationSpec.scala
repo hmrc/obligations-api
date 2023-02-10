@@ -16,10 +16,10 @@
 
 package v1.models.response.common
 
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
 
 class ObligationSpec extends UnitSpec {
   "writes" should {
@@ -27,8 +27,7 @@ class ObligationSpec extends UnitSpec {
       val obligationDetails = ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.Fulfilled)
 
       "passed a model with typeOfBusiness self-employment" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |       "typeOfBusiness": "self-employment",
             |       "businessId": "XAIS12345678910",
@@ -49,8 +48,7 @@ class ObligationSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with typeOfBusiness uk-property" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |       "typeOfBusiness": "uk-property",
             |       "businessId": "XAIS12345678910",
@@ -71,8 +69,7 @@ class ObligationSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with typeOfBusiness foreign-property" in {
-        val json = Json.parse(
-          """
+        val json = Json.parse("""
             |{
             |       "typeOfBusiness": "foreign-property",
             |       "businessId": "XAIS12345678910",
