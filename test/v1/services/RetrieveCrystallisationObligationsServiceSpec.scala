@@ -20,7 +20,6 @@ import api.controllers.EndpointLogContext
 import api.models.domain.Nino
 import api.models.domain.status.DesStatus.F
 import api.models.domain.status.MtdStatus.Fulfilled
-import api.models.errors
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
@@ -85,17 +84,17 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
 
         val input = List(
           ("INVALID_IDNUMBER", NinoFormatError),
-          ("INVALID_IDTYPE", errors.InternalError),
-          ("INVALID_STATUS", errors.InternalError),
-          ("INVALID_REGIME", errors.InternalError),
-          ("INVALID_DATE_FROM", errors.InternalError),
-          ("INVALID_DATE_TO", errors.InternalError),
-          ("INVALID_DATE_RANGE", errors.InternalError),
+          ("INVALID_IDTYPE", InternalError),
+          ("INVALID_STATUS", InternalError),
+          ("INVALID_REGIME", InternalError),
+          ("INVALID_DATE_FROM", InternalError),
+          ("INVALID_DATE_TO", InternalError),
+          ("INVALID_DATE_RANGE", InternalError),
           ("NOT_FOUND_BPKEY", NotFoundError),
           ("INSOLVENT_TRADER", RuleInsolventTraderError),
           ("NOT_FOUND", NotFoundError),
-          ("SERVER_ERROR", errors.InternalError),
-          ("SERVICE_UNAVAILABLE", errors.InternalError)
+          ("SERVER_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))

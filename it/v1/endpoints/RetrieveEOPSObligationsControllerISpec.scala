@@ -16,25 +16,7 @@
 
 package v1.endpoints
 
-import api.models.errors
-import api.models.errors.{
-  BusinessIdFormatError,
-  FromDateFormatError,
-  MissingFromDateError,
-  MissingToDateError,
-  MissingTypeOfBusinessError,
-  MtdError,
-  NinoFormatError,
-  NoObligationsFoundError,
-  NotFoundError,
-  RuleDateRangeInvalidError,
-  RuleFromDateNotSupportedError,
-  RuleInsolventTraderError,
-  StatusFormatError,
-  ToDateBeforeFromDateError,
-  ToDateFormatError,
-  TypeOfBusinessFormatError
-}
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
@@ -637,18 +619,18 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = List(
-          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, InternalError),
           (BAD_REQUEST, "INVALID_IDNUMBER", BAD_REQUEST, NinoFormatError),
-          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, errors.InternalError),
-          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, errors.InternalError),
+          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, InternalError),
           (BAD_REQUEST, "INVALID_DATE_FROM", BAD_REQUEST, FromDateFormatError),
           (BAD_REQUEST, "INVALID_DATE_TO", BAD_REQUEST, ToDateFormatError),
           (BAD_REQUEST, "INVALID_DATE_RANGE", BAD_REQUEST, RuleDateRangeInvalidError),
           (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
           (FORBIDDEN, "NOT_FOUND_BPKEY", NOT_FOUND, NotFoundError),
           (FORBIDDEN, "INSOLVENT_TRADER", BAD_REQUEST, RuleInsolventTraderError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, errors.InternalError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, errors.InternalError)
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError)
         )
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }

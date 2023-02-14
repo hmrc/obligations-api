@@ -17,7 +17,6 @@
 package v1.services
 
 import api.controllers.RequestContext
-import api.models.errors
 import api.models.errors._
 import api.services.BaseService
 import cats.data.EitherT
@@ -46,17 +45,17 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
-      "INVALID_IDTYPE"      -> errors.InternalError,
-      "INVALID_STATUS"      -> errors.InternalError,
-      "INVALID_REGIME"      -> errors.InternalError,
+      "INVALID_IDTYPE"      -> InternalError,
+      "INVALID_STATUS"      -> InternalError,
+      "INVALID_REGIME"      -> InternalError,
       "INVALID_DATE_FROM"   -> FromDateFormatError,
       "INVALID_DATE_TO"     -> ToDateFormatError,
       "INVALID_DATE_RANGE"  -> RuleDateRangeInvalidError,
       "INSOLVENT_TRADER"    -> RuleInsolventTraderError,
       "NOT_FOUND_BPKEY"     -> NotFoundError,
       "NOT_FOUND"           -> NotFoundError,
-      "SERVER_ERROR"        -> errors.InternalError,
-      "SERVICE_UNAVAILABLE" -> errors.InternalError
+      "SERVER_ERROR"        -> InternalError,
+      "SERVICE_UNAVAILABLE" -> InternalError
     )
 
 }
