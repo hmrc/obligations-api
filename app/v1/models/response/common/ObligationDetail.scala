@@ -16,14 +16,10 @@
 
 package v1.models.response.common
 
-import play.api.libs.json.{Json, OWrites}
-import v1.models.domain.status.MtdStatus
+import api.models.domain.status.MtdStatus
+import play.api.libs.json.{ Json, OWrites }
 
-case class ObligationDetail(periodStartDate: String,
-                            periodEndDate: String,
-                            dueDate: String,
-                            receivedDate: Option[String],
-                            status: MtdStatus)
+case class ObligationDetail(periodStartDate: String, periodEndDate: String, dueDate: String, receivedDate: Option[String], status: MtdStatus)
 
 object ObligationDetail {
   implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]

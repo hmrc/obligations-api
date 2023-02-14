@@ -16,11 +16,10 @@
 
 package v1.connectors
 
-import mocks.MockAppConfig
-import v1.models.domain.Nino
-import v1.mocks.MockHttpClient
-import v1.models.domain.status.DesStatus.F
-import v1.models.outcomes.ResponseWrapper
+import api.connectors.ConnectorSpec
+import api.models.domain.Nino
+import api.models.domain.status.DesStatus.F
+import api.models.outcomes.ResponseWrapper
 import v1.models.request.ObligationsTaxYear
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
@@ -29,49 +28,41 @@ import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
 
-  private val validNino = "AA123456A"
-  private val fromDate  = "2018-04-06"
-  private val toDate    = "2019-04-05"
+  "RetrieveCrystallisationObligationsConnector" should {
+    "return the expected response for a non-TYS request" when {
+      "a valid request is made" in new DesTest with Test {
+        val outcome: Right[Nothing, ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]] =
+          Right(ResponseWrapper(correlationId, response))
 
-  class Test extends MockHttpClient with MockAppConfig {
-
-    val connector: RetrieveCrystallisationObligationsConnector =
-      new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
-  }
-
-  "retrieve" should {
-    val request = RetrieveCrystallisationObligationsRequest(Nino(validNino), ObligationsTaxYear(fromDate, toDate))
-
-    "return a result" when {
-      "the downstream call is successful and a source is passed in" in new Test {
-        val outcome = Right(
-          ResponseWrapper(
-            correlationId,
-            DesRetrieveCrystallisationObligationsResponse(
-              Seq(DesObligation(
-                inboundCorrespondenceFromDate = fromDate,
-                inboundCorrespondenceToDate = toDate,
-                inboundCorrespondenceDueDate = toDate,
-                status = F,
-                inboundCorrespondenceDateReceived = Some(toDate)
-              )))
-          )
-        )
-
-        MockedHttpClient
-          .get(
-            url = s"$baseUrl/enterprise/obligation-data/nino/$validNino/ITSA?from=$fromDate&to=$toDate",
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = requiredDesHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate")
           .returns(Future.successful(outcome))
+
         await(connector.retrieveCrystallisationObligations(request)) shouldBe outcome
       }
     }
+  }
+
+  trait Test {
+    _: ConnectorTest =>
+
+    protected val nino     = "AA123456A"
+    protected val fromDate = "2018-04-06"
+    protected val toDate   = "2019-04-05"
+
+    val connector: RetrieveCrystallisationObligationsConnector =
+      new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+
+    lazy val request: RetrieveCrystallisationObligationsRequest =
+      RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear(fromDate, toDate))
+    lazy val response: DesRetrieveCrystallisationObligationsResponse =
+      DesRetrieveCrystallisationObligationsResponse(
+        Seq(
+          DesObligation(
+            inboundCorrespondenceFromDate = fromDate,
+            inboundCorrespondenceToDate = toDate,
+            inboundCorrespondenceDueDate = toDate,
+            status = F,
+            inboundCorrespondenceDateReceived = Some(toDate)
+          )))
   }
 }

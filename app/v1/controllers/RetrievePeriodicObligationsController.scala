@@ -16,30 +16,27 @@
 
 package v1.controllers
 
-import cats.data.EitherT
-import cats.implicits._
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.Logging
+import api.controllers._
+import api.services.{ AuditService, EnrolmentsAuthService, MtdIdLookupService }
+import play.api.mvc.{ Action, AnyContent, ControllerComponents }
+import utils.{ IdGenerator, Logging }
 import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, RetrievePeriodicObligationsAuditDetail}
-import v1.models.errors._
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRawData
-import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, RetrievePeriodicObligationsService}
+import v1.services.RetrievePeriodicObligationsService
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrievePeriodicObligationsController @Inject()(val authService: EnrolmentsAuthService,
                                                       val lookupService: MtdIdLookupService,
-                                                      requestParser: RetrievePeriodicObligationsRequestParser,
+                                                      parser: RetrievePeriodicObligationsRequestParser,
                                                       service: RetrievePeriodicObligationsService,
                                                       auditService: AuditService,
-                                                      cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+                                                      cc: ControllerComponents,
+                                                      idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrievePeriodicObligationsController", endpointName = "handleRequest")
@@ -51,54 +48,23 @@ class RetrievePeriodicObligationsController @Inject()(val authService: Enrolment
                     toDate: Option[String],
                     status: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
+      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
+
       val rawData = RetrievePeriodicObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
-      val result =
-        for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.retrieve(parsedRequest))
-        } yield {
-          logger.info(
-            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          val response = Json.toJson(serviceResponse.responseData)
+      val requestHandler = RequestHandler
+        .withParser(parser)
+        .withService(service.retrieve)
+        .withPlainJsonResult()
+        .withAuditing(AuditHandler(
+          auditService = auditService,
+          auditType = "retrievePeriodicObligations",
+          transactionName = "retrieve-periodic-obligations",
+          pathParams = Map("nino" -> nino),
+          includeResponse = true
+        ))
 
-          auditSubmission(RetrievePeriodicObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
-            serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
-
-          Ok(response)
-            .withApiHeaders(serviceResponse.correlationId)
-        }
-
-      result.leftMap { errorWrapper =>
-        val correlationId = getCorrelationId(errorWrapper)
-        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
-
-        auditSubmission(RetrievePeriodicObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
-          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
-        result
-      }.merge
+      requestHandler.handleRequest(rawData)
     }
-
-  private def errorResult(errorWrapper: ErrorWrapper) = {
-    errorWrapper.error match {
-      case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
-           | FromDateFormatError | ToDateFormatError | StatusFormatError
-           | MissingFromDateError | MissingToDateError | ToDateBeforeFromDateError
-           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError | RuleInsolventTraderError
-           | BadRequestError => BadRequest(Json.toJson(errorWrapper))
-
-      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case _ => unhandledError(errorWrapper)
-    }
-  }
-
-  private def auditSubmission(details: RetrievePeriodicObligationsAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
-    val event = AuditEvent("retrievePeriodicObligations", "retrieve-periodic-obligations", details)
-    auditService.auditEvent(event)
-  }
 
 }

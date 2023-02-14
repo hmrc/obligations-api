@@ -16,17 +16,16 @@
 
 package v1.mocks.services
 
+import api.controllers.RequestContext
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
-import v1.models.errors.ErrorWrapper
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.services.RetrieveEOPSObligationsService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait MockRetrieveEOPSObligationsService extends MockFactory {
 
@@ -34,10 +33,11 @@ trait MockRetrieveEOPSObligationsService extends MockFactory {
 
   object MockRetrieveEOPSObligationsService {
 
-    def retrieve(requestData: RetrieveEOPSObligationsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]]]] = {
+    def retrieve(
+        requestData: RetrieveEOPSObligationsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]]]] = {
       (mockService
-        .retrieve(_: RetrieveEOPSObligationsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext))
-        .expects(requestData, *, *, *)
+        .retrieve(_: RetrieveEOPSObligationsRequest)(_: RequestContext, _: ExecutionContext))
+        .expects(requestData, *, *)
     }
   }
 

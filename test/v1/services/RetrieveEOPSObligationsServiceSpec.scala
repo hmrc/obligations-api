@@ -16,23 +16,22 @@
 
 package v1.services
 
-import support.UnitSpec
+import api.controllers.EndpointLogContext
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockRetrieveEOPSObligationsConnector
-import v1.models.domain.Nino
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
+class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
 
   private val nino           = "AA123456A"
   private val typeOfBusiness = MtdBusiness.`self-employment`
@@ -40,7 +39,6 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
   private val fromDate       = "2018-04-06"
   private val toDate         = "2019-04-05"
   private val status         = MtdStatus.Open
-  private val correlationId  = "X-123"
 
   private val fullResponseModel = RetrieveEOPSObligationsResponse(
     Seq(
@@ -136,7 +134,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
         "businessId filter is applied and there are no response objects with that businessId" in new Test {
           private val requestData = RetrieveEOPSObligationsRequest(Nino(nino),
@@ -155,7 +153,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
 
         "the connector call returns an empty Seq due to JSON reads filtering out all obligations" in new Test {
@@ -167,7 +165,7 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
       }
     }
@@ -181,24 +179,24 @@ class RetrieveEOPSObligationsServiceSpec extends UnitSpec {
 
             MockRetrieveEOPSObligationsConnector
               .doConnectorThing(requestData)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
-            await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
+            await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
         val input = List(
           ("INVALID_IDNUMBER", NinoFormatError),
-          ("INVALID_IDTYPE", DownstreamError),
-          ("INVALID_STATUS", DownstreamError),
-          ("INVALID_REGIME", DownstreamError),
+          ("INVALID_IDTYPE", InternalError),
+          ("INVALID_STATUS", InternalError),
+          ("INVALID_REGIME", InternalError),
           ("INVALID_DATE_FROM", FromDateFormatError),
           ("INVALID_DATE_TO", ToDateFormatError),
           ("INVALID_DATE_RANGE", RuleDateRangeInvalidError),
           ("INSOLVENT_TRADER", RuleInsolventTraderError),
           ("NOT_FOUND_BPKEY", NotFoundError),
           ("NOT_FOUND", NotFoundError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
         input.foreach(args => (serviceError _).tupled(args))
       }

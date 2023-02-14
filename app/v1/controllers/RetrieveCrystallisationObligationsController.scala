@@ -16,81 +16,50 @@
 
 package v1.controllers
 
-import cats.data.EitherT
-import cats.implicits._
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.Logging
+import api.controllers._
+import api.services.{ AuditService, EnrolmentsAuthService, MtdIdLookupService }
+import play.api.mvc.{ Action, AnyContent, ControllerComponents }
+import utils.{ IdGenerator, Logging }
 import v1.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, RetrieveCrystallisationObligationsAuditDetail}
-import v1.models.errors._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
 import v1.services._
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrieveCrystallisationObligationsController @Inject()(val authService: EnrolmentsAuthService,
                                                              val lookupService: MtdIdLookupService,
-                                                             requestParser: RetrieveCrystallisationObligationsRequestParser,
+                                                             parser: RetrieveCrystallisationObligationsRequestParser,
                                                              service: RetrieveCrystallisationObligationsService,
                                                              auditService: AuditService,
-                                                             cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+                                                             cc: ControllerComponents,
+                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
-    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "handleRequest")
+    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "retrieveCrystallisationObligations")
 
   def handleRequest(nino: String, taxYear: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
+      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
+
       val rawData = RetrieveCrystallisationObligationsRawData(nino, taxYear)
-      val result =
-        for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.retrieve(parsedRequest))
-        } yield {
-          logger.info(
-            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          val response = Json.toJson(serviceResponse.responseData)
+      val requestHandler = RequestHandler
+        .withParser(parser)
+        .withService(service.retrieve)
+        .withPlainJsonResult()
+        .withAuditing(AuditHandler(
+          auditService = auditService,
+          auditType = "RetrieveCrystallisationObligations",
+          transactionName = "retrieve-crystallisation-obligations",
+          pathParams = Map("nino" -> nino),
+          includeResponse = true
+        ))
 
-          auditSubmission(RetrieveCrystallisationObligationsAuditDetail(request.userDetails, nino, taxYear,
-            serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
-
-          Ok(response)
-            .withApiHeaders(serviceResponse.correlationId)
-        }
-
-      result.leftMap { errorWrapper =>
-        val correlationId = getCorrelationId(errorWrapper)
-        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
-
-        auditSubmission(RetrieveCrystallisationObligationsAuditDetail(request.userDetails, nino, taxYear,
-          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
-        result
-      }.merge
+      requestHandler.handleRequest(rawData)
     }
-
-  private def errorResult(errorWrapper: ErrorWrapper) = {
-    errorWrapper.error match {
-      case NinoFormatError | TaxYearFormatError | RuleTaxYearNotSupportedError
-           | RuleTaxYearRangeExceededError | RuleInsolventTraderError | BadRequestError => BadRequest(Json.toJson(errorWrapper))
-
-      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case _ => unhandledError(errorWrapper)
-    }
-  }
-
-  private def auditSubmission(details: RetrieveCrystallisationObligationsAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
-    val event = AuditEvent("retrieveCrystallisationObligations", "retrieve-crystallisation-obligations", details)
-    auditService.auditEvent(event)
-  }
 
 }

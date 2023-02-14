@@ -16,34 +16,41 @@
 
 package v1.controllers.requestParsers
 
-import java.time.LocalDate
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
+import api.models.errors.{ BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError }
 
+import java.time.LocalDate
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
-import v1.models.errors.{ BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError }
 import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
 
 class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
-  val nino                     = "AA123456B"
-  val typeOfBusiness           = "self-employment"
-  val convertedTypeOfBusiness  = MtdBusiness.`self-employment`
-  val businessId               = "XAIS123456789012"
-  val fromDate                 = "2019-01-01"
-  val toDate                   = "2020-01-01"
-  val status                   = "Open"
-  val convertedStatus          = MtdStatus.Open
-  val convertedStatusFulfilled = MtdStatus.Fulfilled
-  val data                     = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDatesData          = RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
+  val nino                                 = "AA123456B"
+  val typeOfBusiness                       = "self-employment"
+  val convertedTypeOfBusiness: MtdBusiness = MtdBusiness.`self-employment`
+  val businessId                           = "XAIS123456789012"
+  val fromDate                             = "2019-01-01"
+  val toDate                               = "2020-01-01"
+  val status                               = "Open"
+  val convertedStatus: MtdStatus           = MtdStatus.Open
+  val convertedStatusFulfilled: MtdStatus  = MtdStatus.Fulfilled
+  implicit val correlationId: String       = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  val invalidNinoData =
+  val data: RetrievePeriodicObligationsRawData =
+    RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+
+  val todaysDatesData: RetrievePeriodicObligationsRawData =
+    RetrievePeriodicObligationsRawData(nino, Some(typeOfBusiness), Some(businessId), None, None, Some("Fulfilled"))
+
+  val invalidNinoData: RetrievePeriodicObligationsRawData =
     RetrievePeriodicObligationsRawData("Walrus", Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  val invalidMultipleData = RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(businessId), Some(fromDate), Some(toDate), Some(status))
-  val todaysDate          = LocalDate.now().toString
-  val nextYearsDate       = LocalDate.now().plusDays(366).toString
+
+  val invalidMultipleData: RetrievePeriodicObligationsRawData =
+    RetrievePeriodicObligationsRawData("Walrus", Some("Beans"), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+  val todaysDate: String    = LocalDate.now().toString
+  val nextYearsDate: String = LocalDate.now().plusDays(366).toString
 
   trait Test extends MockRetrievePeriodicObligationsValidator {
     lazy val parser = new RetrievePeriodicObligationsRequestParser(mockValidator)
@@ -65,12 +72,12 @@ class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
     "return an error wrapper" when {
       "the validator returns a single error" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(invalidNinoData).returns(List(NinoFormatError))
-        parser.parseRequest(invalidNinoData) shouldBe Left(ErrorWrapper(None, NinoFormatError, None))
+        parser.parseRequest(invalidNinoData) shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
       "the validator returns multiple errors" in new Test {
         MockRetrievePeriodicObligationsValidator.validate(invalidMultipleData).returns(List(NinoFormatError, TypeOfBusinessFormatError))
         parser.parseRequest(invalidMultipleData) shouldBe Left(
-          ErrorWrapper(None, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
+          ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, TypeOfBusinessFormatError))))
       }
     }
     "convert fromDate to today and toDate to 366 days ahead" when {

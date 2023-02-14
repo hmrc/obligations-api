@@ -16,12 +16,14 @@
 
 package v1.connectors
 
+import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.DownstreamUri._
+import api.models.domain.status.MtdStatus
 import config.AppConfig
 import javax.inject.{ Inject, Singleton }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
-import v1.connectors.httpparsers.StandardDesHttpParser._
-import v1.models.domain.status.MtdStatus
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
@@ -31,23 +33,22 @@ import scala.concurrent.{ ExecutionContext, Future }
 class RetrievePeriodicObligationsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def retrievePeriodicObligations(request: RetrievePeriodicObligationsRequest)(
-      implicit hc: HeaderCarrier,
-      ec: ExecutionContext): Future[DesOutcome[RetrievePeriodObligationsResponse]] = {
+      implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[RetrievePeriodObligationsResponse]] = {
 
-    val queryParams: String = Seq(
+    val queryParams: Seq[(String, String)] = Seq(
       "from"   -> request.fromDate,
       "to"     -> request.toDate,
       "status" -> request.status
     ).collect {
-        case (k, Some(v: MtdStatus)) => s"$k=${v.toDes}"
-        case (k, Some(v: String))    => s"$k=$v"
-      }
-      .mkString("&")
+      case (k, Some(v: MtdStatus)) => k -> v.toDes.toString
+      case (k, Some(v: String))    => k -> v
+    }
 
-    val url = s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?$queryParams"
+    val url = DesUri[RetrievePeriodObligationsResponse](s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA")
 
-    get(
-      DesUri[RetrievePeriodObligationsResponse](s"$url")
-    )
+    get(url, queryParams)
   }
 }

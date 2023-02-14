@@ -16,14 +16,11 @@
 
 package v1.models.response.common.des
 
+import api.models.domain.business.DesBusiness
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads}
-import v1.models.domain.business.DesBusiness
+import play.api.libs.json.{ JsPath, Reads }
 
-case class DesObligation(incomeSourceType: DesBusiness,
-                         referenceNumber: String,
-                         referenceType: String,
-                         obligationDetails: Seq[DesObligationDetail])
+case class DesObligation(incomeSourceType: DesBusiness, referenceNumber: String, referenceType: String, obligationDetails: Seq[DesObligationDetail])
 
 object DesObligation {
   implicit val reads: Reads[DesObligation] = (

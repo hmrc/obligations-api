@@ -16,8 +16,9 @@
 
 package v1.controllers.requestParsers.validators
 
-import v1.controllers.requestParsers.validators.validations._
-import v1.models.errors.{FromDateFormatError, MtdError, ToDateFormatError}
+import api.controllers.requestParsers.validators.Validator
+import api.controllers.requestParsers.validators.validations._
+import api.models.errors.{ FromDateFormatError, MtdError, ToDateFormatError }
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 
 class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligationsRawData] {
@@ -39,7 +40,7 @@ class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligations
   private def parameterRuleValidation: RetrieveEOPSObligationsRawData => List[List[MtdError]] = (data: RetrieveEOPSObligationsRawData) => {
     val dateRangeValidation = for {
       fromDate <- data.fromDate
-      toDate <- data.toDate
+      toDate   <- data.toDate
     } yield {
       DateRangeValidation.validate(fromDate, toDate)
     }

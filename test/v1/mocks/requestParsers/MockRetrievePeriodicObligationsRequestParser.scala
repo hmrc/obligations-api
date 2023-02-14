@@ -16,19 +16,20 @@
 
 package v1.mocks.requestParsers
 
+import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.RetrievePeriodicObligationsRequestParser
-import v1.models.errors.ErrorWrapper
-import v1.models.request.retrievePeriodObligations.{RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest}
+import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
 
 trait MockRetrievePeriodicObligationsRequestParser extends MockFactory {
 
   val mockRequestParser: RetrievePeriodicObligationsRequestParser = mock[RetrievePeriodicObligationsRequestParser]
 
   object MockRetrievePeriodicObligationsRequestParser {
+
     def parse(data: RetrievePeriodicObligationsRawData): CallHandler[Either[ErrorWrapper, RetrievePeriodicObligationsRequest]] = {
-      (mockRequestParser.parseRequest(_: RetrievePeriodicObligationsRawData)).expects(data)
+      (mockRequestParser.parseRequest(_: RetrievePeriodicObligationsRawData)(_: String)).expects(data, *)
     }
   }
 

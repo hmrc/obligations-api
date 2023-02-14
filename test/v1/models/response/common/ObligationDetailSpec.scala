@@ -16,16 +16,15 @@
 
 package v1.models.response.common
 
+import api.models.domain.status.MtdStatus
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.status.MtdStatus
 
 class ObligationDetailSpec extends UnitSpec {
   "writes" should {
     "write to JSON" when {
       "passed a model with status Fulfilled" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "periodStartDate": "2019-01-01",
             |    "periodEndDate": "2019-03-31",
@@ -39,8 +38,7 @@ class ObligationDetailSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with status Open" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "periodStartDate": "2019-01-01",
             |    "periodEndDate": "2019-03-31",
@@ -54,8 +52,7 @@ class ObligationDetailSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with no receivedDate" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "periodStartDate": "2019-01-01",
             |    "periodEndDate": "2019-03-31",

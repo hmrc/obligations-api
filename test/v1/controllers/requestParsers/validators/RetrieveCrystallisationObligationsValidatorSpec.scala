@@ -16,13 +16,13 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.models.errors._
 import support.UnitSpec
-import v1.models.errors._
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
 
 class RetrieveCrystallisationObligationsValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
+  private val validNino    = "AA123456A"
   private val validTaxYear = "2018-19"
 
   val validator = new RetrieveCrystallisationObligationsValidator()

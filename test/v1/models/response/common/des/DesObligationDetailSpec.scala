@@ -16,16 +16,15 @@
 
 package v1.models.response.common.des
 
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
-import v1.models.domain.status.DesStatus
 
 class DesObligationDetailSpec extends UnitSpec {
   "reads" should {
     "read to a model" when {
       "passed JSON with status F" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "F",
             |    "inboundCorrespondenceFromDate": "2018-04-06",
@@ -40,8 +39,7 @@ class DesObligationDetailSpec extends UnitSpec {
         json.as[DesObligationDetail] shouldBe model
       }
       "passed JSON with status O" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "O",
             |    "inboundCorrespondenceFromDate": "2018-04-06",
@@ -56,8 +54,7 @@ class DesObligationDetailSpec extends UnitSpec {
         json.as[DesObligationDetail] shouldBe model
       }
       "passed JSON with no inboundCorrespondenceDateReceived" in {
-        val json = Json.parse(
-          """
+        val json  = Json.parse("""
             |{
             |    "status": "O",
             |    "inboundCorrespondenceFromDate": "2018-04-06",

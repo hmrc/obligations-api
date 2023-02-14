@@ -16,13 +16,14 @@
 
 package v1.controllers.requestParsers
 
-import java.time.LocalDate
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
 
+import java.time.LocalDate
 import javax.inject.Inject
-import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.RetrievePeriodicObligationsValidator
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
 import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
 
 class RetrievePeriodicObligationsRequestParser @Inject()(val validator: RetrievePeriodicObligationsValidator)

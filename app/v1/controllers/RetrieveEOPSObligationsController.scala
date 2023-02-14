@@ -16,86 +16,54 @@
 
 package v1.controllers
 
-import cats.data.EitherT
-import cats.implicits._
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
-import utils.Logging
+import api.controllers._
+import api.services.{ AuditService, EnrolmentsAuthService, MtdIdLookupService }
+import play.api.mvc.{ Action, AnyContent, ControllerComponents }
+import utils.{ IdGenerator, Logging }
 import v1.controllers.requestParsers.RetrieveEOPSObligationsRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail}
-import v1.models.errors._
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 import v1.services._
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAuthService,
                                                   val lookupService: MtdIdLookupService,
-                                                  requestParser: RetrieveEOPSObligationsRequestParser,
+                                                  parser: RetrieveEOPSObligationsRequestParser,
                                                   service: RetrieveEOPSObligationsService,
                                                   auditService: AuditService,
-                                                  cc: ControllerComponents)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+                                                  cc: ControllerComponents,
+                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
 
-  def handleRequest(nino: String, typeOfBusiness: Option[String],
-                    businessId: Option[String], fromDate: Option[String],
-                    toDate: Option[String], status: Option[String]
-                   ): Action[AnyContent] =
+  def handleRequest(nino: String,
+                    typeOfBusiness: Option[String],
+                    businessId: Option[String],
+                    fromDate: Option[String],
+                    toDate: Option[String],
+                    status: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
+      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
+
       val rawData = RetrieveEOPSObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
-      val result =
-        for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.retrieve(parsedRequest))
-        } yield {
-          logger.info(
-            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
 
-          val response = Json.toJson(serviceResponse.responseData)
+      val requestHandler = RequestHandler
+        .withParser(parser)
+        .withService(service.retrieve)
+        .withPlainJsonResult()
+        .withAuditing(AuditHandler(
+          auditService = auditService,
+          auditType = "retrieveEOPSObligations",
+          transactionName = "retrieve-eops-obligations",
+          pathParams = Map("nino" -> nino),
+          includeResponse = true
+        ))
 
-          auditSubmission(RetrieveEOPSObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
-            serviceResponse.correlationId, AuditResponse(OK, Right(Some(response)))))
-
-          Ok(response)
-            .withApiHeaders(serviceResponse.correlationId)
-        }
-
-      result.leftMap { errorWrapper =>
-        val correlationId = getCorrelationId(errorWrapper)
-        val result = errorResult(errorWrapper).withApiHeaders(correlationId)
-
-        auditSubmission(RetrieveEOPSObligationsAuditDetail(request.userDetails, nino, typeOfBusiness, businessId, fromDate, toDate, status,
-          correlationId, AuditResponse(result.header.status, Left(errorWrapper.auditErrors))))
-        result
-      }.merge
+      requestHandler.handleRequest(rawData)
     }
-
-  private def errorResult(errorWrapper: ErrorWrapper) = {
-    errorWrapper.error match {
-      case NinoFormatError | TypeOfBusinessFormatError | BusinessIdFormatError
-           | FromDateFormatError | ToDateFormatError | StatusFormatError
-           | MissingToDateError | MissingFromDateError | ToDateBeforeFromDateError
-           | MissingTypeOfBusinessError | RuleDateRangeInvalidError | RuleFromDateNotSupportedError | RuleInsolventTraderError
-           | BadRequestError => BadRequest(Json.toJson(errorWrapper))
-
-      case NotFoundError | NoObligationsFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
-      case _ => unhandledError(errorWrapper)
-    }
-  }
-
-  private def auditSubmission(details: RetrieveEOPSObligationsAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
-    val event = AuditEvent("retrieveEOPSObligations", "retrieve-eops-obligations", details)
-    auditService.auditEvent(event)
-  }
 }

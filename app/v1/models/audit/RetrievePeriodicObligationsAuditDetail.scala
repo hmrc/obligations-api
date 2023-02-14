@@ -16,8 +16,9 @@
 
 package v1.models.audit
 
-import play.api.libs.json.{Json, Writes}
-import v1.models.auth.UserDetails
+import api.models.audit.AuditResponse
+import api.models.auth.UserDetails
+import play.api.libs.json.{ Json, Writes }
 
 case class RetrievePeriodicObligationsAuditDetail(userType: String,
                                                   agentReferenceNumber: Option[String],

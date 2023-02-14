@@ -16,93 +16,38 @@
 
 package v1.controllers
 
-import play.api.libs.json.Json
+import api.controllers.{ ControllerBaseSpec, ControllerTestRunner }
+import api.mocks.services.MockAuditService
+import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc.Result
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockRetrieveEOPSObligationsRequestParser
-import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockRetrieveEOPSObligationsService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, RetrieveEOPSObligationsAuditDetail}
-import v1.models.domain.Nino
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
+import v1.mocks.services.MockRetrieveEOPSObligationsService
 import v1.models.request.retrieveEOPSObligations._
-import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class RetrieveEOPSObligationsControllerSpec
-  extends ControllerBaseSpec
-    with MockEnrolmentsAuthService
-    with MockMtdIdLookupService
+    extends ControllerBaseSpec
+    with ControllerTestRunner
     with MockRetrieveEOPSObligationsService
     with MockRetrieveEOPSObligationsRequestParser
-    with MockHateoasFactory
     with MockAuditService {
 
-  trait Test {
-    val hc = HeaderCarrier()
-
-    val controller = new RetrieveEOPSObligationsController(
-      authService = mockEnrolmentsAuthService,
-      lookupService = mockMtdIdLookupService,
-      requestParser = mockRequestParser,
-      service = mockService,
-      auditService = mockAuditService,
-      cc = cc
-    )
-
-    MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
-    MockedEnrolmentsAuthService.authoriseUser()
-  }
-
-  private val nino = "AA123456A"
   private val typeOfBusiness = MtdBusiness.`self-employment`
-  private val businessId = "XAIS123456789012"
-  private val fromDate = "2018-04-06"
-  private val toDate = "2019-04-05"
-  private val status = MtdStatus.Open
-  private val correlationId = "X-123"
-
-  private val responseBody = Json.parse(
-    s"""{
-       |  "obligations": [
-       |    {
-       |      "typeOfBusiness": "$typeOfBusiness",
-       |      "businessId": "$businessId",
-       |      "obligationDetails": [
-       |        {
-       |          "periodStartDate": "$fromDate",
-       |          "periodEndDate": "$toDate",
-       |          "dueDate": "2020-04-05",
-       |          "status": "$status"
-       |        }
-       |      ]
-       |    }
-       |  ]
-       |}""".stripMargin)
-
-  def event(auditResponse: AuditResponse): AuditEvent[RetrieveEOPSObligationsAuditDetail] =
-    AuditEvent(
-      auditType = "retrieveEOPSObligations",
-      transactionName = "retrieve-eops-obligations",
-      detail = RetrieveEOPSObligationsAuditDetail(
-        userType = "Individual",
-        agentReferenceNumber = None,
-        nino,
-        Some("self-employment"),
-        Some(businessId),
-        Some(fromDate),
-        Some(toDate),
-        Some("Open"),
-        correlationId,
-        auditResponse
-      )
-    )
+  private val businessId     = "XAIS123456789012"
+  private val fromDate       = "2018-04-06"
+  private val toDate         = "2019-04-05"
+  private val dueDate        = "2020-04-05"
+  private val status         = MtdStatus.Open
 
   private val rawData = RetrieveEOPSObligationsRawData(
     nino = nino,
@@ -112,6 +57,7 @@ class RetrieveEOPSObligationsControllerSpec
     toDate = Some(toDate),
     status = Some(status.toString)
   )
+
   private val requestData = RetrieveEOPSObligationsRequest(
     nino = Nino(nino),
     typeOfBusiness = Some(typeOfBusiness),
@@ -121,9 +67,44 @@ class RetrieveEOPSObligationsControllerSpec
     status = Some(status)
   )
 
+  private val responseBodyModel = RetrieveEOPSObligationsResponse(
+    obligations = Seq(
+      Obligation(
+        typeOfBusiness = MtdBusiness.`self-employment`,
+        businessId = businessId,
+        obligationDetails = Seq(
+          ObligationDetail(
+            periodStartDate = fromDate,
+            periodEndDate = toDate,
+            dueDate = dueDate,
+            receivedDate = None,
+            status = status
+          )
+        )
+      )
+    )
+  )
+
+  private val responseJson = Json.parse(s"""{
+       |  "obligations": [
+       |    {
+       |      "typeOfBusiness": "$typeOfBusiness",
+       |      "businessId": "$businessId",
+       |      "obligationDetails": [
+       |        {
+       |          "periodStartDate": "$fromDate",
+       |          "periodEndDate": "$toDate",
+       |          "dueDate": "$dueDate",
+       |          "status": "$status"
+       |        }
+       |      ]
+       |    }
+       |  ]
+       |}""".stripMargin)
+
   "handleRequest" should {
-    "return OK" when {
-      "happy path" in new Test {
+    "return a successful response with status 200 (OK)" when {
+      "given a valid request" in new Test {
 
         MockRetrieveEOPSObligationsRequestParser
           .parse(rawData)
@@ -131,128 +112,74 @@ class RetrieveEOPSObligationsControllerSpec
 
         MockRetrieveEOPSObligationsService
           .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(
-            correlationId,
-            RetrieveEOPSObligationsResponse(
-              obligations = Seq(
-                Obligation(
-                  typeOfBusiness = MtdBusiness.`self-employment`,
-                  businessId = businessId,
-                  obligationDetails = Seq(
-                    ObligationDetail(
-                      periodStartDate = fromDate,
-                      periodEndDate = toDate,
-                      dueDate = "2020-04-05",
-                      receivedDate = None,
-                      status = status
-                    )
-                  )
-                )
-              )
-            )
-          ))))
+          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
 
-        val result: Future[Result] = controller.handleRequest(
-          nino = nino,
-          typeOfBusiness = Some(typeOfBusiness.toString),
-          businessId = Some(businessId),
-          fromDate = Some(fromDate),
-          toDate = Some(toDate),
-          status = Some(status.toString)
-        )(fakeRequest)
-
-        status(result) shouldBe OK
-        contentAsJson(result) shouldBe responseBody
-        header("X-CorrelationId", result) shouldBe Some(correlationId)
+        runOkTestWithAudit(
+          expectedStatus = OK,
+          maybeExpectedResponseBody = Some(responseJson),
+          maybeAuditResponseBody = Some(responseJson)
+        )
       }
     }
 
     "return the error as per spec" when {
-      "parser errors occur" must {
-        def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
-          s"a ${error.code} error is returned from the parser" in new Test {
+      "the parser validation fails" in new Test {
+        MockRetrieveEOPSObligationsRequestParser
+          .parse(rawData)
+          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
 
-            MockRetrieveEOPSObligationsRequestParser
-              .parse(rawData)
-              .returns(Left(ErrorWrapper(Some(correlationId), error, None)))
-
-            val result: Future[Result] = controller.handleRequest(
-              nino = nino,
-              typeOfBusiness = Some(typeOfBusiness.toString),
-              businessId = Some(businessId),
-              fromDate = Some(fromDate),
-              toDate = Some(toDate),
-              status = Some(status.toString)
-            )(fakeRequest)
-
-            status(result) shouldBe expectedStatus
-            contentAsJson(result) shouldBe Json.toJson(error)
-            header("X-CorrelationId", result) shouldBe Some(correlationId)
-          }
-        }
-
-        val input = List(
-          (NinoFormatError, BAD_REQUEST),
-          (TypeOfBusinessFormatError, BAD_REQUEST),
-          (BusinessIdFormatError, BAD_REQUEST),
-          (FromDateFormatError, BAD_REQUEST),
-          (ToDateFormatError, BAD_REQUEST),
-          (StatusFormatError, BAD_REQUEST),
-          (MissingFromDateError, BAD_REQUEST),
-          (MissingToDateError, BAD_REQUEST),
-          (ToDateBeforeFromDateError, BAD_REQUEST),
-          (MissingTypeOfBusinessError, BAD_REQUEST),
-          (RuleDateRangeInvalidError, BAD_REQUEST),
-          (RuleFromDateNotSupportedError, BAD_REQUEST),
-          (BadRequestError, BAD_REQUEST)
-        )
-
-        input.foreach(args => (errorsFromParserTester _).tupled(args))
+        runErrorTestWithAudit(NinoFormatError)
       }
 
-      "service errors occur" must {
-        def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
-          s"a ${mtdError.code} error is returned from the service" in new Test {
+      "the service returns an error" in new Test {
+        MockRetrieveEOPSObligationsRequestParser
+          .parse(rawData)
+          .returns(Right(requestData))
 
-            MockRetrieveEOPSObligationsRequestParser
-              .parse(rawData)
-              .returns(Right(requestData))
+        MockRetrieveEOPSObligationsService
+          .retrieve(requestData)
+          .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
-            MockRetrieveEOPSObligationsService
-              .retrieve(requestData)
-              .returns(Future.successful(Left(ErrorWrapper(Some(correlationId), mtdError))))
-
-            val result: Future[Result] = controller.handleRequest(
-              nino = nino,
-              typeOfBusiness = Some(typeOfBusiness.toString),
-              businessId = Some(businessId),
-              fromDate = Some(fromDate),
-              toDate = Some(toDate),
-              status = Some(status.toString)
-            )(fakeRequest)
-
-            status(result) shouldBe expectedStatus
-            contentAsJson(result) shouldBe Json.toJson(mtdError)
-            header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
-            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
-          }
-        }
-
-        val input = List(
-          (NinoFormatError, BAD_REQUEST),
-          (FromDateFormatError, BAD_REQUEST),
-          (ToDateFormatError, BAD_REQUEST),
-          (RuleDateRangeInvalidError, BAD_REQUEST),
-          (RuleInsolventTraderError, BAD_REQUEST),
-          (NotFoundError, NOT_FOUND),
-          (NoObligationsFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR),
-        )
-
-        input.foreach(args => (serviceErrors _).tupled(args))
+        runErrorTestWithAudit(RuleTaxYearNotSupportedError)
       }
     }
+  }
+
+  trait Test extends ControllerTest with AuditEventChecking {
+
+    val controller: RetrieveEOPSObligationsController = new RetrieveEOPSObligationsController(
+      authService = mockEnrolmentsAuthService,
+      lookupService = mockMtdIdLookupService,
+      parser = mockRequestParser,
+      service = mockService,
+      auditService = mockAuditService,
+      cc = cc,
+      idGenerator = mockIdGenerator
+    )
+
+    protected def callController(): Future[Result] =
+      controller.handleRequest(
+        nino = nino,
+        typeOfBusiness = Some(typeOfBusiness.toString),
+        businessId = Some(businessId),
+        fromDate = Some(fromDate),
+        toDate = Some(toDate),
+        status = Some(status.toString)
+      )(fakeRequest)
+
+    def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
+      AuditEvent(
+        auditType = "retrieveEOPSObligations",
+        transactionName = "retrieve-eops-obligations",
+        detail = GenericAuditDetail(
+          userType = "Individual",
+          agentReferenceNumber = None,
+          pathParams = Map("nino" -> nino),
+          queryParams = None,
+          requestBody = requestBody,
+          `X-CorrelationId` = correlationId,
+          auditResponse = auditResponse
+        )
+      )
   }
 }

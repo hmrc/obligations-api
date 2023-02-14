@@ -16,6 +16,7 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
@@ -23,7 +24,6 @@ import play.api.libs.json.{ JsValue, Json }
 import play.api.libs.ws.{ WSRequest, WSResponse }
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
@@ -576,17 +576,17 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val input = List(
           (BAD_REQUEST, "INVALID_IDNUMBER", BAD_REQUEST, NinoFormatError),
-          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, DownstreamError),
+          (BAD_REQUEST, "INVALID_IDTYPE", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "INVALID_STATUS", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "INVALID_REGIME", INTERNAL_SERVER_ERROR, InternalError),
           (BAD_REQUEST, "INVALID_DATE_FROM", BAD_REQUEST, FromDateFormatError),
           (BAD_REQUEST, "INVALID_DATE_TO", BAD_REQUEST, ToDateFormatError),
           (BAD_REQUEST, "INVALID_DATE_RANGE", BAD_REQUEST, RuleDateRangeInvalidError),
           (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError),
           (FORBIDDEN, "INSOLVENT_TRADER", BAD_REQUEST, RuleInsolventTraderError),
           (FORBIDDEN, "NOT_FOUND_BPKEY", NOT_FOUND, NotFoundError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
         )
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }

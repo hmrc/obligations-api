@@ -16,23 +16,22 @@
 
 package v1.services
 
-import support.UnitSpec
+import api.controllers.EndpointLogContext
+import api.models.domain.Nino
+import api.models.domain.business.MtdBusiness
+import api.models.domain.status.MtdStatus
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockRetrievePeriodicObligationsConnector
-import v1.models.domain.Nino
-import v1.models.domain.business.MtdBusiness
-import v1.models.domain.status.MtdStatus
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
+class RetrievePeriodicObligationsServiceSpec extends ServiceSpec {
 
   private val validNino           = "AA123456A"
   private val validTypeOfBusiness = MtdBusiness.`foreign-property`
@@ -40,7 +39,6 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
   private val validFromDate       = "2018-04-06"
   private val validToDate         = "2019-04-05"
   private val validStatus         = MtdStatus.Open
-  private val correlationId       = "X-123"
 
   private val fullResponseModel = RetrievePeriodObligationsResponse(
     Seq(
@@ -163,7 +161,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
         "businessId filter is applied and there are no response objects with that businessId" in new Test {
           private val requestData = RetrievePeriodicObligationsRequest(Nino(validNino),
@@ -184,7 +182,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
         "the connector returns an empty array due to JSON reads filtering out all obligations" in new Test {
           private val requestData = RetrievePeriodicObligationsRequest(
@@ -202,7 +200,7 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
             .doConnectorThing(requestData)
             .returns(Future.successful(Right(ResponseWrapper(correlationId, emptyResponseModel))))
 
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), NoObligationsFoundError))
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
       }
     }
@@ -220,24 +218,24 @@ class RetrievePeriodicObligationsServiceSpec extends UnitSpec {
 
             MockRetrievePeriodicObligationsConnector
               .doConnectorThing(requestData)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
-            await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(Some(correlationId), error))
+            await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
         val input = List(
           ("INVALID_IDNUMBER", NinoFormatError),
-          ("INVALID_IDTYPE", DownstreamError),
-          ("INVALID_STATUS", DownstreamError),
-          ("INVALID_REGIME", DownstreamError),
+          ("INVALID_IDTYPE", InternalError),
+          ("INVALID_STATUS", InternalError),
+          ("INVALID_REGIME", InternalError),
           ("INVALID_DATE_FROM", FromDateFormatError),
           ("INVALID_DATE_TO", ToDateFormatError),
           ("INVALID_DATE_RANGE", RuleDateRangeInvalidError),
           ("INSOLVENT_TRADER", RuleInsolventTraderError),
           ("NOT_FOUND_BPKEY", NotFoundError),
           ("NOT_FOUND", NotFoundError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
         input.foreach(args => (serviceError _).tupled(args))
       }

@@ -16,48 +16,46 @@
 
 package v1.services
 
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.data.EitherT
 import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.RetrieveEOPSObligationsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
-import v1.support.DesResponseMappingSupport
 
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends DesResponseMappingSupport with Logging {
+class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit hc: HeaderCarrier,
-                                                        ec: ExecutionContext,
-                                                        logContext: EndpointLogContext): Future[RetrieveEOPSObligationsServiceOutcome] = {
+  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
+                                                        ec: ExecutionContext): Future[RetrieveEOPSObligationsServiceOutcome] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDesErrors(desErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](filterEOPSValues(desResponseWrapper, request.typeOfBusiness, request.businessId))
+      downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
     } yield mtdResponseWrapper
+
     result.value
 
   }
 
-  private val desErrorMap =
+  private val downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
-      "INVALID_IDTYPE"      -> DownstreamError,
-      "INVALID_STATUS"      -> DownstreamError,
-      "INVALID_REGIME"      -> DownstreamError,
+      "INVALID_IDTYPE"      -> InternalError,
+      "INVALID_STATUS"      -> InternalError,
+      "INVALID_REGIME"      -> InternalError,
       "INVALID_DATE_FROM"   -> FromDateFormatError,
       "INVALID_DATE_TO"     -> ToDateFormatError,
       "INVALID_DATE_RANGE"  -> RuleDateRangeInvalidError,
       "INSOLVENT_TRADER"    -> RuleInsolventTraderError,
       "NOT_FOUND_BPKEY"     -> NotFoundError,
       "NOT_FOUND"           -> NotFoundError,
-      "SERVER_ERROR"        -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
+      "SERVER_ERROR"        -> InternalError,
+      "SERVICE_UNAVAILABLE" -> InternalError
     )
 
 }

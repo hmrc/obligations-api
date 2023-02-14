@@ -16,19 +16,20 @@
 
 package v1.mocks.requestParsers
 
+import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.RetrieveEOPSObligationsRequestParser
-import v1.models.errors.ErrorWrapper
-import v1.models.request.retrieveEOPSObligations.{RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest}
+import v1.models.request.retrieveEOPSObligations.{ RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest }
 
 trait MockRetrieveEOPSObligationsRequestParser extends MockFactory {
 
   val mockRequestParser: RetrieveEOPSObligationsRequestParser = mock[RetrieveEOPSObligationsRequestParser]
 
   object MockRetrieveEOPSObligationsRequestParser {
+
     def parse(data: RetrieveEOPSObligationsRawData): CallHandler[Either[ErrorWrapper, RetrieveEOPSObligationsRequest]] = {
-      (mockRequestParser.parseRequest(_: RetrieveEOPSObligationsRawData)).expects(data)
+      (mockRequestParser.parseRequest(_: RetrieveEOPSObligationsRawData)(_: String)).expects(data, *)
     }
   }
 

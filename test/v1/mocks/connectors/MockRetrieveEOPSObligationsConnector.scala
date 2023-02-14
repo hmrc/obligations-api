@@ -16,24 +16,25 @@
 
 package v1.mocks.connectors
 
+import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{DesOutcome, RetrieveEOPSObligationsConnector}
+import v1.connectors.RetrieveEOPSObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait MockRetrieveEOPSObligationsConnector extends MockFactory {
   val mockRetrieveEOPSObligationsConnector: RetrieveEOPSObligationsConnector = mock[RetrieveEOPSObligationsConnector]
 
   object MockRetrieveEOPSObligationsConnector {
 
-    def doConnectorThing(requestData: RetrieveEOPSObligationsRequest): CallHandler[Future[DesOutcome[RetrieveEOPSObligationsResponse]]] = {
+    def doConnectorThing(requestData: RetrieveEOPSObligationsRequest): CallHandler[Future[DownstreamOutcome[RetrieveEOPSObligationsResponse]]] = {
       (mockRetrieveEOPSObligationsConnector
-        .retrieveEOPSObligations(_: RetrieveEOPSObligationsRequest)(_: HeaderCarrier, _: ExecutionContext))
-        .expects(requestData, *, *)
+        .retrieveEOPSObligations(_: RetrieveEOPSObligationsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .expects(requestData, *, *, *)
     }
   }
 }

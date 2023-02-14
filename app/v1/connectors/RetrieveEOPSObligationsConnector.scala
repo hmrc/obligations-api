@@ -16,12 +16,14 @@
 
 package v1.connectors
 
+import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.DownstreamUri._
+import api.models.domain.status.MtdStatus
 import config.AppConfig
 import javax.inject.{ Inject, Singleton }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.HttpClient
-import v1.connectors.httpparsers.StandardDesHttpParser._
-import v1.models.domain.status.MtdStatus
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
@@ -30,8 +32,11 @@ import scala.concurrent.{ ExecutionContext, Future }
 @Singleton
 class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)(implicit hc: HeaderCarrier,
-                                                                       ec: ExecutionContext): Future[DesOutcome[RetrieveEOPSObligationsResponse]] = {
+  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)(
+      implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[RetrieveEOPSObligationsResponse]] = {
 
     val queryParams: String = Seq(
       "from"   -> request.fromDate,
@@ -43,10 +48,8 @@ class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient, val appCo
       }
       .mkString("&")
 
-    val url = s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?$queryParams"
+    val url = DesUri[RetrieveEOPSObligationsResponse](s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?$queryParams")
 
-    get(
-      DesUri[RetrieveEOPSObligationsResponse](s"$url")
-    )
+    get(url)
   }
 }

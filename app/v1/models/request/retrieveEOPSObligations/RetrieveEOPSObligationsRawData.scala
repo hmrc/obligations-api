@@ -16,11 +16,12 @@
 
 package v1.models.request.retrieveEOPSObligations
 
-import v1.models.request.RawData
+import api.models.request.RawData
 
 case class RetrieveEOPSObligationsRawData(nino: String,
                                           typeOfBusiness: Option[String],
                                           businessId: Option[String],
                                           fromDate: Option[String],
                                           toDate: Option[String],
-                                          status: Option[String]) extends RawData
+                                          status: Option[String])
+    extends RawData
