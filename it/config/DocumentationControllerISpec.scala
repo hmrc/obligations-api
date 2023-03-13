@@ -16,11 +16,11 @@
 
 package config
 
+import io.swagger.v3.parser.OpenAPIV3Parser
 import play.api.http.Status
 import play.api.libs.json.{ JsValue, Json }
 import play.api.libs.ws.WSResponse
 import support.IntegrationBaseSpec
-import io.swagger.v3.parser.OpenAPIV3Parser
 
 import scala.util.Try
 
