@@ -16,11 +16,11 @@
 
 package config
 
+import io.swagger.v3.parser.OpenAPIV3Parser
 import play.api.http.Status
 import play.api.libs.json.{ JsValue, Json }
 import play.api.libs.ws.WSResponse
 import support.IntegrationBaseSpec
-import io.swagger.v3.parser.OpenAPIV3Parser
 
 import scala.util.Try
 
@@ -67,14 +67,6 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
       val response: WSResponse = await(buildRequest("/api/definition").get())
       response.status shouldBe Status.OK
       Json.parse(response.body) shouldBe apiDefinitionJson
-    }
-  }
-
-  "a RAML documentation request" must {
-    "return the documentation" in {
-      val response: WSResponse = await(buildRequest("/api/conf/1.0/application.raml").get())
-      response.status shouldBe Status.OK
-      response.body[String] should startWith("#%RAML 1.0")
     }
   }
 
