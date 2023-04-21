@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package definition
+package v2.stubs
 
-import play.api.http.HeaderNames.ACCEPT
-import play.api.mvc.RequestHeader
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.http.Status._
+import support.WireMockMethods
 
-object Versions {
-  val VERSION_1 = "1.0"
-  val VERSION_2 = "2.0"
+object AuditStub extends WireMockMethods {
 
-  private val versionRegex = """application\/vnd.hmrc.(\d.\d)\+json""".r
+  private val auditUri: String = s"/write/audit.*"
 
-  def getFromRequest(request: RequestHeader): Option[String] =
-    getFrom(request.headers.headers)
+  def audit(): StubMapping = {
+    when(method = POST, uri = auditUri)
+      .thenReturn(status = NO_CONTENT)
+  }
 
-  private def getFrom(headers: Seq[(String, String)]) =
-    headers.collectFirst { case (ACCEPT, versionRegex(ver)) => ver }
 }
