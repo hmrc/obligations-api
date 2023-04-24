@@ -35,7 +35,7 @@ class RetrieveEOPSObligationsConnectorSpec extends ConnectorSpec {
         val outcome: Right[Nothing, ResponseWrapper[RetrieveEOPSObligationsResponse]] =
           Right(ResponseWrapper(correlationId, response))
 
-        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate&status=${status.toDes}")
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA")
           .returns(Future.successful(outcome))
 
         await(connector.retrieveEOPSObligations(request)) shouldBe outcome
@@ -54,8 +54,9 @@ class RetrieveEOPSObligationsConnectorSpec extends ConnectorSpec {
     protected val status: MtdStatus           = MtdStatus.Open
 
     val connector: RetrieveEOPSObligationsConnector = new RetrieveEOPSObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+
     lazy val request: RetrieveEOPSObligationsRequest =
-      RetrieveEOPSObligationsRequest(Nino(nino), Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+      RetrieveEOPSObligationsRequest(Nino(nino), None, None, None, None, None)
     lazy val response: RetrieveEOPSObligationsResponse = RetrieveEOPSObligationsResponse(
       Seq(
         Obligation(

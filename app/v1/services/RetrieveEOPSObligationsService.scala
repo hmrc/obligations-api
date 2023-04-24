@@ -18,11 +18,12 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.services.BaseService
+import api.services.{ BaseService, ServiceOutcome }
 import cats.data.EitherT
 import cats.implicits._
 import v1.connectors.RetrieveEOPSObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
+import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
@@ -31,7 +32,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends BaseService {
 
   def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
-                                                        ec: ExecutionContext): Future[RetrieveEOPSObligationsServiceOutcome] = {
+                                                        ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))

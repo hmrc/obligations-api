@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package v1
+package api
 
 import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
-import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
-import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 package object services {
+
   type ServiceOutcome[A] = Either[ErrorWrapper, ResponseWrapper[A]]
 
-  type RetrieveCrystallisationObligationsServiceOutcome = ServiceOutcome[RetrieveCrystallisationObligationsResponse]
-
-  type RetrieveEOPSObligationsServiceOutcome = ServiceOutcome[RetrieveEOPSObligationsResponse]
-
-  type RetrievePeriodicObligationsServiceOutcome = ServiceOutcome[RetrievePeriodObligationsResponse]
 }
