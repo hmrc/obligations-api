@@ -38,18 +38,19 @@ class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient, val appCo
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[RetrieveEOPSObligationsResponse]] = {
 
-    val queryParams: String = Seq(
-      "from"   -> request.fromDate,
-      "to"     -> request.toDate,
-      "status" -> request.status
+    import request._
+
+    val queryParams: Seq[(String, String)] = Seq(
+      "from"   -> fromDate,
+      "to"     -> toDate,
+      "status" -> status
     ).collect {
-        case (k, Some(v: MtdStatus)) => s"$k=${v.toDes}"
-        case (k, Some(v: String))    => s"$k=$v"
-      }
-      .mkString("&")
+      case (k, Some(v: MtdStatus)) => k -> v.toDes.toString
+      case (k, Some(v: String))    => k -> v
+    }
 
-    val url = DesUri[RetrieveEOPSObligationsResponse](s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?$queryParams")
+    val url = DesUri[RetrieveEOPSObligationsResponse](s"enterprise/obligation-data/nino/$nino/ITSA")
 
-    get(url)
+    get(url, queryParams)
   }
 }

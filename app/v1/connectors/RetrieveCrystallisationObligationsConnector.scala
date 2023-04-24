@@ -37,8 +37,10 @@ class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[DesRetrieveCrystallisationObligationsResponse]] = {
 
+    import request._
+
     val url = DesUri[DesRetrieveCrystallisationObligationsResponse](
-      s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA?from=${request.obligationsTaxYear.from}&to=${request.obligationsTaxYear.to}")
+      s"enterprise/obligation-data/nino/$nino/ITSA?from=${obligationsTaxYear.from}&to=${obligationsTaxYear.to}")
 
     get(url)
   }

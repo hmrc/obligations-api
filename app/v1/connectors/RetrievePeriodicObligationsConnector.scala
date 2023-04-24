@@ -38,16 +38,18 @@ class RetrievePeriodicObligationsConnector @Inject()(val http: HttpClient, val a
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[RetrievePeriodObligationsResponse]] = {
 
+    import request._
+
     val queryParams: Seq[(String, String)] = Seq(
-      "from"   -> request.fromDate,
-      "to"     -> request.toDate,
-      "status" -> request.status
+      "from"   -> fromDate,
+      "to"     -> toDate,
+      "status" -> status
     ).collect {
       case (k, Some(v: MtdStatus)) => k -> v.toDes.toString
       case (k, Some(v: String))    => k -> v
     }
 
-    val url = DesUri[RetrievePeriodObligationsResponse](s"enterprise/obligation-data/nino/${request.nino.nino}/ITSA")
+    val url = DesUri[RetrievePeriodObligationsResponse](s"enterprise/obligation-data/nino/$nino/ITSA")
 
     get(url, queryParams)
   }
