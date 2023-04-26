@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package api.services
+package v2.models.response.retrieveCrystallisationObligations
 
-import api.controllers.RequestContextImplicits
-import api.support.DownstreamResponseMappingSupport
-import utils.Logging
+import api.models.domain.status.MtdStatus
+import play.api.libs.json.{Json, OWrites}
 
-trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging
+case class RetrieveCrystallisationObligationsResponse(
+    periodStartDate: String,
+    periodEndDate: String,
+    dueDate: String,
+    status: MtdStatus,
+    receivedDate: Option[String]
+)
+
+object RetrieveCrystallisationObligationsResponse {
+  implicit val writes: OWrites[RetrieveCrystallisationObligationsResponse] = Json.writes[RetrieveCrystallisationObligationsResponse]
+}

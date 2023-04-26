@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.request
+package v2.models.request
 
 import java.time.LocalDate
 
