@@ -16,15 +16,10 @@
 
 package v2.models.response.retrieveCrystallisationObligations
 
-import api.models.domain.status.MtdStatus
-import play.api.libs.json.{Json, OWrites}
+import play.api.libs.json.{ Json, OWrites }
 
 case class RetrieveCrystallisationObligationsResponse(
-    periodStartDate: String,
-    periodEndDate: String,
-    dueDate: String,
-    status: MtdStatus,
-    receivedDate: Option[String]
+    obligations: Seq[Obligation]
 )
 
 object RetrieveCrystallisationObligationsResponse {

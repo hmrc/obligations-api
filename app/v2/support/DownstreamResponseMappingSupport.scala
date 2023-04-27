@@ -30,10 +30,8 @@ trait DownstreamResponseMappingSupport {
       responseWrapper: ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]
   ): Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]] = {
     responseWrapper.responseData.obligationDetails.toList match {
-      case desO :: Nil =>
-        Right(ResponseWrapper(responseWrapper.correlationId, desO.toMtd))
-      case Nil    => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
-      case _ :: _ => Left(ErrorWrapper(responseWrapper.correlationId, InternalError))
+      case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
+      case _   => Right(ResponseWrapper(responseWrapper.correlationId, responseWrapper.responseData.toMtd))
     }
   }
 

@@ -17,8 +17,8 @@
 package v2.models.response.retrieveCrystallisationObligations.des
 
 import api.models.domain.status.DesStatus
-import play.api.libs.json.{Json, Reads}
-import v2.models.response.retrieveCrystallisationObligations
+import play.api.libs.json.{ Json, Reads }
+import v2.models.response.retrieveCrystallisationObligations.Obligation
 
 case class DesObligation(
     inboundCorrespondenceFromDate: String,
@@ -28,7 +28,7 @@ case class DesObligation(
     inboundCorrespondenceDateReceived: Option[String]
 ) {
 
-  def toMtd: retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse = retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse(
+  def toMtd: Obligation = Obligation(
     periodStartDate = inboundCorrespondenceFromDate,
     periodEndDate = inboundCorrespondenceToDate,
     dueDate = inboundCorrespondenceDueDate,

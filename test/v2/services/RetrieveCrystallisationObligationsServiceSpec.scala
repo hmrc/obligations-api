@@ -18,17 +18,16 @@ package v2.services
 
 import api.controllers.EndpointLogContext
 import api.models.domain.Nino
-import api.models.domain.status.DesStatus.F
-import api.models.domain.status.MtdStatus.Fulfilled
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
+import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ desObligationModel, mtdObligationModel }
 import v2.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
 import v2.models.request.ObligationsTaxYear
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v2.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
+import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.Future
 
@@ -41,12 +40,10 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear(fromDate, toDate))
 
   val downstreamResponseModel: DesRetrieveCrystallisationObligationsResponse = DesRetrieveCrystallisationObligationsResponse(
-    Seq(
-      DesObligation("earlier", "then", "before now", F, Some("now"))
-    ))
+    Seq(desObligationModel()))
 
   val mtdResponseModel: RetrieveCrystallisationObligationsResponse =
-    RetrieveCrystallisationObligationsResponse("earlier", "then", "before now", Fulfilled, Some("now"))
+    RetrieveCrystallisationObligationsResponse(Seq(mtdObligationModel()))
 
   trait Test extends MockRetrieveCrystallisationObligationsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()

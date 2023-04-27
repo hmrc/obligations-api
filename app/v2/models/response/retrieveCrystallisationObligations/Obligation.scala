@@ -14,28 +14,19 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators.validations
+package v2.models.response.retrieveCrystallisationObligations
 
-import api.models.errors.{MtdError, TaxYearFormatError}
+import api.models.domain.status.MtdStatus
+import play.api.libs.json.{ Json, OWrites }
 
-object TaxYearValidation {
+case class Obligation(
+    periodStartDate: String,
+    periodEndDate: String,
+    dueDate: String,
+    status: MtdStatus,
+    receivedDate: Option[String]
+)
 
-  val taxYearFormat = "20[1-9][0-9]\\-[1-9][0-9]"
-
-  def validate(taxYear: String, taxYearRangeError: MtdError): List[MtdError] = {
-    if (taxYear.matches(taxYearFormat)) {
-
-      val start = taxYear.substring(2, 4).toInt
-      val end   = taxYear.substring(5, 7).toInt
-
-      if (end - start == 1) {
-        NoValidationErrors
-      } else {
-        List(taxYearRangeError)
-      }
-    } else {
-      List(TaxYearFormatError)
-    }
-  }
-
+object Obligation {
+  implicit val writes: OWrites[Obligation] = Json.writes[Obligation]
 }

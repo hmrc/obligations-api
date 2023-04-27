@@ -37,14 +37,16 @@ object NoObligationsFoundError   extends MtdError("NO_OBLIGATIONS_FOUND", "No ob
 
 // Rule Errors
 object RuleTaxYearNotSupportedError
-    extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "Tax year not supported, because it precedes the earliest allowable tax year", BAD_REQUEST)
+    extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range.", BAD_REQUEST)
 
 object RuleIncorrectOrEmptyBodyError
     extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
 
 object RuleTaxYearRangeExceededError
     extends MtdError("RULE_TAX_YEAR_RANGE_EXCEEDED", "Tax year range exceeded. A tax year range of one year is required", BAD_REQUEST)
-object RuleDateRangeInvalidError extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid", BAD_REQUEST)
+
+object RuleTaxYearRangeInvalidError extends MtdError("RULE_TAX_YEAR_RANGE_INVALID", "A tax year range of one year is required", BAD_REQUEST)
+object RuleDateRangeInvalidError    extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid", BAD_REQUEST)
 
 object RuleInsolventTraderError
     extends MtdError("RULE_INSOLVENT_TRADER", "The remote endpoint has indicated that the Trader is insolvent", BAD_REQUEST)

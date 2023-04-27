@@ -18,9 +18,15 @@ package v2.models.response.retrieveCrystallisationObligations.des
 
 import api.models.domain.PeriodKey
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Reads}
+import play.api.libs.json.{ JsPath, Reads }
+import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
-case class DesRetrieveCrystallisationObligationsResponse(obligationDetails: Seq[DesObligation])
+case class DesRetrieveCrystallisationObligationsResponse(obligationDetails: Seq[DesObligation]) {
+
+  def toMtd: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
+    obligations = obligationDetails.map(_.toMtd)
+  )
+}
 
 object DesRetrieveCrystallisationObligationsResponse {
 
