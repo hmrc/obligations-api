@@ -14,17 +14,67 @@
  * limitations under the License.
  */
 
-package v2.support
+package api.support
 
 import api.controllers.EndpointLogContext
+import api.models.domain.business.MtdBusiness
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import utils.Logging
-import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
+import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
+import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 trait DownstreamResponseMappingSupport {
   self: Logging =>
+
+  final def filterPeriodicValues(
+      responseWrapper: ResponseWrapper[RetrievePeriodObligationsResponse],
+      typeOfBusiness: Option[MtdBusiness],
+      businessId: Option[String]
+  ): Either[ErrorWrapper, ResponseWrapper[RetrievePeriodObligationsResponse]] = {
+    val filteredObligations = responseWrapper.responseData.obligations
+      .filter { obligation =>
+        typeOfBusiness.forall(_ == obligation.typeOfBusiness)
+      }
+      .filter { obligation =>
+        businessId.forall(_ == obligation.businessId)
+      }
+      .filter { obligation =>
+        obligation.obligationDetails.nonEmpty
+      }
+
+    if (filteredObligations.nonEmpty) {
+      Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(filteredObligations)))
+    } else {
+      Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
+    }
+  }
+
+  final def filterEOPSValues(
+      responseWrapper: ResponseWrapper[RetrieveEOPSObligationsResponse],
+      typeOfBusiness: Option[MtdBusiness],
+      businessId: Option[String]
+  ): Either[ErrorWrapper, ResponseWrapper[RetrieveEOPSObligationsResponse]] = {
+
+    val filteredObligations = responseWrapper.responseData.obligations
+      .filter { obligation =>
+        typeOfBusiness.forall(_ == obligation.typeOfBusiness)
+      }
+      .filter { obligation =>
+        businessId.forall(_ == obligation.businessId)
+      }
+      .filter { obligation =>
+        obligation.obligationDetails.nonEmpty
+      }
+
+    if (filteredObligations.nonEmpty) {
+      Right(ResponseWrapper(responseWrapper.correlationId, RetrieveEOPSObligationsResponse(filteredObligations)))
+    } else {
+      Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
+    }
+  }
 
   final def filterCrystallisationValues(
       responseWrapper: ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]

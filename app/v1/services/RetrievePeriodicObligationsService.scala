@@ -18,7 +18,7 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.services.ServiceOutcome
+import api.services.{ BaseService, ServiceOutcome }
 import cats.data.EitherT
 import cats.implicits._
 import v1.connectors.RetrievePeriodicObligationsConnector

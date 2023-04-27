@@ -42,7 +42,7 @@ trait ObligationsTaxYearHelpers {
       * @return ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
       */
     def toObligationsTaxYear: ObligationsTaxYear = {
-      val patternRegex                   = pattern.r
+      val patternRegex = pattern.r
       val patternRegex(fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear)
       ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
     }
@@ -62,10 +62,10 @@ trait ObligationsTaxYearHelpers {
     *         the year is not considered complete and the previous tax year will be returned
     */
   def getMostRecentTaxYear: String = {
-    val year                = date.getYear
+    val year = date.getYear
     val fiscalYearStartDate = LocalDate.parse(s"$year-04-05")
 
-    if (date.isAfter(fiscalYearStartDate)) returnYearInMtdFormat(year)
+    if(date.isAfter(fiscalYearStartDate)) returnYearInMtdFormat(year)
     else returnYearInMtdFormat(year - 1)
   }
 }
