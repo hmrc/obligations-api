@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package api.support
+package v1.support
 
 import api.controllers.EndpointLogContext
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.{ DesStatus, MtdStatus }
+import api.models.domain.status.{DesStatus, MtdStatus}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.BAD_REQUEST
 import support.UnitSpec
 import utils.Logging
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v1.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
+import v1.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 

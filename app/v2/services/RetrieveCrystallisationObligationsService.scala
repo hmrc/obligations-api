@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package v1.services
+package v2.services
 
 import api.controllers.RequestContext
 import api.models.errors._
 import api.services.ServiceOutcome
 import cats.data.EitherT
 import cats.implicits._
-import v1.connectors.RetrieveEOPSObligationsConnector
-import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
-import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
+import v2.connectors.RetrieveCrystallisationObligationsConnector
+import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
+import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends BaseService {
+class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCrystallisationObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
-                                                        ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
+  def retrieve(request: RetrieveCrystallisationObligationsRequest)(
+      implicit ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
 
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
+      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 
     result.value
@@ -49,14 +50,13 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
       "INVALID_IDTYPE"      -> InternalError,
       "INVALID_STATUS"      -> InternalError,
       "INVALID_REGIME"      -> InternalError,
-      "INVALID_DATE_FROM"   -> FromDateFormatError,
-      "INVALID_DATE_TO"     -> ToDateFormatError,
-      "INVALID_DATE_RANGE"  -> RuleDateRangeInvalidError,
-      "INSOLVENT_TRADER"    -> RuleInsolventTraderError,
+      "INVALID_DATE_FROM"   -> InternalError,
+      "INVALID_DATE_TO"     -> InternalError,
+      "INVALID_DATE_RANGE"  -> InternalError,
       "NOT_FOUND_BPKEY"     -> NotFoundError,
+      "INSOLVENT_TRADER"    -> RuleInsolventTraderError,
       "NOT_FOUND"           -> NotFoundError,
       "SERVER_ERROR"        -> InternalError,
       "SERVICE_UNAVAILABLE" -> InternalError
     )
-
 }
