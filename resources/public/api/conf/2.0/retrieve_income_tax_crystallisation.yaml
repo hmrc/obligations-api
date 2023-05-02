@@ -39,6 +39,14 @@ get:
         </tr>
         <tr>
           <td>
+            <p>MULTIPLE</p>
+          </td>
+          <td>
+            <p>Simulate a success response with multiple obligations.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <p>INSOLVENT_TRADER</p>
           </td>
           <td>
@@ -97,8 +105,8 @@ get:
               $ref: './common/errors.yaml#/components/examples/formatTaxYear'
             RULE_TAX_YEAR_NOT_SUPPORTED:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
-            RULE_TAX_YEAR_TOO_LONG:
-              $ref: './common/errors.yaml#/components/examples/ruleTaxYearTooLong'
+            RULE_TAX_YEAR_RANGE_INVALID:
+              $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
             RULE_INSOLVENT_TRADER:
               $ref: './common/errors.yaml#/components/examples/ruleInsolventTrader'
     "403":
