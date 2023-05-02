@@ -1,7 +1,11 @@
 {
-  "periodStartDate": "2018-04-06",
-  "periodEndDate": "2019-04-05",
-  "dueDate": "2020-01-31",
-  "status": "Fulfilled",
-  "receivedDate": "2020-01-25"
+  "obligations": [
+    {
+      "periodStartDate": "2018-04-06",
+      "periodEndDate": "2019-04-05",
+      "dueDate": "2020-01-31",
+      "status": "Fulfilled",
+      "receivedDate": "2020-01-25"
+    }
+  ]
 }

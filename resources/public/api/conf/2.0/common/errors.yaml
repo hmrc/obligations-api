@@ -19,17 +19,17 @@ components:
 
     ruleTaxYearNotSupported:
       description: |
-        The tax year requested is before 2017-18.
+        The specified tax year is not supported.  Either the tax year is before the minimum tax year value, or it is after the maximum tax year value.
       value:
         code: RULE_TAX_YEAR_NOT_SUPPORTED
-        message: The specified tax year is not supported as too early
+        message: The tax year specified does not lie within the supported range
 
-    ruleTaxYearTooLong:
+    ruleTaxYearRangeInvalid:
       description: |
-        The tax year provided is more than one year in length.
+        Tax year range invalid. A tax year range of one year is required.
       value:
-        code: RULE_TAX_YEAR_TOO_LONG
-        message: The specified tax year is too long
+        code: RULE_TAX_YEAR_RANGE_INVALID
+        message: A tax year range of one year is required
 
     formatTypeOfBusiness:
       description: |

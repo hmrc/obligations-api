@@ -4,37 +4,50 @@
   "description": "An array to return one or more businesses and their obligations details.",
   "type": "object",
   "properties": {
-    "periodStartDate": {
-      "description": "The start date of this obligation period. Date in the format YYYY-MM-DD.",
-      "type": "string",
-      "example": "2018-04-06"
-    },
-    "periodEndDate": {
-      "description": "The end date of this obligation period. Date in the format YYYY-MM-DD.",
-      "type": "string",
-      "example": "2019-04-05"
-    },
-    "dueDate": {
-      "description": "The due date for this obligation period. Date in the format YYYY-MM-DD.",
-      "type": "string",
-      "example": "2020-01-31"
-    },
-    "status": {
-      "description": "The status of the obligation, one of: `Open` or `Fulfilled`.",
-      "type": "string",
-      "example": "Open"
-    },
-    "receivedDate": {
-      "description": "The date this obligation period was fulfilled. Date in the format YYYY-MM-DD.",
-      "type": "string",
-      "example": "2019-12-15"
+    "obligations": {
+      "type": "array",
+      "description": "An array to return one or more final declaration obligation details.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "periodStartDate": {
+            "description": "The start date of this obligation period. Date in the format YYYY-MM-DD.",
+            "type": "string",
+            "example": "2018-04-06"
+          },
+          "periodEndDate": {
+            "description": "The end date of this obligation period. Date in the format YYYY-MM-DD.",
+            "type": "string",
+            "example": "2019-04-05"
+          },
+          "dueDate": {
+            "description": "The due date for this obligation period. Date in the format YYYY-MM-DD.",
+            "type": "string",
+            "example": "2020-01-31"
+          },
+          "status": {
+            "description": "The status of the obligation, one of: `Open` or `Fulfilled`.",
+            "type": "string",
+            "example": "Open"
+          },
+          "receivedDate": {
+            "description": "The date this obligation period was fulfilled. Date in the format YYYY-MM-DD.",
+            "type": "string",
+            "example": "2019-12-15"
+          }
+        },
+        "required": [
+          "periodStartDate",
+          "periodEndDate",
+          "dueDate",
+          "status"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "required": [
-    "periodStartDate",
-    "periodEndDate",
-    "dueDate",
-    "status"
+    "obligations"
   ],
   "additionalProperties": false
 }
