@@ -16,20 +16,20 @@
 
 package v2.controllers
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.controllers.{ ControllerBaseSpec, ControllerTestRunner }
 import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
 import api.models.domain.Nino
 import api.models.domain.status.MtdStatus
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc.Result
 import v2.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
 import v2.mocks.services._
 import v2.models.request.ObligationsTaxYear
 import v2.models.request.retrieveCrystallisationObligations._
-import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
+import v2.models.response.retrieveCrystallisationObligations.{ Obligation, RetrieveCrystallisationObligationsResponse }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -46,15 +46,21 @@ class RetrieveCrystallisationObligationsControllerSpec
   private val rawData     = RetrieveCrystallisationObligationsRawData(nino, Some(taxYear))
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2017-04-06", "2018-04-05"))
 
-  private val responseBodyModel: RetrieveCrystallisationObligationsResponse =
-    RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25"))
+  private val responseBodyModel: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
+    obligations = List(Obligation("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25")))
+  )
 
-  private val responseJson: JsValue = Json.parse("""{
-    |  "periodStartDate": "2018-04-06",
-    |  "periodEndDate": "2019-04-05",
-    |  "dueDate": "2020-01-31",
-    |  "status": "Fulfilled",
-    |  "receivedDate": "2020-01-25"
+  private val responseJson: JsValue = Json.parse("""
+    |{
+    |  "obligations": [
+    |    {
+    |      "periodStartDate": "2018-04-06",
+    |      "periodEndDate": "2019-04-05",
+    |      "dueDate": "2020-01-31",
+    |      "status": "Fulfilled",
+    |      "receivedDate": "2020-01-25"
+    |    }
+    |  ]
     |}
     """.stripMargin)
 

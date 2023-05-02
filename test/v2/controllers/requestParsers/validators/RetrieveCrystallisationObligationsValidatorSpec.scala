@@ -52,7 +52,7 @@ class RetrieveCrystallisationObligationsValidatorSpec extends UnitSpec {
       ("A12344A", validTaxYear, NinoFormatError),
       (validNino, "201-20", TaxYearFormatError),
       (validNino, "2016-17", RuleTaxYearNotSupportedError),
-      (validNino, "2018-20", RuleTaxYearRangeExceededError),
+      (validNino, "2018-20", RuleTaxYearRangeInvalidError),
     ).foreach(args => (test _).tupled(args))
 
     "return multiple errors" when {

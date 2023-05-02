@@ -18,7 +18,7 @@ package v2.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations._
-import api.models.errors.{MtdError, RuleTaxYearNotSupportedError}
+import api.models.errors.{ MtdError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError }
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
 
 class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrystallisationObligationsRawData] {
@@ -28,7 +28,7 @@ class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrys
   private def parameterFormatValidation: RetrieveCrystallisationObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
-      data.taxYear.map(TaxYearValidation.validate).getOrElse(Nil)
+      data.taxYear.map(TaxYearValidation.validate(_, RuleTaxYearRangeInvalidError)).getOrElse(Nil)
     )
   }
 

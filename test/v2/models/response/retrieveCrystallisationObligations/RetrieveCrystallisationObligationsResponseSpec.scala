@@ -19,48 +19,29 @@ package v2.models.response.retrieveCrystallisationObligations
 import api.models.domain.status.MtdStatus
 import play.api.libs.json.Json
 import support.UnitSpec
+import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ mtdObligationJson, mtdObligationJsonNoReceivedDate, mtdObligationModel }
 
 class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
+
   "writes" should {
     "write to JSON" when {
-      "passed a model with status Fulfilled" in {
-        val json  = Json.parse("""
-            |{
-            |    "status": "Fulfilled",
-            |    "periodStartDate": "2018-04-06",
-            |    "periodEndDate": "2019-04-05",
-            |    "receivedDate": "2020-01-25",
-            |    "dueDate": "1920-01-31"
-            |}
-            |""".stripMargin)
-        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Fulfilled, Some("2020-01-25"))
+      "passed a response with multiple obligations" in {
+        val json = Json.parse(s"""
+             |{
+             |    "obligations": [
+             |        ${mtdObligationJson("Fulfilled")},
+             |        ${mtdObligationJson("Open")},
+             |        $mtdObligationJsonNoReceivedDate
+             |    ]
+             |}
+             |""".stripMargin)
 
-        Json.toJson(model) shouldBe json
-      }
-      "passed a model with status Open" in {
-        val json  = Json.parse("""
-            |{
-            |    "status": "Open",
-            |    "periodStartDate": "2018-04-06",
-            |    "periodEndDate": "2019-04-05",
-            |    "receivedDate": "2020-01-25",
-            |    "dueDate": "1920-01-31"
-            |}
-            |""".stripMargin)
-        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, Some("2020-01-25"))
-
-        Json.toJson(model) shouldBe json
-      }
-      "passed a model with no receivedDate" in {
-        val json  = Json.parse("""
-            |{
-            |    "status": "Open",
-            |    "periodStartDate": "2018-04-06",
-            |    "periodEndDate": "2019-04-05",
-            |    "dueDate": "1920-01-31"
-            |}
-            |""".stripMargin)
-        val model = RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "1920-01-31", MtdStatus.Open, None)
+        val model = RetrieveCrystallisationObligationsResponse(
+          List(
+            mtdObligationModel(status = MtdStatus.Fulfilled),
+            mtdObligationModel(status = MtdStatus.Open),
+            mtdObligationModel(receivedDate = None),
+          ))
 
         Json.toJson(model) shouldBe json
       }
