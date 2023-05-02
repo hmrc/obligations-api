@@ -28,7 +28,10 @@
           "status": {
             "description": "The status of the obligation, one of: `Open` or `Fulfilled`.",
             "type": "string",
-            "example": "Open"
+            "enum": [
+              "Open",
+              "Fulfilled"
+            ]
           },
           "receivedDate": {
             "description": "The date this obligation period was fulfilled. Date in the format YYYY-MM-DD.",
