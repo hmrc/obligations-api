@@ -43,7 +43,7 @@ trait ObligationsTaxYearHelpers {
       */
     def toObligationsTaxYear: ObligationsTaxYear = {
       val patternRegex                   = pattern.r
-      val patternRegex(fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear)
+      val patternRegex(fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear): @unchecked
       ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
     }
   }

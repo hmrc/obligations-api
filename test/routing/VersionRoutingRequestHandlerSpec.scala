@@ -62,7 +62,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     val httpConfiguration: HttpConfiguration = HttpConfiguration("context")
     private val errorHandler                 = mock[HttpErrorHandler]
     private val filters                      = mock[HttpFilters]
-    (filters.filters _).stubs().returns(Seq.empty)
+    (() => filters.filters).stubs().returns(Seq.empty)
 
     val requestHandler: VersionRoutingRequestHandler =
       new VersionRoutingRequestHandler(routingMap, errorHandler, httpConfiguration, mockAppConfig, filters, action)
@@ -121,8 +121,8 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
-          MockAppConfig.endpointsEnabled(Version1) returns true anyNumberOfTimes ()
-          MockAppConfig.endpointsEnabled(Version2) returns true anyNumberOfTimes ()
+          MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
+          MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path/")) shouldBe Some(handler)
         }
@@ -130,8 +130,8 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
-          MockAppConfig.endpointsEnabled(Version1) returns true anyNumberOfTimes ()
-          MockAppConfig.endpointsEnabled(Version2) returns true anyNumberOfTimes ()
+          MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
+          MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path")) shouldBe Some(handler)
         }

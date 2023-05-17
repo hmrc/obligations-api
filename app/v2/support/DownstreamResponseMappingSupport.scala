@@ -35,7 +35,7 @@ trait DownstreamResponseMappingSupport {
     }
   }
 
-  final def mapDownstreamErrors[_](errorCodeMap: PartialFunction[String, MtdError])(downstreamResponseWrapper: ResponseWrapper[DownstreamError])(
+  final def mapDownstreamErrors[A](errorCodeMap: PartialFunction[String, MtdError])(downstreamResponseWrapper: ResponseWrapper[DownstreamError])(
       implicit logContext: EndpointLogContext): ErrorWrapper = {
 
     lazy val defaultErrorCodeMapping: String => MtdError = { code =>
