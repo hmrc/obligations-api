@@ -36,7 +36,7 @@ class ObligationsTaxYearSpec extends UnitSpec {
     "return an exception" when {
       "passed an invalid taxYear" in new Test {
         val result = intercept[IllegalArgumentException](RawTaxYear(Some("201-20")))
-        result.getMessage shouldBe "requirement failed"
+        result.getMessage shouldBe "Tax year must conform to format: 20([1-9][0-9])\\-([1-9][0-9])"
       }
     }
   }
@@ -54,7 +54,7 @@ class ObligationsTaxYearSpec extends UnitSpec {
     "return an exception" when {
       "passed an invalid taxYear" in new Test {
         val result = intercept[IllegalArgumentException](RawTaxYear(Some("201-20")).toObligationsTaxYear)
-        result.getMessage shouldBe "requirement failed"
+        result.getMessage shouldBe "Tax year must conform to format: 20([1-9][0-9])\\-([1-9][0-9])"
       }
     }
   }
@@ -74,7 +74,7 @@ class ObligationsTaxYearSpec extends UnitSpec {
     "return fromMtd(2019-20)" when {
       "passed a date after 2020-04-05" in new Test {
         override val date: LocalDate = LocalDate.parse("2020-04-06")
-        getMostRecentTaxYear shouldBe  "2019-20"
+        getMostRecentTaxYear shouldBe "2019-20"
       }
     }
   }
