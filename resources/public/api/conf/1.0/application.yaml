@@ -51,6 +51,6 @@ paths:
   /obligations/details/{nino}/income-and-expenditure:
     $ref: './retrieve_income_tax_income_expenditure.yaml'
   /obligations/details/{nino}/crystallisation:
-    $ref: './retrieve_income_tax_crystallisation.yaml'
+    $ref: './retrieve_income_tax_final_declaration.yaml'
   /obligations/details/{nino}/end-of-period-statement:
     $ref: './retrieve_income_tax_eops.yaml'
