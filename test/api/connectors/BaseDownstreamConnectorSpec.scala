@@ -21,43 +21,35 @@ import api.mocks.MockHttpClient
 import api.models.outcomes.ResponseWrapper
 import config.AppConfig
 import mocks.MockAppConfig
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient, HttpReads }
+import uk.gov.hmrc.http.{ HttpClient, HttpReads }
 
 import scala.concurrent.Future
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
   // WLOG
-  val body        = "body"
-  val outcome     = Right(ResponseWrapper(correlationId, Result(2)))
-  val url         = "some/url?param=value"
-  val absoluteUrl = s"$baseUrl/$url"
+  val body                       = "body"
+  val outcome                    = Right(ResponseWrapper(correlationId, Result(2)))
+  val url                        = "some/url?param=value"
+  val absoluteUrl                = s"$baseUrl/$url"
+  val qps: Seq[(String, String)] = Seq("param1" -> "value1")
 
   // WLOG
   case class Result(value: Int)
 
   implicit val httpReads: HttpReads[DownstreamOutcome[Result]] = mock[HttpReads[DownstreamOutcome[Result]]]
 
-  class DesTest extends MockHttpClient with MockAppConfig {
+  class Test extends MockHttpClient with MockAppConfig {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
       val http: HttpClient     = mockHttpClient
       val appConfig: AppConfig = mockAppConfig
     }
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
-
-    val qps: Seq[(String, String)] = Seq("param1" -> "value1")
-
   }
 
   "for DES" when {
     "get" must {
-      "get with the required headers and return the result" in new DesTest {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-
+      "get with the required headers and return the result" in new Test with DesTest {
         MockedHttpClient
           .get(absoluteUrl,
                config = dummyDesHeaderCarrierConfig,
