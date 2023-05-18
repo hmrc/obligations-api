@@ -34,18 +34,17 @@ trait ObligationsTaxYearHelpers {
     * @param taxYear tax year in MTD format (e.g. 2017-18)
     */
   case class RawTaxYear(taxYear: Option[String]) {
-    val pattern = "20([1-9][0-9])\\-([1-9][0-9])"
+    private val patternRegex = "20([1-9][0-9])-([1-9][0-9])".r
 
-    require(taxYear.forall(_.matches(pattern)))
+    private val (fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear) match {
+      case patternRegex(from, to) => (from, to)
+      case _                      => throw new IllegalArgumentException("Tax year must conform to format: 20([1-9][0-9])-([1-9][0-9])")
+    }
 
     /**
       * @return ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
       */
-    def toObligationsTaxYear: ObligationsTaxYear = {
-      val patternRegex                   = pattern.r
-      val patternRegex(fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear): @unchecked
-      ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
-    }
+    val toObligationsTaxYear: ObligationsTaxYear = ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
   }
 
   /**

@@ -34,11 +34,11 @@ trait ObligationsTaxYearHelpers {
     * @param taxYear tax year in MTD format (e.g. 2017-18)
     */
   case class RawTaxYear(taxYear: Option[String]) {
-    private val patternRegex = "20([1-9][0-9])\\-([1-9][0-9])".r
+    private val patternRegex = "20([1-9][0-9])-([1-9][0-9])".r
 
     private val (fromYear, toYear) = taxYear.getOrElse(getMostRecentTaxYear) match {
       case patternRegex(from, to) => (from, to)
-      case _                      => throw new IllegalArgumentException("Tax year must conform to format: 20([1-9][0-9])\\-([1-9][0-9])")
+      case _                      => throw new IllegalArgumentException("Tax year must conform to format: 20([1-9][0-9])-([1-9][0-9])")
     }
 
     /**
