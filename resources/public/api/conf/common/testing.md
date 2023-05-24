@@ -5,3 +5,9 @@ It may not be possible to test all scenarios in the sandbox. You can test some s
 If you have a specific testing need that is not supported in the sandbox, contact <a href="/developer/support">our support team</a>.
 
 Some APIs may be marked \[test only\]. This means that they are not available for use in production and may change.
+
+<h3>Dynamic</h3>
+Some endpoints support DYNAMIC gov test scenarios. 
+The response is dynamic based on the request parameters:
+- Retrieve Income Tax (Self Assessment) Income and Expenditure Obligations
+- Retrieve Income Tax (Self Assessment) End of Period Statement Obligations
