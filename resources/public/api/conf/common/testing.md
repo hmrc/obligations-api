@@ -9,5 +9,5 @@ Some APIs may be marked \[test only\]. This means that they are not available fo
 <h3>Dynamic</h3>
 Some endpoints support DYNAMIC gov test scenarios. 
 The response is dynamic based on the request parameters:
-- Retrieve Income Tax (Self Assessment) Income and Expenditure Obligations
-- Retrieve Income Tax (Self Assessment) End of Period Statement Obligations
+- Retrieve Income Tax (Self Assessment) Income and Expenditure Obligations V1.0
+- Retrieve Income Tax (Self Assessment) End of Period Statement Obligations V1.0
