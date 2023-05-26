@@ -66,7 +66,7 @@ get:
             <p>DYNAMIC</p>
           </td>
           <td>
-            <p>Following response values will change to correspond to the values submitted in the request:
+            <p>The following response values will change to correspond to the values submitted in the request:
                 <ul>
                     <li>fromDate</li>
                     <li>toDate</li>
