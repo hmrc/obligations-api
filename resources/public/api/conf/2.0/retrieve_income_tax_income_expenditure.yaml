@@ -70,7 +70,7 @@ get:
               <ul>
               <li>fromDate</li>
               <li>toDate</li>
-              <li>status</li>
+              <li>status (Open or Fulfilled)</li>
               </ul>
             </p>
           </td>

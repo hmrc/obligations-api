@@ -62,7 +62,7 @@ get:
                 <ul>
                     <li>fromDate</li>
                     <li>toDate</li>
-                    <li>Status(Open/Fulfilled)</li>
+                    <li>status (Open or Fulfilled)</li>
                 </ul>
             </p>
           </td>
