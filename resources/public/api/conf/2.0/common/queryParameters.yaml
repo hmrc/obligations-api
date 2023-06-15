@@ -4,7 +4,7 @@ components:
       name: taxYear
       in: query
       description: |
-        The tax year the data applies to. If not supplied it will default to the last completed tax year. The earliest permitted tax year is 2017-18.
+        The tax year the data applies to. If a tax year is not specified and the current date falls before April 5th of the current tax year, the data will be fetched from the previous tax year. However, if the current date is April 5th or later in the current tax year, the data will be fetched from the current tax year. The earliest permitted tax year is 2017-18.
       schema:
         type: string
         example: 2022-23
