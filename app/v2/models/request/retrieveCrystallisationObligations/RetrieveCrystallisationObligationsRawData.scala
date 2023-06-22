@@ -18,4 +18,4 @@ package v2.models.request.retrieveCrystallisationObligations
 
 import api.models.request.RawData
 
-case class RetrieveCrystallisationObligationsRawData(nino: String, taxYear: Option[String]) extends RawData
+case class RetrieveCrystallisationObligationsRawData(nino: String, taxYear: Option[String], status: Option[String]) extends RawData

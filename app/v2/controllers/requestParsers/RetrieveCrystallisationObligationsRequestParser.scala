@@ -18,19 +18,24 @@ package v2.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.Nino
+import api.models.domain.status.MtdStatus
+import api.models.request.TaxYearRange
 import v2.controllers.requestParsers.validators.RetrieveCrystallisationObligationsValidator
-import v2.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
-import v2.models.request.{ObligationsTaxYear, ObligationsTaxYearHelpers}
+import v2.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
 
 import javax.inject.Inject
 
 class RetrieveCrystallisationObligationsRequestParser @Inject()(val validator: RetrieveCrystallisationObligationsValidator)
-    extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest]
-    with ObligationsTaxYearHelpers {
+    extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest] {
 
   override protected def requestFor(data: RetrieveCrystallisationObligationsRawData): RetrieveCrystallisationObligationsRequest = {
-    val obligationsTaxYear: ObligationsTaxYear = RawTaxYear(data.taxYear).toObligationsTaxYear
+    val obligationsTaxYear = data.taxYear
+      .map(TaxYearRange.fromMtd)
+      .getOrElse(defaultTaxYearRange())
 
-    RetrieveCrystallisationObligationsRequest(Nino(data.nino), obligationsTaxYear)
+    val maybeStatus = data.status.flatMap(MtdStatus.parser.lift)
+    RetrieveCrystallisationObligationsRequest(Nino(data.nino), obligationsTaxYear, maybeStatus)
   }
+
+  protected def defaultTaxYearRange(): TaxYearRange = TaxYearRange.todayMinus(years = 4)
 }

@@ -26,6 +26,7 @@ object FromDateFormatError       extends MtdError("FORMAT_FROM_DATE", "The provi
 object ToDateFormatError         extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid", BAD_REQUEST)
 object StatusFormatError         extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
 object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "The provided type of business is invalid", BAD_REQUEST)
+object FormatStatusError         extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
 
 // Parameter errors
 object MissingTypeOfBusinessError

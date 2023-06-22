@@ -25,8 +25,8 @@ import v2.connectors.RetrieveCrystallisationObligationsConnector
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
 class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCrystallisationObligationsConnector) extends BaseService {
@@ -36,7 +36,7 @@ class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCry
       ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
 
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(errorMap))
       mtdResponseWrapper        <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 
@@ -44,7 +44,7 @@ class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCry
 
   }
 
-  private val downstreamErrorMap: Map[String, MtdError] =
+  private val errorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
       "INVALID_IDTYPE"      -> InternalError,
