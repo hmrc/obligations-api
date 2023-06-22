@@ -68,7 +68,7 @@ class TaxYearSpec extends UnitSpec {
   "currentTaxYear()" should {
     "return the current tax year" when {
       def test(date: String): TaxYear = {
-        implicit val nowSupplier: () => LocalDate = () => LocalDate.parse(date)
+        implicit val todaySupplier: () => LocalDate = () => LocalDate.parse(date)
         TaxYear.currentTaxYear()
       }
 

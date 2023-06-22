@@ -23,12 +23,10 @@ import java.time.LocalDate
 
 class TaxYearRangeSpec extends UnitSpec {
 
-  trait Test //extends ObligationsTaxYearHelpers
-
   "fromMtd()" should {
 
     "return a TaxYearRange" when {
-      "passed an MTD-format taxYear" in new Test {
+      "passed an MTD-format taxYear" in {
         val taxYear: TaxYear = TaxYear.fromMtd("2019-20")
         TaxYearRange.fromMtd("2019-20") shouldBe TaxYearRange(taxYear)
       }
@@ -37,7 +35,7 @@ class TaxYearRangeSpec extends UnitSpec {
 
   "from and to" should {
     "return the correct taxYearStart and taxYearEnd respectively" when {
-      "a valid taxYear is entered" in new Test {
+      "a valid taxYear is entered" in {
         val range: TaxYearRange = TaxYearRange.fromMtd("2019-20")
         range.from.taxYearStart shouldBe "2019-04-06"
         range.to.taxYearEnd shouldBe "2020-04-05"
@@ -47,11 +45,11 @@ class TaxYearRangeSpec extends UnitSpec {
 
   "todayMinus(years)" should {
     "return a TaxYearRange from the 'subtracted' tax year to the current tax year" in {
-      val today          = "2023-04-01"
+      val today          = LocalDate.parse("2023-04-01")
       val currentTaxYear = "2022-23"
       val expectedFrom   = TaxYear.fromMtd("2018-19")
 
-      implicit val nowSupplier: () => LocalDate = () => LocalDate.parse(today)
+      implicit val todaySupplier: () => LocalDate = () => today
 
       val result: TaxYearRange = TaxYearRange.todayMinus(years = 4)
       result shouldBe TaxYearRange(expectedFrom, TaxYear.fromMtd(currentTaxYear))
