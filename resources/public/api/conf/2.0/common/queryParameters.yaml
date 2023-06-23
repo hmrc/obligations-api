@@ -55,7 +55,9 @@ components:
       name: status
       in: query
       description: |
-        Obligation status to return: Open or Fulfilled only. To retrieve all obligations omit the status.
+        Status of the obligations to return.
+        
+        Accepted values are ‘Open’ and ‘Fulfilled’. If no status is supplied, both open and fulfilled obligations are returned.
       schema:
         type: string
         example: Open

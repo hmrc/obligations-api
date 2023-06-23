@@ -41,11 +41,11 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "retrieveCrystallisationObligations")
 
-  def handleRequest(nino: String, taxYear: Option[String]): Action[AnyContent] =
+  def handleRequest(nino: String, taxYear: Option[String], status: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = RetrieveCrystallisationObligationsRawData(nino, taxYear)
+      val rawData = RetrieveCrystallisationObligationsRawData(nino, taxYear, status)
 
       val requestHandler = RequestHandler
         .withParser(parser)

@@ -18,14 +18,14 @@ package v2.connectors
 
 import api.connectors.DownstreamUri._
 import api.connectors.httpparsers.StandardDownstreamHttpParser._
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
+import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
 import config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient }
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
-import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{ Inject, Singleton }
+import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
 class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
@@ -36,10 +36,14 @@ class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[DesRetrieveCrystallisationObligationsResponse]] = {
 
-    import request._
+    import request.nino
+    import request.obligationsTaxYear.from.taxYearStart
+    import request.obligationsTaxYear.to.taxYearEnd
 
-    val url = DesUri[DesRetrieveCrystallisationObligationsResponse](
-      s"enterprise/obligation-data/nino/$nino/ITSA?from=${obligationsTaxYear.from}&to=${obligationsTaxYear.to}")
+    val url =
+      DesUri[DesRetrieveCrystallisationObligationsResponse](
+        s"enterprise/obligation-data/nino/$nino/ITSA?from=$taxYearStart&to=$taxYearEnd"
+      )
 
     get(url)
   }

@@ -23,12 +23,13 @@ import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisat
 
 class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrystallisationObligationsRawData] {
 
-  private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
+  private val validations = List(parameterFormatValidation, parameterRuleValidation)
 
   private def parameterFormatValidation: RetrieveCrystallisationObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
-      data.taxYear.map(TaxYearValidation.validate(_, RuleTaxYearRangeInvalidError)).getOrElse(Nil)
+      data.taxYear.map(TaxYearValidation.validate(_, RuleTaxYearRangeInvalidError)).getOrElse(Nil),
+      data.status.map(StatusValidation.validate).getOrElse(Nil)
     )
   }
 
@@ -39,7 +40,7 @@ class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrys
   }
 
   override def validate(data: RetrieveCrystallisationObligationsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
+    run(validations, data).distinct
   }
 
 }

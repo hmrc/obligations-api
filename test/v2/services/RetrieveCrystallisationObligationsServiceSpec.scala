@@ -18,13 +18,14 @@ package v2.services
 
 import api.controllers.EndpointLogContext
 import api.models.domain.Nino
+import api.models.domain.status.MtdStatus.Fulfilled
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.models.request.TaxYearRange
+import api.services.{ ServiceOutcome, ServiceSpec }
 import uk.gov.hmrc.http.HeaderCarrier
 import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ desObligationModel, mtdObligationModel }
 import v2.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
-import v2.models.request.ObligationsTaxYear
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
@@ -33,11 +34,11 @@ import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
 
-  private val nino     = "AA123456A"
-  private val fromDate = "2018-04-06"
-  private val toDate   = "2019-04-05"
+  private val nino   = "AA123456A"
+  private val status = Fulfilled
 
-  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear(fromDate, toDate))
+  private val requestData =
+    RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2018-19"), Some(status))
 
   val downstreamResponseModel: DesRetrieveCrystallisationObligationsResponse = DesRetrieveCrystallisationObligationsResponse(
     Seq(desObligationModel()))
@@ -62,7 +63,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResponseModel))))
 
-        await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, mtdResponseModel))
+        val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
+        result shouldBe Right(ResponseWrapper(correlationId, mtdResponseModel))
       }
     }
 
@@ -76,7 +78,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
               .retrieve(requestData)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-            await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
+            val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
+            result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
         val input = List(
@@ -104,7 +107,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
 
-        await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
+        val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
+        result shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
       }
     }
   }

@@ -19,10 +19,11 @@ package v2.connectors
 import api.connectors.ConnectorSpec
 import api.models.domain.Nino
 import api.models.domain.status.DesStatus.F
+import api.models.domain.status.MtdStatus
 import api.models.outcomes.ResponseWrapper
-import v2.models.request.ObligationsTaxYear
+import api.models.request.TaxYearRange
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v2.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
+import v2.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
 
 import scala.concurrent.Future
 
@@ -45,15 +46,19 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val nino     = "AA123456A"
-    protected val fromDate = "2018-04-06"
-    protected val toDate   = "2019-04-05"
+    protected val nino       = "AA123456A"
+    protected val fromDate   = "2018-04-06"
+    protected val toDate     = "2019-04-05"
+
+    private val taxYearRange = TaxYearRange.fromMtd("2018-19")
+
+    protected val maybeStatus: Option[MtdStatus] = Option(MtdStatus.Fulfilled)
 
     val connector: RetrieveCrystallisationObligationsConnector =
       new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
     lazy val request: RetrieveCrystallisationObligationsRequest =
-      RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear(fromDate, toDate))
+      RetrieveCrystallisationObligationsRequest(Nino(nino), taxYearRange, maybeStatus)
     lazy val response: DesRetrieveCrystallisationObligationsResponse =
       DesRetrieveCrystallisationObligationsResponse(
         Seq(
