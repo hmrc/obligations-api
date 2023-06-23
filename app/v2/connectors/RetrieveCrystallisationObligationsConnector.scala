@@ -40,9 +40,14 @@ class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient
     import request.obligationsTaxYear.from.taxYearStart
     import request.obligationsTaxYear.to.taxYearEnd
 
+    val statusParam = request.status match {
+      case Some(status) => s"&status=${status.toDes}"
+      case None         => ""
+    }
+
     val url =
       DesUri[DesRetrieveCrystallisationObligationsResponse](
-        s"enterprise/obligation-data/nino/$nino/ITSA?from=$taxYearStart&to=$taxYearEnd"
+        s"enterprise/obligation-data/nino/$nino/ITSA?from=$taxYearStart&to=$taxYearEnd$statusParam"
       )
 
     get(url)

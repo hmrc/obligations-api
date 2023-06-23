@@ -35,6 +35,18 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
         val outcome: Right[Nothing, ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]] =
           Right(ResponseWrapper(correlationId, response))
 
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate&status=F")
+          .returns(Future.successful(outcome))
+
+        await(connector.retrieveCrystallisationObligations(request)) shouldBe outcome
+      }
+
+      "a valid request is made with no status param" in new DesTest with Test {
+        override val maybeStatus: Option[MtdStatus] = None
+
+        val outcome: Right[Nothing, ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]] =
+          Right(ResponseWrapper(correlationId, response))
+
         willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate")
           .returns(Future.successful(outcome))
 
@@ -46,9 +58,9 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val nino       = "AA123456A"
-    protected val fromDate   = "2018-04-06"
-    protected val toDate     = "2019-04-05"
+    protected val nino     = "AA123456A"
+    protected val fromDate = "2018-04-06"
+    protected val toDate   = "2019-04-05"
 
     private val taxYearRange = TaxYearRange.fromMtd("2018-19")
 
@@ -59,6 +71,7 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
 
     lazy val request: RetrieveCrystallisationObligationsRequest =
       RetrieveCrystallisationObligationsRequest(Nino(nino), taxYearRange, maybeStatus)
+
     lazy val response: DesRetrieveCrystallisationObligationsResponse =
       DesRetrieveCrystallisationObligationsResponse(
         Seq(
