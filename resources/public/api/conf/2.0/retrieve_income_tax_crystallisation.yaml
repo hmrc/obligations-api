@@ -54,10 +54,13 @@ get:
     - name: taxYear
       in: query
       description: |
-        The tax year the data applies to. The earliest permitted tax year is 2017-18.
+        The tax year the data applies to.
         
-        If a tax year is not specified then all obligation from CY-4 are returned. (CY = Current Tax Year)
-        eg. if current TY is 2023-24 then all obligations from 2019-20 till 2023-34 are returned.
+        If a tax year is not specified, returns all obligations starting from 4 years before the current tax year.
+        
+        For example, if current tax year is 2023-24 and no tax year is specified, all obligations from 2019-20 to 2023-24 are returned.
+        
+        The earliest allowable tax year is 2017-18.
       schema:
         type: string
         example: 2022-23
