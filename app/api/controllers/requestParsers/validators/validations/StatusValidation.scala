@@ -25,7 +25,7 @@ object StatusValidation {
 
   def validate(status: String): List[MtdError] = {
     Try {
-      Option(status).map(MtdStatus.parser)
+      MtdStatus.parser(status)
     } match {
       case Failure(_) => List(StatusFormatError)
       case Success(_) => NoValidationErrors

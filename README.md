@@ -8,7 +8,7 @@ The Obligations API allows software packages to:
 
 ## Requirements
 
-- Scala 2.12.x
+- Scala 2.13.x
 - Java 8
 - sbt > 1.6.x
 - [Service Manager](https://github.com/hmrc/service-manager)

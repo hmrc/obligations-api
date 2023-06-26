@@ -1,0 +1,41 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package v2.controllers.requestParsers
+
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.Nino
+import api.models.domain.status.MtdStatus
+import api.models.request.TaxYearRange
+import v2.controllers.requestParsers.validators.RetrieveCrystallisationObligationsValidator
+import v2.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
+
+import javax.inject.Inject
+
+class RetrieveCrystallisationObligationsRequestParser @Inject()(val validator: RetrieveCrystallisationObligationsValidator)
+    extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest] {
+
+  override protected def requestFor(data: RetrieveCrystallisationObligationsRawData): RetrieveCrystallisationObligationsRequest = {
+    val obligationsTaxYear = data.taxYear
+      .map(TaxYearRange.fromMtd)
+      .getOrElse(defaultTaxYearRange())
+
+    val maybeStatus = data.status.flatMap(MtdStatus.parser.lift)
+    RetrieveCrystallisationObligationsRequest(Nino(data.nino), obligationsTaxYear, maybeStatus)
+  }
+
+  protected def defaultTaxYearRange(): TaxYearRange = TaxYearRange.todayMinus(years = 4)
+}
