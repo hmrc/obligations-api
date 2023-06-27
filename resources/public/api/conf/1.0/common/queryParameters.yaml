@@ -56,7 +56,7 @@ components:
       in: query
       description: |
         Obligation status to return: Open or Fulfilled only. To retrieve all obligations omit the status. 
-        <br>For Dynamic gov test scenario if the current system date is past the "dueDate" the status would be 'fulfilled' and if the "dueDate" is in the future the status would be set as 'Open'
+        <br>For dynamic gov test scenarios within the sandbox environment, if the current system date is after the ‘dueDate’ the status is ‘Fulfilled’. If the ‘dueDate’ is in the future the status is ‘Open’.
       schema:
         type: string
         example: Open
