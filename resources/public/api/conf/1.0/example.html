@@ -14,7 +14,19 @@
  * limitations under the License.
  *@
 
-<!DOCTYPE HTML><html><head><title>Hello World API documentation</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 7.4.0"><link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script type="text/javascript" src="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script><script type="text/javascript">
+<!DOCTYPE HTML>
+<html>
+<head><title>Hello World API documentation</title>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta content="https://github.com/raml2html/raml2html 7.4.0" name="generator">
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"
+            type="text/javascript"></script>
+    <script type="text/javascript">
       $(document).ready(function() {
   $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
     hljs.highlightBlock(block);
@@ -50,7 +62,10 @@
     } catch(e) {}
   });
 });
-    </script><style>
+
+
+    </script>
+    <style>
       .hljs {
   background: transparent;
 }
@@ -186,7 +201,139 @@ pre code {
 .required {
   color: #f00;
 }
-    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>Hello World API documentation <small>version 1.0</small></h1><p>https://helloworld.service.hmrc.gov.uk/</p><h3 id="overview"><a href="#overview">Overview</a></h3><p><strong>Add overview documentation here</strong></p><h3 id="versioning"><a href="#versioning">Versioning</a></h3><p>When an API changes in a way that is backwards-incompatible, we increase the version number of the API. See our <a href="/api-documentation/docs/reference-guide#versioning">reference guide</a> for more on versioning.</p><h3 id="errors"><a href="#errors">Errors</a></h3><p>We use standard HTTP status codes to show whether an API request succeeded or not. They are usually in the range:</p><ul><li>200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action</li><li>400 to 499 if it failed because of a client error by your application</li><li>500 to 599 if it failed because of an error on our server</li></ul><p>Errors specific to each API are shown in the Endpoints section, under Response. See our <a href="/api-documentation/docs/reference-guide#errors">reference guide</a> for more on errors.</p></div><div class="panel panel-default"><div class="panel-heading"><h3 id="insert_context" class="panel-title">/insert/context</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_insert_context__nino__sample_endpoint"><span class="parent">/insert/context/{nino}</span>/sample-endpoint</a> <span class="methods"><a href="#insert_context__nino__sample_endpoint_get"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span></a></span></h4></div><div id="panel_insert_context__nino__sample_endpoint" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#insert_context__nino__sample_endpoint_get'" class="list-group-item"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span><div class="method_description"><p>This endpoint allows a user to see an example endpoint.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="insert_context__nino__sample_endpoint_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span class="glyphicon glyphicon-lock" title="Authentication required"></span></span> <span class="parent">/insert/context/{nino}</span>/sample-endpoint</h4></div><div class="modal-body"><div class="alert alert-info"><p>This endpoint allows a user to see an example endpoint.</p></div><div class="alert alert-warning"><span class="glyphicon glyphicon-lock" title="Authentication required"></span> Secured by <b></b> with scopes:<ul><li>read:self-assessment</li></ul></div><ul class="nav nav-tabs"><li class="active"><a href="#insert_context__nino__sample_endpoint_get_request" data-toggle="tab">Request</a></li><li><a href="#insert_context__nino__sample_endpoint_get_response" data-toggle="tab">Response</a></li><li><a href="#insert_context__nino__sample_endpoint_get_securedby" data-toggle="tab">Security</a></li></ul><div class="tab-content"><div class="tab-pane active" id="insert_context__nino__sample_endpoint_get_request"><h3>URI Parameters</h3><ul><li><strong>nino</strong>: <em><span class="required">required</span>(string)</em><p>National Insurance number, in the format AA999999A.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>TC663795B</code></pre></div></li></ul><h3>Annotations</h3><ul><li><strong>annotations.sandboxData</strong><pre><code>"<p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>\n<table>\n    <thead>\n        <tr>\n            <th>Header Value (Gov-Test-Scenario)</th>\n            <th>Scenario</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr>\n            <td><p>N/A - DEFAULT</p></td>\n            <td><p>Simulate success response with self-employment loss.</p></td>\n        </tr>\n    </tbody>\n</table>\n"</code></pre></li><li><strong>annotations.scope</strong><pre><code>"read:self-assessment"</code></pre></li></ul></div><div class="tab-pane" id="insert_context__nino__sample_endpoint_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><h3>Headers</h3><ul><li><strong>X-CorrelationId</strong>: <em><span class="required">required</span>(string)</em><p>Unique ID for operation tracking<br>String, 36 characters.</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>c75f40a6-a3df-4429-a697-471eeec46435</code></pre></div></li></ul><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>:</p><pre><code>{
+
+
+    </style>
+</head>
+<body data-spy="scroll" data-target="#sidebar">
+<div class="container">
+    <div class="row">
+        <div class="col-md-9" role="main">
+            <div class="page-header"><h1>Hello World API documentation <small>version 1.0</small></h1>
+                <p>https://helloworld.service.hmrc.gov.uk/</p>
+                <h3 id="overview"><a href="#overview">Overview</a></h3>
+                <p><strong>Add overview documentation here</strong></p>
+                <h3 id="versioning"><a href="#versioning">Versioning</a></h3>
+                <p>When an API changes in a way that is backwards-incompatible, we increase the version number of the
+                    API. See our <a href="/api-documentation/docs/reference-guide#versioning">reference guide</a> for
+                    more on versioning.</p>
+                <h3 id="errors"><a href="#errors">Errors</a></h3>
+                <p>We use standard HTTP status codes to show whether an API request succeeded or not. They are usually
+                    in the range:</p>
+                <ul>
+                    <li>200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait
+                        for further action
+                    </li>
+                    <li>400 to 499 if it failed because of a client error by your application</li>
+                    <li>500 to 599 if it failed because of an error on our server</li>
+                </ul>
+                <p>Errors specific to each API are shown in the Endpoints section, under Response. See our <a
+                        href="/api-documentation/docs/reference-guide#errors">reference guide</a> for more on errors.
+                </p></div>
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 class="panel-title" id="insert_context">/insert/context</h3></div>
+                <div class="panel-body">
+                    <div class="panel-group">
+                        <div class="panel panel-white resource-modal">
+                            <div class="panel-heading"><h4 class="panel-title"><a class="collapsed"
+                                                                                  data-toggle="collapse"
+                                                                                  href="#panel_insert_context__nino__sample_endpoint"><span
+                                    class="parent">/insert/context/{nino}</span>/sample-endpoint</a> <span
+                                    class="methods"><a href="#insert_context__nino__sample_endpoint_get"><span
+                                    class="badge badge_get">get <span class="glyphicon glyphicon-lock"
+                                                                      title="Authentication required"></span></span></a></span>
+                            </h4></div>
+                            <div class="panel-collapse collapse" id="panel_insert_context__nino__sample_endpoint">
+                                <div class="panel-body">
+                                    <div class="list-group">
+                                        <div class="list-group-item"
+                                             onclick="window.location.href = '#insert_context__nino__sample_endpoint_get'"><span
+                                                class="badge badge_get">get <span
+                                                class="glyphicon glyphicon-lock" title="Authentication required"></span></span>
+                                            <div class="method_description"><p>This endpoint allows a user to see an
+                                                example endpoint.</p></div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="insert_context__nino__sample_endpoint_get" tabindex="0">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button aria-hidden="true" class="close" data-dismiss="modal" type="button">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get <span
+                                                    class="glyphicon glyphicon-lock"
+                                                    title="Authentication required"></span></span> <span class="parent">/insert/context/{nino}</span>/sample-endpoint
+                                            </h4></div>
+                                        <div class="modal-body">
+                                            <div class="alert alert-info"><p>This endpoint allows a user to see an
+                                                example endpoint.</p></div>
+                                            <div class="alert alert-warning"><span class="glyphicon glyphicon-lock"
+                                                                                   title="Authentication required"></span>
+                                                Secured by <b></b> with scopes:
+                                                <ul>
+                                                    <li>read:self-assessment</li>
+                                                </ul>
+                                            </div>
+                                            <ul class="nav nav-tabs">
+                                                <li class="active"><a
+                                                        data-toggle="tab"
+                                                        href="#insert_context__nino__sample_endpoint_get_request">Request</a>
+                                                </li>
+                                                <li><a data-toggle="tab"
+                                                       href="#insert_context__nino__sample_endpoint_get_response">Response</a>
+                                                </li>
+                                                <li><a data-toggle="tab"
+                                                       href="#insert_context__nino__sample_endpoint_get_securedby">Security</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content">
+                                                <div class="tab-pane active"
+                                                     id="insert_context__nino__sample_endpoint_get_request"><h3>URI
+                                                    Parameters</h3>
+                                                    <ul>
+                                                        <li><strong>nino</strong>: <em><span
+                                                                class="required">required</span>(string)</em>
+                                                            <p>National Insurance number, in the format AA999999A.</p>
+                                                            <p><strong>Example</strong>:</p>
+                                                            <div class="examples">
+                                                                <pre><code>TC663795B</code></pre>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Annotations</h3>
+                                                    <ul>
+                                                        <li><strong>annotations.sandboxData</strong>
+                                                            <pre><code>"<p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>\n<table>\n    <thead>\n        <tr>\n            <th>Header Value (Gov-Test-Scenario)</th>\n            <th>Scenario</th>\n        </tr>\n    </thead>\n    <tbody>\n        <tr>\n            <td><p>N/A - DEFAULT</p></td>\n            <td><p>Simulate success response with self-employment loss.</p></td>\n        </tr>\n    </tbody>\n</table>\n"</code></pre>
+                                                        </li>
+                                                        <li><strong>annotations.scope</strong>
+                                                            <pre><code>"read:self-assessment"</code></pre>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="tab-pane"
+                                                     id="insert_context__nino__sample_endpoint_get_response"><h2>HTTP
+                                                    status code <a href="http://httpstatus.es/200"
+                                                                   target="_blank">200</a></h2>
+                                                    <h3>Headers</h3>
+                                                    <ul>
+                                                        <li><strong>X-CorrelationId</strong>: <em><span
+                                                                class="required">required</span>(string)</em>
+                                                            <p>Unique ID for operation tracking<br>String, 36
+                                                                characters.</p>
+                                                            <p><strong>Example</strong>:</p>
+                                                            <div class="examples">
+                                                                <pre><code>c75f40a6-a3df-4429-a697-471eeec46435</code></pre>
+                                                            </div>
+                                                        </li>
+                                                    </ul>
+                                                    <h3>Body</h3>
+                                                    <p><strong>Media type</strong>: application/json</p>
+                                                    <p><strong>Type</strong>:</p>
+                                                    <pre><code>{
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Brought Forward Loss",
   "description": "Brought Forward Loss",
@@ -206,7 +353,11 @@ pre code {
     "taxYear",
     "lastModified"
   ]
-}</code></pre><p><strong>Examples</strong>:</p><div class="examples"><p><strong>example-1</strong>:<br>Sample example 1</p><pre><code>{
+}</code></pre>
+                                                    <p><strong>Examples</strong>:</p>
+                                                    <div class="examples"><p><strong>example-1</strong>:<br>Sample
+                                                        example 1</p>
+                                                        <pre><code>{
   "aFieldUsedAcrossMultipleSchemas": "123456789012345",
   "aFieldDefinedInline": "foo",
   "links": [
@@ -221,7 +372,9 @@ pre code {
       "method": "GET"
     }
   ]
-}</code></pre><p><strong>example-2</strong>:<br>Sample example 2</p><pre><code>{
+}</code></pre>
+                                                        <p><strong>example-2</strong>:<br>Sample example 2</p>
+                                                        <pre><code>{
   "aFieldUsedAcrossMultipleSchemas": "123456789012346",
   "aFieldDefinedInline": "bar",
   "links": [
@@ -236,4 +389,30 @@ pre code {
       "method": "GET"
     }
   ]
-}</code></pre></div></div><div class="tab-pane" id="insert_context__nino__sample_endpoint_get_securedby"><h1>Secured by</h1></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#insert_context">/insert/context</a></li></ul></div></div></div></div></body></html>
+}</code></pre>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane"
+                                                     id="insert_context__nino__sample_endpoint_get_securedby"><h1>
+                                                    Secured by</h1></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="hidden-print affix" id="sidebar" role="complementary">
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="#insert_context">/insert/context</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

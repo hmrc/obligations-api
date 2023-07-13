@@ -18,11 +18,11 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.Nino
+import v1.controllers.requestParsers.validators.RetrieveCrystallisationObligationsValidator
+import v1.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
+import v1.models.request.{ ObligationsTaxYear, ObligationsTaxYearHelpers }
 
 import javax.inject.Inject
-import v1.controllers.requestParsers.validators.RetrieveCrystallisationObligationsValidator
-import v1.models.request.{ ObligationsTaxYear, ObligationsTaxYearHelpers }
-import v1.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
 
 class RetrieveCrystallisationObligationsRequestParser @Inject()(val validator: RetrieveCrystallisationObligationsValidator)
     extends RequestParser[RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest]

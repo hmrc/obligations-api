@@ -18,7 +18,7 @@ package v2.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{ JsObject, Json }
 import support.WireMockMethods
 
 object AuthStub extends WireMockMethods {
@@ -29,7 +29,7 @@ object AuthStub extends WireMockMethods {
     "key" -> "HMRC-MTD-IT",
     "identifiers" -> Json.arr(
       Json.obj(
-        "key" -> "MTDITID",
+        "key"   -> "MTDITID",
         "value" -> "1234567890"
       )
     )
@@ -40,6 +40,10 @@ object AuthStub extends WireMockMethods {
       .thenReturn(status = OK, body = successfulAuthResponse(mtdEnrolment))
   }
 
+  private def successfulAuthResponse(enrolments: JsObject*): JsObject = {
+    Json.obj("authorisedEnrolments" -> enrolments, "affinityGroup" -> "Individual")
+  }
+
   def unauthorisedNotLoggedIn(): StubMapping = {
     when(method = POST, uri = authoriseUri)
       .thenReturn(status = UNAUTHORIZED, headers = Map("WWW-Authenticate" -> """MDTP detail="MissingBearerToken""""))
@@ -48,10 +52,5 @@ object AuthStub extends WireMockMethods {
   def unauthorisedOther(): StubMapping = {
     when(method = POST, uri = authoriseUri)
       .thenReturn(status = UNAUTHORIZED, headers = Map("WWW-Authenticate" -> """MDTP detail="InvalidBearerToken""""))
-  }
-
-  private def successfulAuthResponse(enrolments: JsObject*): JsObject = {
-    Json.obj("authorisedEnrolments" -> enrolments,
-      "affinityGroup" -> "Individual")
   }
 }

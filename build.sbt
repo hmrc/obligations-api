@@ -19,10 +19,7 @@ import uk.gov.hmrc.DefaultBuildSettings.{ addTestReportOption, defaultSettings }
 import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 
-val appName = "obligations-api"
-
 lazy val ItTest = config("it") extend Test
-
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
@@ -54,3 +51,4 @@ lazy val microservice = Project(appName, file("."))
     resolvers += Resolver.jcenterRepo
   )
   .settings(PlayKeys.playDefaultPort := 7793)
+val appName = "obligations-api"

@@ -26,9 +26,9 @@ import uk.gov.hmrc.http.{ HttpReads, HttpResponse }
 
 object StandardDownstreamHttpParser extends HttpParser {
 
-  case class SuccessCode(status: Int) extends AnyVal
-
   val logger: Logger = Logger(getClass)
+
+  case class SuccessCode(status: Int) extends AnyVal
 
   // Return Right[DownstreamResponse[Unit]] as success response has no body - no need to assign it a value
   implicit def readsEmpty(implicit successCode: SuccessCode = SuccessCode(NO_CONTENT)): HttpReads[DownstreamOutcome[Unit]] =

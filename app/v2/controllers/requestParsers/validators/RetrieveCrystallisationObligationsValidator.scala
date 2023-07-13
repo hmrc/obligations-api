@@ -25,6 +25,10 @@ class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrys
 
   private val validations = List(parameterFormatValidation, parameterRuleValidation)
 
+  override def validate(data: RetrieveCrystallisationObligationsRawData): List[MtdError] = {
+    run(validations, data).distinct
+  }
+
   private def parameterFormatValidation: RetrieveCrystallisationObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
@@ -37,10 +41,6 @@ class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrys
     List(
       data.taxYear.map(MtdTaxYearValidation.validate(_, RuleTaxYearNotSupportedError)).getOrElse(Nil)
     )
-  }
-
-  override def validate(data: RetrieveCrystallisationObligationsRawData): List[MtdError] = {
-    run(validations, data).distinct
   }
 
 }

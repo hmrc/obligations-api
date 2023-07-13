@@ -157,16 +157,6 @@ class RetrieveEOPSObligationsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] =
-      controller.handleRequest(
-        nino = nino,
-        typeOfBusiness = Some(typeOfBusiness.toString),
-        businessId = Some(businessId),
-        fromDate = Some(fromDate),
-        toDate = Some(toDate),
-        status = Some(status.toString)
-      )(fakeRequest)
-
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "retrieveEOPSObligations",
@@ -181,5 +171,15 @@ class RetrieveEOPSObligationsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def callController(): Future[Result] =
+      controller.handleRequest(
+        nino = nino,
+        typeOfBusiness = Some(typeOfBusiness.toString),
+        businessId = Some(businessId),
+        fromDate = Some(fromDate),
+        toDate = Some(toDate),
+        status = Some(status.toString)
+      )(fakeRequest)
   }
 }

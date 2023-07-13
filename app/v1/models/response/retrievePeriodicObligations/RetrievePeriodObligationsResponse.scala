@@ -16,11 +16,11 @@
 
 package v1.models.response.retrievePeriodicObligations
 
-import api.models.domain.{ PeriodKey, ReferenceType }
 import api.models.domain.business.DesBusiness
+import api.models.domain.{ PeriodKey, ReferenceType }
 import play.api.libs.json.{ JsPath, Json, OWrites, Reads }
-import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.common.des.DesObligation
+import v1.models.response.common.{ Obligation, ObligationDetail }
 
 case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
 

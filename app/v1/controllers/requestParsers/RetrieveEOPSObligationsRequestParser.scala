@@ -20,11 +20,11 @@ import api.controllers.requestParsers.RequestParser
 import api.models.domain.Nino
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
+import v1.controllers.requestParsers.validators.RetrieveEOPSObligationsValidator
+import v1.models.request.retrieveEOPSObligations.{ RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest }
 
 import java.time.LocalDate
 import javax.inject.Inject
-import v1.controllers.requestParsers.validators.RetrieveEOPSObligationsValidator
-import v1.models.request.retrieveEOPSObligations.{ RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest }
 
 class RetrieveEOPSObligationsRequestParser @Inject()(val validator: RetrieveEOPSObligationsValidator)
     extends RequestParser[RetrieveEOPSObligationsRawData, RetrieveEOPSObligationsRequest] {

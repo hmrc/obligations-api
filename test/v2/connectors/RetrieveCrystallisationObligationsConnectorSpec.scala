@@ -58,20 +58,8 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val nino     = "AA123456A"
-    protected val fromDate = "2018-04-06"
-    protected val toDate   = "2019-04-05"
-
-    private val taxYearRange = TaxYearRange.fromMtd("2018-19")
-
-    protected val maybeStatus: Option[MtdStatus] = Option(MtdStatus.Fulfilled)
-
-    val connector: RetrieveCrystallisationObligationsConnector =
-      new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-
     lazy val request: RetrieveCrystallisationObligationsRequest =
       RetrieveCrystallisationObligationsRequest(Nino(nino), taxYearRange, maybeStatus)
-
     lazy val response: DesRetrieveCrystallisationObligationsResponse =
       DesRetrieveCrystallisationObligationsResponse(
         Seq(
@@ -82,5 +70,13 @@ class RetrieveCrystallisationObligationsConnectorSpec extends ConnectorSpec {
             status = F,
             inboundCorrespondenceDateReceived = Some(toDate)
           )))
+
+    val connector: RetrieveCrystallisationObligationsConnector =
+      new RetrieveCrystallisationObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    protected val nino                           = "AA123456A"
+    protected val fromDate                       = "2018-04-06"
+    protected val toDate                         = "2019-04-05"
+    protected val maybeStatus: Option[MtdStatus] = Option(MtdStatus.Fulfilled)
+    private val taxYearRange                     = TaxYearRange.fromMtd("2018-19")
   }
 }

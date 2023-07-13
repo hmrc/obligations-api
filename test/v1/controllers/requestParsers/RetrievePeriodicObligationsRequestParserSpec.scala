@@ -20,11 +20,11 @@ import api.models.domain.Nino
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
 import api.models.errors.{ BadRequestError, ErrorWrapper, NinoFormatError, TypeOfBusinessFormatError }
-
-import java.time.LocalDate
 import support.UnitSpec
 import v1.mocks.validators.MockRetrievePeriodicObligationsValidator
 import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
+
+import java.time.LocalDate
 
 class RetrievePeriodicObligationsRequestParserSpec extends UnitSpec {
   val nino                                 = "AA123456B"

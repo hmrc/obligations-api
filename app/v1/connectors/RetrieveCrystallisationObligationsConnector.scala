@@ -16,16 +16,15 @@
 
 package v1.connectors
 
-import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
 import api.connectors.DownstreamUri._
 import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
 import config.AppConfig
-import javax.inject.{ Inject, Singleton }
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient }
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v1.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
+import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton
