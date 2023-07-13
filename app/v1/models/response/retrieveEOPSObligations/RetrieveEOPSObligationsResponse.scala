@@ -16,8 +16,8 @@
 
 package v1.models.response.retrieveEOPSObligations
 
-import api.models.domain.{ PeriodKey, ReferenceType }
 import api.models.domain.business.DesBusiness
+import api.models.domain.{ PeriodKey, ReferenceType }
 import play.api.libs.json.{ JsPath, Json, OWrites, Reads }
 import v1.models.response.common.des.DesObligation
 import v1.models.response.common.{ Obligation, ObligationDetail }

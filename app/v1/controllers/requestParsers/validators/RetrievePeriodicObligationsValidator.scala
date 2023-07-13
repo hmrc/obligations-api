@@ -25,6 +25,10 @@ class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObl
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, missingParameterValidation)
 
+  override def validate(data: RetrievePeriodicObligationsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
+
   private def parameterFormatValidation: RetrievePeriodicObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
@@ -54,9 +58,5 @@ class RetrievePeriodicObligationsValidator extends Validator[RetrievePeriodicObl
       DateMissingValidation.validate(data.fromDate, data.toDate),
       BusinessIdIncludedWithTypeOfBusinessValidation.validate(data.businessId, data.typeOfBusiness)
     )
-  }
-
-  override def validate(data: RetrievePeriodicObligationsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 }

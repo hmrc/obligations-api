@@ -31,19 +31,6 @@ import scala.concurrent.{ ExecutionContext, Future }
 @Singleton
 class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCrystallisationObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrieveCrystallisationObligationsRequest)(
-      implicit ctx: RequestContext,
-      ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
-
-    val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
-    } yield mtdResponseWrapper
-
-    result.value
-
-  }
-
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
@@ -59,4 +46,17 @@ class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCry
       "SERVER_ERROR"        -> InternalError,
       "SERVICE_UNAVAILABLE" -> InternalError
     )
+
+  def retrieve(request: RetrieveCrystallisationObligationsRequest)(
+      implicit ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
+
+    val result = for {
+      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
+    } yield mtdResponseWrapper
+
+    result.value
+
+  }
 }

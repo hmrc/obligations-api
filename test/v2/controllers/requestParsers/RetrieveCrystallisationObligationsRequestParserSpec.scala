@@ -34,13 +34,13 @@ class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
 
   trait Test extends MockRetrieveCrystallisationObligationsValidator {
 
-    val defaultRange: TaxYearRange =
-      TaxYearRange(TaxYear.fromMtd("2018-19"), TaxYear.fromMtd("2023-24"))
-
     lazy val parser: RetrieveCrystallisationObligationsRequestParser =
       new RetrieveCrystallisationObligationsRequestParser(mockValidator) {
         override protected def defaultTaxYearRange(): TaxYearRange = defaultRange
       }
+
+    val defaultRange: TaxYearRange =
+      TaxYearRange(TaxYear.fromMtd("2018-19"), TaxYear.fromMtd("2023-24"))
   }
 
   "parse" should {

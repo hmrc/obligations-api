@@ -23,6 +23,15 @@ import v2.models.response.retrieveCrystallisationObligations.des.DesObligation
 
 object RetrieveCrystallisationObligationsFixtures {
 
+  val mtdObligationJsonNoReceivedDate: JsValue = Json.parse(s"""
+       |{
+       |    "periodStartDate": "2018-04-06",
+       |    "periodEndDate": "2019-04-05",
+       |    "dueDate": "1920-01-31",
+       |    "status": "Fulfilled"
+       |}
+       |""".stripMargin)
+
   def desObligationModel(status: DesStatus = DesStatus.F, receivedDate: Option[String] = Some("2020-01-25")): DesObligation = DesObligation(
     inboundCorrespondenceFromDate = "2018-04-06",
     inboundCorrespondenceToDate = "2019-04-05",
@@ -48,14 +57,5 @@ object RetrieveCrystallisationObligationsFixtures {
       |    "receivedDate": "2020-01-25"
       |}
       |""".stripMargin)
-
-  val mtdObligationJsonNoReceivedDate: JsValue = Json.parse(s"""
-       |{
-       |    "periodStartDate": "2018-04-06",
-       |    "periodEndDate": "2019-04-05",
-       |    "dueDate": "1920-01-31",
-       |    "status": "Fulfilled"
-       |}
-       |""".stripMargin)
 
 }

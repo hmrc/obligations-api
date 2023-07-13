@@ -31,22 +31,17 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
 
+  private val extraPredicatesAnd =
+    CompositePredicate(
+      _,
+      AlternatePredicate(AlternatePredicate(CompositePredicate(AffinityGroup.Individual, ConfidenceLevel.L200), AffinityGroup.Organisation),
+                         AffinityGroup.Agent)
+    )
+
   trait Test {
-    val mockAuthConnector: AuthConnector = mock[AuthConnector]
-
+    lazy val target                                                   = new EnrolmentsAuthService(mockAuthConnector, mockAppConfig)
+    val mockAuthConnector: AuthConnector                              = mock[AuthConnector]
     val authRetrievals: Retrieval[Option[AffinityGroup] ~ Enrolments] = affinityGroup and authorisedEnrolments
-
-    object MockedAuthConnector {
-
-      def authorised[A](predicate: Predicate, retrievals: Retrieval[A]): CallHandler[Future[A]] = {
-        (mockAuthConnector
-          .authorise[A](_: Predicate, _: Retrieval[A])(_: HeaderCarrier, _: ExecutionContext))
-          .expects(predicate, retrievals, *, *)
-      }
-
-    }
-
-    lazy val target = new EnrolmentsAuthService(mockAuthConnector, mockAppConfig)
 
     def mockConfidenceLevelCheckConfig(authValidationEnabled: Boolean = true, confidenceLevel: ConfidenceLevel = ConfidenceLevel.L200): Unit = {
       MockAppConfig.confidenceLevelCheckEnabled.returns(
@@ -57,14 +52,17 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
         )
       )
     }
-  }
 
-  private val extraPredicatesAnd =
-    CompositePredicate(
-      _,
-      AlternatePredicate(AlternatePredicate(CompositePredicate(AffinityGroup.Individual, ConfidenceLevel.L200), AffinityGroup.Organisation),
-                         AffinityGroup.Agent)
-    )
+    object MockedAuthConnector {
+
+      def authorised[A](predicate: Predicate, retrievals: Retrieval[A]): CallHandler[Future[A]] = {
+        (mockAuthConnector
+          .authorise[A](_: Predicate, _: Retrieval[A])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(predicate, retrievals, *, *)
+      }
+
+    }
+  }
 
   "calling .buildPredicate" when {
     "confidence level checks are on" should {

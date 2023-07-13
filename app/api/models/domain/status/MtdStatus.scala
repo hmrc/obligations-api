@@ -24,13 +24,15 @@ sealed trait MtdStatus {
 }
 
 object MtdStatus {
+  val parser: PartialFunction[String, MtdStatus] = Enums.parser[MtdStatus]
+
   case object Fulfilled extends MtdStatus {
     override def toDes: DesStatus = DesStatus.F
   }
+
+  implicit val format: Format[MtdStatus] = Enums.format[MtdStatus]
+
   case object Open extends MtdStatus {
     override def toDes: DesStatus = DesStatus.O
   }
-
-  implicit val format: Format[MtdStatus]         = Enums.format[MtdStatus]
-  val parser: PartialFunction[String, MtdStatus] = Enums.parser[MtdStatus]
 }

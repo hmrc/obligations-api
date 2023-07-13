@@ -22,14 +22,13 @@ import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRa
 
 class RetrievePeriodicObligationsValidatorSpec extends UnitSpec {
 
+  val validator                   = new RetrievePeriodicObligationsValidator()
   private val validNino           = "AA123456A"
   private val validTypeOfBusiness = "self-employment"
   private val validBusinessId     = "XAIS12345678901"
   private val validFromDate       = "2019-01-01"
   private val validToDate         = "2019-12-30"
   private val validStatus         = "Open"
-
-  val validator = new RetrievePeriodicObligationsValidator()
 
   "running a validation" should {
     "return no errors" when {

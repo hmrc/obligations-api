@@ -36,28 +36,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
     val fromDate       = "2019-01-01"
     val toDate         = "2019-06-06"
     val status         = "Open"
-
-    def setupStubs(): StubMapping
-
-    def uri: String = s"/$nino/income-and-expenditure"
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-    def queryParams: Map[String, String] = Map(
-      "from" -> "2019-01-01",
-      "to"   -> "2019-06-06"
-    )
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    val responseBody = Json.parse("""{
+    val responseBody   = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -99,7 +78,6 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
-
     val responseBodyOneObjectMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -157,7 +135,6 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
-
     val responseBodyMultipleObjectsOneDetail = Json.parse("""{
         |  "obligations": [
         |     {
@@ -232,7 +209,6 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
-
     val responseBodyMultipleObjectsMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -337,6 +313,26 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
+    def setupStubs(): StubMapping
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map(
+      "from" -> "2019-01-01",
+      "to"   -> "2019-06-06"
+    )
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def uri: String = s"/$nino/income-and-expenditure"
 
     def errorBody(code: String): String =
       s"""

@@ -34,17 +34,15 @@ import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
 
-  private val nino   = "AA123456A"
-  private val status = Fulfilled
-
-  private val requestData =
-    RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2018-19"), Some(status))
-
   val downstreamResponseModel: DesRetrieveCrystallisationObligationsResponse = DesRetrieveCrystallisationObligationsResponse(
     Seq(desObligationModel()))
 
   val mtdResponseModel: RetrieveCrystallisationObligationsResponse =
     RetrieveCrystallisationObligationsResponse(Seq(mtdObligationModel()))
+  private val nino   = "AA123456A"
+  private val status = Fulfilled
+  private val requestData =
+    RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2018-19"), Some(status))
 
   trait Test extends MockRetrieveCrystallisationObligationsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
