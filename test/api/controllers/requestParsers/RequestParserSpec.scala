@@ -28,9 +28,6 @@ class RequestParserSpec extends UnitSpec {
   private val nino                   = "AA123456A"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  case class Raw(nino: String) extends RawData
-  case class Request(nino: Nino)
-
   trait Test {
     test =>
 
@@ -43,6 +40,10 @@ class RequestParserSpec extends UnitSpec {
     }
 
   }
+
+  case class Raw(nino: String) extends RawData
+
+  case class Request(nino: Nino)
 
   "parse" should {
     "return a Request" when {

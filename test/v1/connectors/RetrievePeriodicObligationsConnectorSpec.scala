@@ -45,16 +45,6 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val nino                        = "AA123456A"
-    protected val fromDate                    = "2018-04-06"
-    protected val toDate                      = "2019-04-05"
-    protected val status: MtdStatus           = MtdStatus.Open
-    protected val typeOfBusiness: MtdBusiness = MtdBusiness.`foreign-property`
-    protected val businessId                  = "XAIS123456789012"
-
-    val connector: RetrievePeriodicObligationsConnector =
-      new RetrievePeriodicObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-
     lazy val request: RetrievePeriodicObligationsRequest = RetrievePeriodicObligationsRequest(Nino(nino), None, None, None, None, None)
     lazy val response: RetrievePeriodObligationsResponse = RetrievePeriodObligationsResponse(
       Seq(
@@ -63,5 +53,14 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
           businessId = businessId,
           obligationDetails = Seq(ObligationDetail(fromDate, toDate, toDate, Some(fromDate), MtdStatus.Open))
         )))
+
+    val connector: RetrievePeriodicObligationsConnector =
+      new RetrievePeriodicObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    protected val nino                        = "AA123456A"
+    protected val fromDate                    = "2018-04-06"
+    protected val toDate                      = "2019-04-05"
+    protected val status: MtdStatus           = MtdStatus.Open
+    protected val typeOfBusiness: MtdBusiness = MtdBusiness.`foreign-property`
+    protected val businessId                  = "XAIS123456789012"
   }
 }

@@ -17,6 +17,7 @@
 package v2.models.request.retrieveCrystallisationObligations
 
 import api.models.domain.Nino
-import v2.models.request.ObligationsTaxYear
+import api.models.domain.status.MtdStatus
+import api.models.request.TaxYearRange
 
-case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: ObligationsTaxYear)
+case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: TaxYearRange, status: Option[MtdStatus])

@@ -23,11 +23,11 @@ import api.models.domain.Nino
 import api.models.domain.status.MtdStatus
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
+import api.models.request.TaxYearRange
 import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc.Result
 import v2.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
 import v2.mocks.services._
-import v2.models.request.ObligationsTaxYear
 import v2.models.request.retrieveCrystallisationObligations._
 import v2.models.response.retrieveCrystallisationObligations.{ Obligation, RetrieveCrystallisationObligationsResponse }
 
@@ -41,10 +41,12 @@ class RetrieveCrystallisationObligationsControllerSpec
     with MockRetrieveCrystallisationObligationsRequestParser
     with MockAuditService {
 
-  private val taxYear = "2017-18"
+  private val taxYear          = "2017-18"
+  private val maybeStatusParam = Option("Fulfilled")
+  private val maybeStatus      = Option(MtdStatus.Fulfilled)
 
-  private val rawData     = RetrieveCrystallisationObligationsRawData(nino, Some(taxYear))
-  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2017-04-06", "2018-04-05"))
+  private val rawData     = RetrieveCrystallisationObligationsRawData(nino, Some(taxYear), maybeStatusParam)
+  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
 
   private val responseBodyModel: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
     obligations = List(Obligation("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25")))
@@ -121,8 +123,6 @@ class RetrieveCrystallisationObligationsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeGetRequest)
-
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "RetrieveCrystallisationObligations",
@@ -137,6 +137,8 @@ class RetrieveCrystallisationObligationsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear), maybeStatusParam)(fakeGetRequest)
 
   }
 }

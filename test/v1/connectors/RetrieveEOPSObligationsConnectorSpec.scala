@@ -46,15 +46,6 @@ class RetrieveEOPSObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val nino                        = "AA123456A"
-    protected val typeOfBusiness: MtdBusiness = MtdBusiness.`foreign-property`
-    protected val businessId                  = "XAIS123456789012"
-    protected val fromDate                    = "2018-04-06"
-    protected val toDate                      = "2019-04-05"
-    protected val status: MtdStatus           = MtdStatus.Open
-
-    val connector: RetrieveEOPSObligationsConnector = new RetrieveEOPSObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-
     lazy val request: RetrieveEOPSObligationsRequest =
       RetrieveEOPSObligationsRequest(Nino(nino), None, None, None, None, None)
     lazy val response: RetrieveEOPSObligationsResponse = RetrieveEOPSObligationsResponse(
@@ -64,5 +55,12 @@ class RetrieveEOPSObligationsConnectorSpec extends ConnectorSpec {
           businessId = businessId,
           obligationDetails = Seq(ObligationDetail(fromDate, toDate, toDate, Some(fromDate), MtdStatus.Open))
         )))
+    val connector: RetrieveEOPSObligationsConnector = new RetrieveEOPSObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    protected val nino                              = "AA123456A"
+    protected val typeOfBusiness: MtdBusiness       = MtdBusiness.`foreign-property`
+    protected val businessId                        = "XAIS123456789012"
+    protected val fromDate                          = "2018-04-06"
+    protected val toDate                            = "2019-04-05"
+    protected val status: MtdStatus                 = MtdStatus.Open
   }
 }

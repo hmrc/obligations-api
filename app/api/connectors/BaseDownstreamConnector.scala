@@ -46,18 +46,6 @@ trait BaseDownstreamConnector {
     doPost(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
   }
 
-  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
-                                                                                          ec: ExecutionContext,
-                                                                                          hc: HeaderCarrier,
-                                                                                          httpReads: HttpReads[DownstreamOutcome[Resp]],
-                                                                                          correlationId: String): Future[DownstreamOutcome[Resp]] = {
-
-    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] =
-      http.GET(getBackendUri(uri), queryParams = queryParams)
-
-    doGet(getBackendHeaders(uri, hc, correlationId))
-  }
-
   private def getBackendUri[Resp](uri: DownstreamUri[Resp]): String =
     s"${configFor(uri).baseUrl}/${uri.value}"
 
@@ -88,5 +76,17 @@ trait BaseDownstreamConnector {
     uri match {
       case DesUri(_) => appConfig.desDownstreamConfig
     }
+
+  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
+                                                                                          ec: ExecutionContext,
+                                                                                          hc: HeaderCarrier,
+                                                                                          httpReads: HttpReads[DownstreamOutcome[Resp]],
+                                                                                          correlationId: String): Future[DownstreamOutcome[Resp]] = {
+
+    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] =
+      http.GET(getBackendUri(uri), queryParams = queryParams)
+
+    doGet(getBackendHeaders(uri, hc, correlationId))
+  }
 
 }

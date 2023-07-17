@@ -22,8 +22,9 @@ import utils.enums.Enums
 sealed trait ReferenceType
 
 object ReferenceType {
-  case object MTDBIS extends ReferenceType
-
-  implicit val format: Format[ReferenceType]         = Enums.format[ReferenceType]
   val parser: PartialFunction[String, ReferenceType] = Enums.parser[ReferenceType]
+
+  implicit val format: Format[ReferenceType] = Enums.format[ReferenceType]
+
+  case object MTDBIS extends ReferenceType
 }

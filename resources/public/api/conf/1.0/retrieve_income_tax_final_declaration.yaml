@@ -53,9 +53,20 @@ get:
             <p>Simulate a scenario where no data is found.</p>
           </td>
         </tr>
+                <tr>
+                <td><p>DYNAMIC</p></td>
+                <td><p>The following response values will change to correspond to the values submitted in the request:
+                  <ul>
+                      <li>periodStartDate</li>
+                      <li>periodEndDate</li>
+                      <li>dueDate</li>
+                      <li>receivedDate</li>
+                  </ul>
+                </p></td>
+            </tr>
       </tbody>
     </table>
- 
+  
 
   parameters:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
@@ -101,6 +112,9 @@ get:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearTooLong'
             RULE_INSOLVENT_TRADER:
               $ref: './common/errors.yaml#/components/examples/ruleInsolventTrader'
+            RULE_INCORRECT_GOV_TEST_SCENARIO:
+              $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
+
     "403":
       description: Forbidden
       content:

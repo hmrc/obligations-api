@@ -25,6 +25,10 @@ class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligations
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, missingParameterValidation)
 
+  override def validate(data: RetrieveEOPSObligationsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
+
   private def parameterFormatValidation: RetrieveEOPSObligationsRawData => List[List[MtdError]] = data => {
     List(
       NinoValidation.validate(data.nino),
@@ -54,9 +58,5 @@ class RetrieveEOPSObligationsValidator extends Validator[RetrieveEOPSObligations
     List(
       DateMissingValidation.validate(data.fromDate, data.toDate)
     )
-  }
-
-  override def validate(data: RetrieveEOPSObligationsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 }

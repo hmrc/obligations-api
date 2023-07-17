@@ -72,3 +72,6 @@ object UnsupportedVersionError  extends MtdError(code = "NOT_FOUND", message = "
 
 object InvalidBodyTypeError
     extends MtdError(code = "INVALID_BODY_TYPE", message = "Expecting text/json or application/json body", UNSUPPORTED_MEDIA_TYPE)
+
+//Stub errors
+object RuleIncorrectGovTestScenarioError extends MtdError("RULE_INCORRECT_GOV_TEST_SCENARIO", "The Gov-Test-Scenario was not found", BAD_REQUEST)

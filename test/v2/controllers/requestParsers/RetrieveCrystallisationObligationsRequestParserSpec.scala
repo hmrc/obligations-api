@@ -16,74 +16,92 @@
 
 package v2.controllers.requestParsers
 
-import api.models.domain.Nino
-import api.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
+import api.models.domain.status.MtdStatus
+import api.models.domain.{ Nino, TaxYear }
+import api.models.errors._
+import api.models.request.TaxYearRange
 import support.UnitSpec
 import v2.mocks.validators.MockRetrieveCrystallisationObligationsValidator
-import v2.models.request.retrieveCrystallisationObligations.{RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest}
-import v2.models.request.{ObligationsTaxYear, ObligationsTaxYearHelpers}
-
-import java.time.LocalDate
+import v2.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
 
 class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
-  val nino                      = "AA123456B"
-  val overriddenDate: LocalDate = LocalDate.parse("2019-04-06")
+  val nino = "AA123456B"
 
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val inputData: RetrieveCrystallisationObligationsRawData =
-    RetrieveCrystallisationObligationsRawData(nino, Some("2018-19"))
+    RetrieveCrystallisationObligationsRawData(nino, Some("2018-19"), Some("Open"))
 
   trait Test extends MockRetrieveCrystallisationObligationsValidator {
-    val testDate: LocalDate
-    lazy val parser: RetrieveCrystallisationObligationsRequestParser with ObligationsTaxYearHelpers =
-      new RetrieveCrystallisationObligationsRequestParser(mockValidator) with ObligationsTaxYearHelpers {
-        override val date: LocalDate = testDate
+
+    lazy val parser: RetrieveCrystallisationObligationsRequestParser =
+      new RetrieveCrystallisationObligationsRequestParser(mockValidator) {
+        override protected def defaultTaxYearRange(): TaxYearRange = defaultRange
       }
+
+    val defaultRange: TaxYearRange =
+      TaxYearRange(TaxYear.fromMtd("2018-19"), TaxYear.fromMtd("2023-24"))
   }
 
   "parse" should {
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        override val testDate: LocalDate = overriddenDate
-
         MockRetrieveCrystallisationObligationsValidator.validate(inputData).returns(Nil)
 
-        parser.parseRequest(inputData) shouldBe
-          Right(RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2018-04-06", "2019-04-05")))
+        val result: Either[ErrorWrapper, RetrieveCrystallisationObligationsRequest] = parser.parseRequest(inputData)
+        result shouldBe
+          Right(
+            RetrieveCrystallisationObligationsRequest(
+              Nino(nino),
+              TaxYearRange.fromMtd("2018-19"),
+              Some(MtdStatus.Open)
+            ))
       }
-      "valid request data is supplied with no taxYear" in new Test {
-        override val testDate: LocalDate = overriddenDate
 
-        MockRetrieveCrystallisationObligationsValidator.validate(inputData.copy(taxYear = None)).returns(Nil)
+      "valid request data is supplied with no taxYear or status params" in new Test {
+        private val rawData = inputData.copy(taxYear = None, status = None)
 
-        parser.parseRequest(inputData.copy(taxYear = None)) shouldBe
-          Right(RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2018-04-06", "2019-04-05")))
+        MockRetrieveCrystallisationObligationsValidator.validate(rawData).returns(Nil)
+
+        val result: Either[ErrorWrapper, RetrieveCrystallisationObligationsRequest] =
+          parser.parseRequest(rawData)
+        result shouldBe
+          Right(
+            RetrieveCrystallisationObligationsRequest(
+              Nino(nino),
+              defaultRange,
+              status = None
+            )
+          )
       }
     }
 
     "return an ErrorWrapper" when {
 
       "a single validation error occurs" in new Test {
-        override val testDate: LocalDate = overriddenDate
-
         MockRetrieveCrystallisationObligationsValidator
           .validate(inputData)
           .returns(List(NinoFormatError))
 
-        parser.parseRequest(inputData) shouldBe
-          Left(ErrorWrapper(correlationId, NinoFormatError, None))
+        val result: Either[ErrorWrapper, RetrieveCrystallisationObligationsRequest] = parser.parseRequest(inputData)
+        result shouldBe Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
 
       "multiple validation errors occur" in new Test {
-        override val testDate: LocalDate = overriddenDate
-
         MockRetrieveCrystallisationObligationsValidator
           .validate(inputData)
-          .returns(List(NinoFormatError, TaxYearFormatError))
+          .returns(List(NinoFormatError, TaxYearFormatError, StatusFormatError))
 
-        parser.parseRequest(inputData) shouldBe
-          Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, TaxYearFormatError))))
+        val result: Either[ErrorWrapper, RetrieveCrystallisationObligationsRequest] = parser.parseRequest(inputData)
+        result shouldBe Left(
+          ErrorWrapper(correlationId,
+                       BadRequestError,
+                       Some(
+                         List(
+                           NinoFormatError,
+                           TaxYearFormatError,
+                           StatusFormatError
+                         ))))
       }
     }
   }

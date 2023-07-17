@@ -24,19 +24,23 @@ sealed trait MtdBusiness {
 }
 
 object MtdBusiness {
+  val parser: PartialFunction[String, MtdBusiness] = Enums.parser[MtdBusiness]
+
   case object `self-employment` extends MtdBusiness {
     override def toDes: DesBusiness = DesBusiness.ITSB
   }
+
   case object `uk-property` extends MtdBusiness {
     override def toDes: DesBusiness = DesBusiness.ITSP
   }
+
   case object `foreign-property` extends MtdBusiness {
     override def toDes: DesBusiness = DesBusiness.ITSF
   }
+
+  implicit val format: Format[MtdBusiness] = Enums.format[MtdBusiness]
+
   case object `do-not-use` extends MtdBusiness {
     override def toDes: DesBusiness = DesBusiness.ITSA
   }
-
-  implicit val format: Format[MtdBusiness]         = Enums.format[MtdBusiness]
-  val parser: PartialFunction[String, MtdBusiness] = Enums.parser[MtdBusiness]
 }

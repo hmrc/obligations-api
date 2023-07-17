@@ -16,17 +16,16 @@
 
 package v1.connectors
 
-import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
-import api.connectors.httpparsers.StandardDownstreamHttpParser._
 import api.connectors.DownstreamUri._
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
 import api.models.domain.status.MtdStatus
 import config.AppConfig
-import javax.inject.{ Inject, Singleton }
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient }
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
+import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
 
 @Singleton

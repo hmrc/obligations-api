@@ -115,8 +115,6 @@ class RetrieveCrystallisationObligationsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeGetRequest)
-
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "RetrieveCrystallisationObligations",
@@ -131,6 +129,8 @@ class RetrieveCrystallisationObligationsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeGetRequest)
 
   }
 }

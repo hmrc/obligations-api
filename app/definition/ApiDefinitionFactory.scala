@@ -26,15 +26,11 @@ import javax.inject.{ Inject, Singleton }
 @Singleton
 class ApiDefinitionFactory @Inject()(appConfig: AppConfig) extends Logging {
 
-  private val readScope  = "read:self-assessment"
-  private val writeScope = "write:self-assessment"
-
   lazy val confidenceLevel: ConfidenceLevel = {
     val clConfig = appConfig.confidenceLevelConfig
 
     if (clConfig.definitionEnabled) clConfig.confidenceLevel else ConfidenceLevel.L50
   }
-
   lazy val definition: Definition =
     Definition(
       scopes = Seq(
@@ -71,6 +67,8 @@ class ApiDefinitionFactory @Inject()(appConfig: AppConfig) extends Logging {
         requiresTrust = None
       )
     )
+  private val readScope  = "read:self-assessment"
+  private val writeScope = "write:self-assessment"
 
   private[definition] def buildAPIStatus(version: Version): APIStatus = {
     APIStatus.parser

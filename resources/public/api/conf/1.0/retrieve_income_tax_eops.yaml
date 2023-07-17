@@ -133,6 +133,8 @@ get:
               $ref: './common/errors.yaml#/components/examples/ruleDateRangeInvalid'
             RULE_FROM_DATE_NOT_SUPPORTED:
               $ref: './common/errors.yaml#/components/examples/ruleFromDateNotSupported'
+            RULE_INCORRECT_GOV_TEST_SCENARIO:
+              $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
 
     "403":
       description: Forbidden

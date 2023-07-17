@@ -18,12 +18,12 @@ package v1.controllers.requestParsers
 
 import api.models.domain.Nino
 import api.models.errors.{ BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError }
-
-import java.time.LocalDate
 import support.UnitSpec
 import v1.mocks.validators.MockRetrieveCrystallisationObligationsValidator
 import v1.models.request.retrieveCrystallisationObligations.{ RetrieveCrystallisationObligationsRawData, RetrieveCrystallisationObligationsRequest }
 import v1.models.request.{ ObligationsTaxYear, ObligationsTaxYearHelpers }
+
+import java.time.LocalDate
 
 class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
   val nino                      = "AA123456B"
@@ -35,11 +35,11 @@ class RetrieveCrystallisationObligationsRequestParserSpec extends UnitSpec {
     RetrieveCrystallisationObligationsRawData(nino, Some("2018-19"))
 
   trait Test extends MockRetrieveCrystallisationObligationsValidator {
-    val testDate: LocalDate
     lazy val parser: RetrieveCrystallisationObligationsRequestParser with ObligationsTaxYearHelpers =
       new RetrieveCrystallisationObligationsRequestParser(mockValidator) with ObligationsTaxYearHelpers {
         override val date: LocalDate = testDate
       }
+    val testDate: LocalDate
   }
 
   "parse" should {

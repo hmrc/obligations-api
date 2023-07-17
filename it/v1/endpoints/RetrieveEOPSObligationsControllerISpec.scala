@@ -30,35 +30,13 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino           = "AA123456A"
-    val typeOfBusiness = "self-employment"
-    val businessId     = "XAIS12345678901"
-    val fromDate       = "2018-04-06"
-    val toDate         = "2019-04-05"
-    val status         = "Open"
-
-    def setupStubs(): StubMapping
-
-    def uri: String = s"/$nino/end-of-period-statement"
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-    def queryParams: Map[String, String] = Map(
-      "from"   -> fromDate,
-      "to"     -> toDate,
-      "status" -> "O"
-    )
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    val desResponse: JsValue = Json.parse("""
+    val nino                  = "AA123456A"
+    val typeOfBusiness        = "self-employment"
+    val businessId            = "XAIS12345678901"
+    val fromDate              = "2018-04-06"
+    val toDate                = "2019-04-05"
+    val status                = "Open"
+    val desResponse: JsValue  = Json.parse("""
         |{
         |    "obligations": [
         |        {
@@ -118,31 +96,51 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         |        }
         |    ]
         |}""".stripMargin)
-
     val responseBody: JsValue = Json.parse(s"""
-         |{
-         |  "obligations": [
-         |     {
-         |       "typeOfBusiness": "self-employment",
-         |       "businessId": "XAIS12345678901",
-         |       "obligationDetails": [
-         |         {
-         |           "periodStartDate": "2018-01-01",
-         |           "periodEndDate": "2018-12-31",
-         |           "dueDate": "2020-01-31",
-         |           "receivedDate": "2019-05-13",
-         |           "status": "Fulfilled"
-         |         },
-         |         {
-         |           "periodStartDate": "2019-01-01",
-         |           "periodEndDate": "2019-12-31",
-         |           "dueDate": "2021-01-31",
-         |           "status": "Open"
-         |         }
-         |       ]
-         |    }
-         |  ]
-         |}""".stripMargin)
+                                              |{
+                                              |  "obligations": [
+                                              |     {
+                                              |       "typeOfBusiness": "self-employment",
+                                              |       "businessId": "XAIS12345678901",
+                                              |       "obligationDetails": [
+                                              |         {
+                                              |           "periodStartDate": "2018-01-01",
+                                              |           "periodEndDate": "2018-12-31",
+                                              |           "dueDate": "2020-01-31",
+                                              |           "receivedDate": "2019-05-13",
+                                              |           "status": "Fulfilled"
+                                              |         },
+                                              |         {
+                                              |           "periodStartDate": "2019-01-01",
+                                              |           "periodEndDate": "2019-12-31",
+                                              |           "dueDate": "2021-01-31",
+                                              |           "status": "Open"
+                                              |         }
+                                              |       ]
+                                              |    }
+                                              |  ]
+                                              |}""".stripMargin)
+
+    def setupStubs(): StubMapping
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map(
+      "from"   -> fromDate,
+      "to"     -> toDate,
+      "status" -> "O"
+    )
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def uri: String = s"/$nino/end-of-period-statement"
 
     def errorBody(code: String): String =
       s"""

@@ -28,6 +28,10 @@ trait WireMockMethods {
     new Mapping(method, uri, queryParams, headers, None)
   }
 
+  sealed trait HTTPMethod {
+    def wireMockMapping(pattern: UrlPattern): MappingBuilder
+  }
+
   class Mapping(method: HTTPMethod, uri: String, queryParams: Map[String, String], headers: Map[String, String], body: Option[String]) {
     private val mapping = {
       val uriMapping = method.wireMockMapping(urlPathMatching(uri))
@@ -42,7 +46,7 @@ trait WireMockMethods {
 
       body match {
         case Some(extractedBody) => uriMappingWithHeaders.withRequestBody(equalTo(extractedBody))
-        case None => uriMappingWithHeaders
+        case None                => uriMappingWithHeaders
       }
     }
 
@@ -67,16 +71,12 @@ trait WireMockMethods {
         }
         body match {
           case Some(extractedBody) => responseWithHeaders.withBody(extractedBody)
-          case None => responseWithHeaders
+          case None                => responseWithHeaders
         }
       }
 
       stubFor(mapping.willReturn(response))
     }
-  }
-
-  sealed trait HTTPMethod {
-    def wireMockMapping(pattern: UrlPattern): MappingBuilder
   }
 
   case object POST extends HTTPMethod {

@@ -22,10 +22,9 @@ import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisat
 
 class RetrieveCrystallisationObligationsValidatorSpec extends UnitSpec {
 
+  val validator            = new RetrieveCrystallisationObligationsValidator()
   private val validNino    = "AA123456A"
   private val validTaxYear = "2018-19"
-
-  val validator = new RetrieveCrystallisationObligationsValidator()
 
   "running a validation" should {
     "return no errors" when {
