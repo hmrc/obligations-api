@@ -22,14 +22,13 @@ import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
 
 class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
 
+  val validator                   = new RetrieveEOPSObligationsValidator()
   private val validNino           = "AA123456A"
   private val validTypeOfBusiness = "self-employment"
   private val validBusinessId     = "XAIS12345678901"
   private val validFromDate       = "2019-01-01"
   private val validToDate         = "2019-12-30"
   private val validStatus         = "Open"
-
-  val validator = new RetrieveEOPSObligationsValidator()
 
   "running a validation" should {
     "return no errors" when {

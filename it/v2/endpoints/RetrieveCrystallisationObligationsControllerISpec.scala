@@ -29,34 +29,9 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
   private trait Test {
 
-    val nino    = "AA123456A"
-    val taxYear = "2017-18"
-
-    def setupStubs(): Unit = {}
-
-    def uri: String = s"/$nino/crystallisation"
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-    def queryParams: Map[String, String] = Map(
-      "from" -> "2017-04-06",
-      "to"   -> "2018-04-05"
-    )
-
-    def request(): WSRequest = {
-      AuditStub.audit()
-      AuthStub.authorised()
-      MtdIdLookupStub.ninoFound(nino)
-      setupStubs()
-
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.2.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    val singleObligationResponseBody: JsValue = Json.parse(s"""
+    val nino                                     = "AA123456A"
+    val taxYear                                  = "2017-18"
+    val singleObligationResponseBody: JsValue    = Json.parse(s"""
          |{
          |  "obligations": [
          |    {
@@ -69,29 +44,27 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  ]
          |}
          |""".stripMargin)
-
     val multipleObligationsResponseBody: JsValue = Json.parse(s"""
-         |{
-         |  "obligations": [
-         |    {
-         |      "periodStartDate": "2018-04-06",
-         |      "periodEndDate": "2019-04-05",
-         |      "dueDate": "2020-01-31",
-         |      "status": "Fulfilled",
-         |      "receivedDate": "2020-01-25"
-         |    },
-         |    {
-         |      "periodStartDate": "2018-04-06",
-         |      "periodEndDate": "2019-04-05",
-         |      "dueDate": "2020-01-31",
-         |      "status": "Fulfilled",
-         |      "receivedDate": "2021-01-25"
-         |    }
-         |  ]
-         |}
-         |""".stripMargin)
-
-    val desResponse: JsValue = Json.parse("""
+                                                                 |{
+                                                                 |  "obligations": [
+                                                                 |    {
+                                                                 |      "periodStartDate": "2018-04-06",
+                                                                 |      "periodEndDate": "2019-04-05",
+                                                                 |      "dueDate": "2020-01-31",
+                                                                 |      "status": "Fulfilled",
+                                                                 |      "receivedDate": "2020-01-25"
+                                                                 |    },
+                                                                 |    {
+                                                                 |      "periodStartDate": "2018-04-06",
+                                                                 |      "periodEndDate": "2019-04-05",
+                                                                 |      "dueDate": "2020-01-31",
+                                                                 |      "status": "Fulfilled",
+                                                                 |      "receivedDate": "2021-01-25"
+                                                                 |    }
+                                                                 |  ]
+                                                                 |}
+                                                                 |""".stripMargin)
+    val desResponse: JsValue                     = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -114,6 +87,30 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         |    ]
         |}
     """.stripMargin)
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map(
+      "from" -> "2017-04-06",
+      "to"   -> "2018-04-05"
+    )
+
+    def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
+      setupStubs()
+
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.2.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def setupStubs(): Unit = {}
+
+    def uri: String = s"/$nino/crystallisation"
 
     def errorBody(code: String): String =
       s"""

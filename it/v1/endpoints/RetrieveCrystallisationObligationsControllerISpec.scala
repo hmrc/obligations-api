@@ -30,29 +30,8 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
   private trait Test {
 
-    val nino    = "AA123456A"
-    val taxYear = "2017-18"
-
-    def setupStubs(): StubMapping
-
-    def uri: String = s"/$nino/crystallisation"
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-    def queryParams: Map[String, String] = Map(
-      "from" -> "2017-04-06",
-      "to"   -> "2018-04-05"
-    )
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
+    val nino                  = "AA123456A"
+    val taxYear               = "2017-18"
     val responseBody: JsValue = Json.parse(s"""
          |{
          |  "periodStartDate": "2018-04-06",
@@ -62,8 +41,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  "receivedDate": "2020-01-25"
          |}
          |""".stripMargin)
-
-    val desResponse: JsValue = Json.parse("""
+    val desResponse: JsValue  = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -86,6 +64,26 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         |    ]
         |}
     """.stripMargin)
+
+    def setupStubs(): StubMapping
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map(
+      "from" -> "2017-04-06",
+      "to"   -> "2018-04-05"
+    )
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def uri: String = s"/$nino/crystallisation"
 
     def errorBody(code: String): String =
       s"""

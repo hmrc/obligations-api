@@ -31,18 +31,6 @@ import scala.concurrent.{ ExecutionContext, Future }
 @Singleton
 class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
-                                                        ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
-
-    val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
-    } yield mtdResponseWrapper
-
-    result.value
-
-  }
-
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
@@ -58,5 +46,17 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
       "SERVER_ERROR"        -> InternalError,
       "SERVICE_UNAVAILABLE" -> InternalError
     )
+
+  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
+                                                        ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
+
+    val result = for {
+      downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
+    } yield mtdResponseWrapper
+
+    result.value
+
+  }
 
 }

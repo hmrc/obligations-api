@@ -31,7 +31,6 @@ import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligations
 import v1.models.response.common.{ Obligation, ObligationDetail }
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
-import scala.collection.immutable.Seq
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -144,16 +143,6 @@ class RetrievePeriodicObligationsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] =
-      controller.handleRequest(
-        nino,
-        Some(typeOfBusiness),
-        Some(businessId),
-        Some(fromDate),
-        Some(toDate),
-        Some(status)
-      )(fakeRequest)
-
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "retrievePeriodicObligations",
@@ -168,5 +157,15 @@ class RetrievePeriodicObligationsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def callController(): Future[Result] =
+      controller.handleRequest(
+        nino,
+        Some(typeOfBusiness),
+        Some(businessId),
+        Some(fromDate),
+        Some(toDate),
+        Some(status)
+      )(fakeRequest)
   }
 }

@@ -18,12 +18,16 @@ package v1.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations._
-import api.models.errors.{MtdError, RuleTaxYearNotSupportedError, RuleTaxYearRangeExceededError}
+import api.models.errors.{ MtdError, RuleTaxYearNotSupportedError, RuleTaxYearRangeExceededError }
 import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
 
 class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrystallisationObligationsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
+
+  override def validate(data: RetrieveCrystallisationObligationsRawData): List[MtdError] = {
+    run(validationSet, data).distinct
+  }
 
   private def parameterFormatValidation: RetrieveCrystallisationObligationsRawData => List[List[MtdError]] = data => {
     List(
@@ -36,10 +40,6 @@ class RetrieveCrystallisationObligationsValidator extends Validator[RetrieveCrys
     List(
       data.taxYear.map(MtdTaxYearValidation.validate(_, RuleTaxYearNotSupportedError)).getOrElse(Nil)
     )
-  }
-
-  override def validate(data: RetrieveCrystallisationObligationsRawData): List[MtdError] = {
-    run(validationSet, data).distinct
   }
 
 }

@@ -16,9 +16,9 @@
 
 package v1.models.request
 
-import java.time.LocalDate
-
 import support.UnitSpec
+
+import java.time.LocalDate
 
 class ObligationsTaxYearSpec extends UnitSpec {
 

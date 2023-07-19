@@ -5,49 +5,6 @@ get:
     
     ### Test data
     Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
-
-    <table>
-      <thead>
-        <tr>
-          <th>Header Value (Gov-Test-Scenario)</th>
-          <th>Scenario</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <p>N/A - DEFAULT</p>
-          </td>
-          <td>
-            <p>Simulate a success response with an open obligation.</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <p>MULTIPLE</p>
-          </td>
-          <td>
-            <p>Simulate a success response with multiple obligations.</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <p>INSOLVENT_TRADER</p>
-          </td>
-          <td>
-            <p>Simulate a scenario where the remote endpoint indicates that the Trader is insolvent.</p>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <p>NOT_FOUND</p>
-          </td>
-          <td>
-            <p>Simulate a scenario where no data is found.</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
     
     | Header Value (Gov-Test-Scenario)      | Scenario                                                                               |
     |---------------------------------------|----------------------------------------------------------------------------------------|
@@ -116,6 +73,9 @@ get:
               $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
             RULE_INSOLVENT_TRADER:
               $ref: './common/errors.yaml#/components/examples/ruleInsolventTrader'
+            RULE_INCORRECT_GOV_TEST_SCENARIO:
+              $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
+
     "403":
       description: Forbidden
       content:

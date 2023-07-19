@@ -74,6 +74,7 @@ final case class TaxYear private (private val value: String) {
 
 object TaxYear {
 
+  type TodaySupplier = () => LocalDate
   val minimumTaxYear = new TaxYear("2018")
 
   /** @param taxYear
@@ -87,8 +88,6 @@ object TaxYear {
 
   def fromDownstreamInt(taxYear: Int): TaxYear =
     new TaxYear(taxYear.toString)
-
-  type TodaySupplier = () => LocalDate
 
   def currentTaxYear()(implicit todaySupplier: TodaySupplier = today _): TaxYear = {
     val today            = todaySupplier()

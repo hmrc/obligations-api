@@ -31,18 +31,6 @@ import scala.concurrent.{ ExecutionContext, Future }
 @Singleton
 class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector) extends BaseService {
 
-  def retrieve(request: RetrievePeriodicObligationsRequest)(implicit
-                                                            ctx: RequestContext,
-                                                            ec: ExecutionContext): Future[ServiceOutcome[RetrievePeriodObligationsResponse]] = {
-    val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterPeriodicValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
-    } yield mtdResponseWrapper
-
-    result.value
-
-  }
-
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_IDTYPE"      -> InternalError,
@@ -58,4 +46,16 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
       "SERVER_ERROR"        -> InternalError,
       "SERVICE_UNAVAILABLE" -> InternalError
     )
+
+  def retrieve(request: RetrievePeriodicObligationsRequest)(implicit
+                                                            ctx: RequestContext,
+                                                            ec: ExecutionContext): Future[ServiceOutcome[RetrievePeriodObligationsResponse]] = {
+    val result = for {
+      downstreamResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](filterPeriodicValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
+    } yield mtdResponseWrapper
+
+    result.value
+
+  }
 }

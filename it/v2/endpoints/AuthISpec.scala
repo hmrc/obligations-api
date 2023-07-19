@@ -30,25 +30,10 @@ import java.time.Year
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val nino: String      = "AA123456A"
-    val taxYearEnd: Int   = Year.now.getValue
-    val taxYearStart: Int = Year.now.getValue - 1
-    val taxYear: String   = s"$taxYearStart-${taxYearEnd.toString.drop(2)}"
-
-    def setupStubs(): StubMapping
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(s"/$nino/crystallisation")
-        .addQueryStringParameters("taxYear" -> taxYear)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.2.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
+    val nino: String         = "AA123456A"
+    val taxYearEnd: Int      = Year.now.getValue
+    val taxYearStart: Int    = Year.now.getValue - 1
+    val taxYear: String      = s"$taxYearStart-${taxYearEnd.toString.drop(2)}"
     val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
@@ -72,6 +57,20 @@ class AuthISpec extends IntegrationBaseSpec {
         |    ]
         |}
     """.stripMargin)
+
+    def setupStubs(): StubMapping
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(s"/$nino/crystallisation")
+        .addQueryStringParameters("taxYear" -> taxYear)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.2.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
   }
 
   "Calling the crystallisation endpoint" when {
