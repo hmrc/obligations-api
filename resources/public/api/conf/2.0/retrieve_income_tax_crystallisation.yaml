@@ -4,7 +4,7 @@ get:
     This endpoint allows a developer to retrieve the final declaration (previously known as crystallisation) obligations for a customer’s Income Tax account. The account identifier (National Insurance number) must be provided.
     
     ### Test data
-    <p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>
+    Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
 
     <table>
       <thead>
@@ -48,6 +48,13 @@ get:
         </tr>
       </tbody>
     </table>
+    
+    | Header Value (Gov-Test-Scenario)      | Scenario                                                                               |
+    |---------------------------------------|----------------------------------------------------------------------------------------|
+    | N/A - DEFAULT                         | Simulates a success response with an open obligation.                                  |
+    | MULTIPLE                              | Simulates a success response with multiple obligations.                                |
+    | INSOLVENT_TRADER                      | Simulates a scenario where the remote endpoint indicates that the Trader is insolvent. |
+    | NOT_FOUND                             | Simulates a scenario where no data is found.                                           |
 
   parameters:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'

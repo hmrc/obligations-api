@@ -4,7 +4,7 @@ get:
     This endpoint allows a developer to retrieve obligations for a user's business income sources. The account identifier (National Insurance number) must be provided.
     
     ### Test data
-    <p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>
+    Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
     <table>
       <thead>
         <tr>
