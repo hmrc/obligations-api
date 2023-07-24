@@ -12,6 +12,8 @@ get:
     | MULTIPLE                              | Simulates a success response with multiple obligations.                                |
     | INSOLVENT_TRADER                      | Simulates a scenario where the remote endpoint indicates that the Trader is insolvent. |
     | NOT_FOUND                             | Simulates a scenario where no data is found.                                           |
+    | DYNAMIC                               | The following response values will change to correspond to the values submitted in the request: <br/> • periodStartDate <br/> • periodEndDate <br/> • dueDate <br/> • receivedDate|
+
 
   parameters:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
