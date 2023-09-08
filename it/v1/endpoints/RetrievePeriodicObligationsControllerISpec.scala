@@ -20,11 +20,11 @@ import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
+import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -36,7 +36,8 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
     val fromDate       = "2019-01-01"
     val toDate         = "2019-06-06"
     val status         = "Open"
-    val responseBody   = Json.parse("""{
+
+    val responseBody = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -78,6 +79,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyOneObjectMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -135,6 +137,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsOneDetail = Json.parse("""{
         |  "obligations": [
         |     {
@@ -209,6 +212,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -314,6 +318,85 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |""".stripMargin
     )
 
+    val dynamicObligationsResponseBody: JsValue = Json.parse(s"""
+                                                                |{
+                                                                |    "obligations": [
+                                                                |        {
+                                                                |            "typeOfBusiness": "self-employment",
+                                                                |            "businessId": "XBIS12345678901",
+                                                                |            "obligationDetails": [
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-07-06",
+                                                                |                    "periodEndDate": "2023-10-05",
+                                                                |                    "dueDate": "2023-11-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-10-06",
+                                                                |                    "periodEndDate": "2024-01-05",
+                                                                |                    "dueDate": "2024-02-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2024-01-06",
+                                                                |                    "periodEndDate": "2024-04-05",
+                                                                |                    "dueDate": "2024-05-05",
+                                                                |                    "status": "Open"
+                                                                |                }
+                                                                |            ]
+                                                                |        },
+                                                                |        {
+                                                                |            "typeOfBusiness": "uk-property",
+                                                                |            "businessId": "XPIS12345678901",
+                                                                |            "obligationDetails": [
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-07-06",
+                                                                |                    "periodEndDate": "2023-10-05",
+                                                                |                    "dueDate": "2023-11-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-10-06",
+                                                                |                    "periodEndDate": "2024-01-05",
+                                                                |                    "dueDate": "2024-02-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2024-01-06",
+                                                                |                    "periodEndDate": "2024-04-05",
+                                                                |                    "dueDate": "2024-05-05",
+                                                                |                    "status": "Open"
+                                                                |                }
+                                                                |            ]
+                                                                |        },
+                                                                |        {
+                                                                |            "typeOfBusiness": "foreign-property",
+                                                                |            "businessId": "XFIS12345678901",
+                                                                |            "obligationDetails": [
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-07-06",
+                                                                |                    "periodEndDate": "2023-10-05",
+                                                                |                    "dueDate": "2023-11-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2023-10-06",
+                                                                |                    "periodEndDate": "2024-01-05",
+                                                                |                    "dueDate": "2024-02-05",
+                                                                |                    "status": "Open"
+                                                                |                },
+                                                                |                {
+                                                                |                    "periodStartDate": "2024-01-06",
+                                                                |                    "periodEndDate": "2024-04-05",
+                                                                |                    "dueDate": "2024-05-05",
+                                                                |                    "status": "Open"
+                                                                |                }
+                                                                |            ]
+                                                                |        }
+                                                                |    ]
+                                                                |}
+                                                                |""".stripMargin)
+
     def setupStubs(): StubMapping
 
     def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
@@ -359,11 +442,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -381,11 +465,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -403,11 +488,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -425,15 +511,197 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
         response.json shouldBe responseBodyMultipleObjectsMultipleDetails
+        response.header("Content-Type") shouldBe Some("application/json")
+      }
+
+      "Downstream returns the expected obligations given the DYNAMIC Gov-test-scenario" in new Test {
+        override val desResponse: JsValue = Json.parse("""
+                                                         |{
+                                                         |    "obligations": [
+                                                         |        {
+                                                         |            "identification": {
+                                                         |                "incomeSourceType": "ITSA",
+                                                         |                "referenceNumber": "AB123456A",
+                                                         |                "referenceType": "NINO"
+                                                         |            },
+                                                         |            "obligationDetails": [
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2020-01-31",
+                                                         |                    "periodKey": "19P0"
+                                                         |                }
+                                                         |            ]
+                                                         |        },
+                                                         |        {
+                                                         |            "identification": {
+                                                         |                "incomeSourceType": "ITSB",
+                                                         |                "referenceNumber": "XBIS12345678901",
+                                                         |                "referenceType": "MTDBIS"
+                                                         |            },
+                                                         |            "obligationDetails": [
+                                                         |                {
+                                                         |                    "status": "F",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2018-07-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2018-08-05",
+                                                         |                    "inboundCorrespondenceDateReceived": "2018-08-01",
+                                                         |                    "periodKey": "#001"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-07-06",
+                                                         |                    "inboundCorrespondenceToDate": "2018-10-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2018-11-05",
+                                                         |                    "periodKey": "#002"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-10-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-01-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2019-02-05",
+                                                         |                    "periodKey": "#003"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2019-01-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2019-05-06",
+                                                         |                    "periodKey": "#004"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2020-01-31",
+                                                         |                    "periodKey": "EOPS"
+                                                         |                }
+                                                         |            ]
+                                                         |        },
+                                                         |        {
+                                                         |            "identification": {
+                                                         |                "incomeSourceType": "ITSP",
+                                                         |                "referenceNumber": "XPIS12345678901",
+                                                         |                "referenceType": "MTDBIS"
+                                                         |            },
+                                                         |            "obligationDetails": [
+                                                         |                {
+                                                         |                    "status": "F",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2018-07-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2018-08-05",
+                                                         |                    "inboundCorrespondenceDateReceived": "2018-08-01",
+                                                         |                    "periodKey": "#001"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-07-06",
+                                                         |                    "inboundCorrespondenceToDate": "2018-10-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2018-11-05",
+                                                         |                    "periodKey": "#002"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-10-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-01-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2019-02-05",
+                                                         |                    "periodKey": "#003"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2019-01-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2019-05-06",
+                                                         |                    "periodKey": "#004"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2018-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2019-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2020-01-31",
+                                                         |                    "periodKey": "EOPS"
+                                                         |                }
+                                                         |            ]
+                                                         |        },
+                                                         |        {
+                                                         |            "identification": {
+                                                         |                "incomeSourceType": "ITSF",
+                                                         |                "referenceNumber": "XFIS12345678901",
+                                                         |                "referenceType": "MTDBIS"
+                                                         |            },
+                                                         |            "obligationDetails": [
+                                                         |                {
+                                                         |                    "status": "F",
+                                                         |                    "inboundCorrespondenceFromDate": "2021-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2021-07-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2021-08-05",
+                                                         |                    "inboundCorrespondenceDateReceived": "2021-08-01",
+                                                         |                    "periodKey": "#001"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2021-07-06",
+                                                         |                    "inboundCorrespondenceToDate": "2021-10-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2021-11-05",
+                                                         |                    "periodKey": "#002"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2021-10-06",
+                                                         |                    "inboundCorrespondenceToDate": "2022-01-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2022-02-05",
+                                                         |                    "periodKey": "#003"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2022-01-06",
+                                                         |                    "inboundCorrespondenceToDate": "2022-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2022-05-06",
+                                                         |                    "periodKey": "#004"
+                                                         |                },
+                                                         |                {
+                                                         |                    "status": "O",
+                                                         |                    "inboundCorrespondenceFromDate": "2021-04-06",
+                                                         |                    "inboundCorrespondenceToDate": "2022-04-05",
+                                                         |                    "inboundCorrespondenceDueDate": "2023-01-31",
+                                                         |                    "periodKey": "EOPS"
+                                                         |                }
+                                                         |            ]
+                                                         |        }
+                                                         |    ]
+                                                         |}
+    """.stripMargin)
+
+        override def queryParams: Map[String, String] = Map(
+          "from" -> "2023-09-07",
+          "to"   -> "2024-09-07"
+        )
+
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+        }
+
+        val response: WSResponse = await(
+          request()
+            .addHttpHeaders(("Gov-Test-Scenario", "DYNAMIC"))
+            .get())
+
+        response.status shouldBe OK
+        response.json shouldBe dynamicObligationsResponseBody
         response.header("Content-Type") shouldBe Some("application/json")
       }
     }
@@ -521,11 +789,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -559,11 +828,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -599,11 +869,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> "uk-property",
-                                         "businessId"     -> businessId,
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> "uk-property",
+                "businessId"     -> businessId,
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -621,11 +892,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                         "businessId"     -> "XAIS12345678903",
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> typeOfBusiness,
+                "businessId"     -> "XAIS12345678903",
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -634,4 +906,5 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }
