@@ -86,6 +86,19 @@ class RetrieveEOPSObligationsValidatorSpec extends UnitSpec {
       }
     }
 
+    "return a ToDateFormatError error" when {
+      "the toDate is later than 2100" in {
+        val laterValidFromDate = "2099-12-24"
+        val invalidToDate = "2100-07-01"
+        validator.validate(RetrieveEOPSObligationsRawData(validNino,
+          Some(validTypeOfBusiness),
+          Some(validBusinessId),
+          Some(laterValidFromDate),
+          Some(invalidToDate),
+          Some(validStatus))) shouldBe List(ToDateFormatError)
+      }
+    }
+
     def test(nino: String, typeOfBusiness: String, businessId: String, fromDate: String, toDate: String, status: String, error: MtdError): Unit = {
       s"return ${error.code} error" when {
         s"RetrievePeriodicObligationsRawData($nino, $typeOfBusiness, $businessId, $fromDate, $toDate, $status) is supplied" in {

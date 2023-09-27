@@ -16,7 +16,7 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{ RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError }
+import api.models.errors.{RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError, ToDateFormatError}
 import support.UnitSpec
 
 class DateRangeValidationSpec extends UnitSpec {
@@ -33,6 +33,9 @@ class DateRangeValidationSpec extends UnitSpec {
       }
       "the 'From Date' is before the earliest allowed date" in {
         DateRangeValidation.validate("2015-01-01", "2016-01-01") shouldBe List(RuleFromDateNotSupportedError)
+      }
+      "the 'To Date' is after the latest allowed date" in {
+        DateRangeValidation.validate(from = "2099-12-01", to = "2100-05-01") shouldBe List(ToDateFormatError)
       }
       "the date range is too large" in {
         DateRangeValidation.validate("2018-11-01", "2020-01-01") shouldBe List(RuleDateRangeInvalidError)

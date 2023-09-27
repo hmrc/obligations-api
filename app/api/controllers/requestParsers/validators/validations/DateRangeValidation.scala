@@ -16,9 +16,10 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{ MtdError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError }
+import api.models.errors.{MtdError, RuleDateRangeInvalidError, RuleFromDateNotSupportedError, ToDateBeforeFromDateError, ToDateFormatError}
 
-import java.time.{ Duration, LocalDate }
+import java.time.{Duration, LocalDate}
+import scala.math.Ordered.orderingToOrdered
 
 object DateRangeValidation {
 
@@ -29,17 +30,23 @@ object DateRangeValidation {
     List(
       checkIfToIsBeforeFrom(fmtFrom, fmtTo, ToDateBeforeFromDateError),
       checkIfFromIsTooEarly(fmtFrom, RuleFromDateNotSupportedError),
+      checkIfToDateIsTooLate(fmtTo, ToDateFormatError),
       checkIfDateRangeIsTooLarge(fmtFrom, fmtTo, RuleDateRangeInvalidError),
       checkIfDateRangeIsTooShort(fmtFrom, fmtTo, RuleDateRangeInvalidError)
     ).flatten
   }
 
   private def checkIfToIsBeforeFrom(from: LocalDate, to: LocalDate, error: MtdError): List[MtdError] = if (to isBefore from) List(error) else Nil
-  private def checkIfFromIsTooEarly(from: LocalDate, error: MtdError): List[MtdError]                = if (from isBefore earliestDate) List(error) else Nil
+  private def checkIfFromIsTooEarly(from: LocalDate, error: MtdError): List[MtdError] = if (from isBefore earliestDate) List(error) else Nil
+
+  private def checkIfToDateIsTooLate(toDate: LocalDate, error: MtdError): List[MtdError] =
+    if (toDate >= latestDate) List(error) else Nil
+
   private def checkIfDateRangeIsTooLarge(from: LocalDate, to: LocalDate, error: MtdError): List[MtdError] = {
     val start = from.atStartOfDay()
     val end   = to.atStartOfDay()
     if (Duration.between(start, end.plusDays(1) /* add day to make inclusive */ ).toDays > maxDateRange) List(error) else Nil
   }
+
   private def checkIfDateRangeIsTooShort(from: LocalDate, to: LocalDate, error: MtdError): List[MtdError] = if (to == from) List(error) else Nil
 }

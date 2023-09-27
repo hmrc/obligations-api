@@ -45,7 +45,7 @@ components:
       name: toDate
       in: query
       description: |
-        The end date of the range to filter obligations in the format YYYY-MM-DD.
+        The end date of the range to filter obligations in the format YYYY-MM-DD. (Our systems only accept dates up to 2100-01-01.)
         <br>Mandatory if the “from” query parameter is supplied. If the “from” and “to” date parameters are not supplied, the date range will default to a year from today unless the status parameter is set to "Open".
       schema:
         type: string
