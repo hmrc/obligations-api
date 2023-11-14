@@ -25,11 +25,11 @@ import v1.connectors.RetrievePeriodicObligationsConnector
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicObligationsConnector) extends BaseService {
+class RetrievePeriodicObligationsService @Inject() (connector: RetrievePeriodicObligationsConnector) extends BaseService {
 
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
@@ -48,14 +48,16 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrievePeriodicOb
     )
 
   def retrieve(request: RetrievePeriodicObligationsRequest)(implicit
-                                                            ctx: RequestContext,
-                                                            ec: ExecutionContext): Future[ServiceOutcome[RetrievePeriodObligationsResponse]] = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[RetrievePeriodObligationsResponse]] = {
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrievePeriodicObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterPeriodicValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
+      mtdResponseWrapper <- EitherT.fromEither[Future](
+        filterPeriodicValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId.map(_.toString)))
     } yield mtdResponseWrapper
 
     result.value
 
   }
+
 }

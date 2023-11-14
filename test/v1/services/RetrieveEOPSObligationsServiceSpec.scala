@@ -17,7 +17,7 @@
 package v1.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.Nino
+import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
 import api.models.errors._
@@ -26,9 +26,10 @@ import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.connectors.MockRetrieveEOPSObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
@@ -44,8 +45,21 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
     Seq(
       Obligation(MtdBusiness.`self-employment`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
       Obligation(MtdBusiness.`foreign-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-      Obligation(MtdBusiness.`uk-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
+      Obligation(MtdBusiness.`uk-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
     ))
+
+  private def request(nino: Nino,
+                      typeOfBusiness: Option[MtdBusiness],
+                      businessId: Option[String],
+                      dateRange: Option[(String, String)],
+                      status: Option[MtdStatus]) =
+    RetrieveEOPSObligationsRequest(
+      nino = nino,
+      typeOfBusiness = typeOfBusiness,
+      businessId = businessId.map(BusinessId),
+      dateRange = dateRange.map { case (from, to) => DateRange(LocalDate.parse(from), LocalDate.parse(to)) },
+      status = status
+    )
 
   trait Test extends MockRetrieveEOPSObligationsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
@@ -54,13 +68,14 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
     val service = new RetrieveEOPSObligationsService(
       connector = mockRetrieveEOPSObligationsConnector
     )
+
   }
 
   "service" when {
     "connector call is successful" must {
       "return mapped result with nothing filtered out" when {
         "no typeOfBusiness or businessId are provided" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), None, None, Some(fromDate), Some(toDate), Some(status))
+          private val requestData = request(Nino(nino), None, None, Some((fromDate, toDate)), Some(status))
 
           MockRetrieveEOPSObligationsConnector
             .doConnectorThing(requestData)
@@ -75,7 +90,7 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
       businesses.foreach { business =>
         s"return mapped result with only $business in it" when {
           s"typeOfBusiness [$business] is provided " in new Test {
-            private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), Some(business), None, Some(fromDate), Some(toDate), Some(status))
+            private val requestData = request(Nino(nino), Some(business), None, Some((fromDate, toDate)), Some(status))
 
             private val filteredResponseModel = RetrieveEOPSObligationsResponse(
               Seq(
@@ -93,7 +108,7 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
 
       "filter out data with a different businessId" when {
         "businessId is provided and not all of the response objects have that id" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), None, Some(businessId), Some(fromDate), Some(toDate), Some(status))
+          private val requestData = request(Nino(nino), None, Some(businessId), Some((fromDate, toDate)), Some(status))
 
           private val responseModel = RetrieveEOPSObligationsResponse(
             Seq(
@@ -118,12 +133,8 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
 
       "return 404" when {
         "typeOfBusiness filter is applied and there are no response objects with that typeOfBusiness" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino),
-                                                                   Some(MtdBusiness.`foreign-property`),
-                                                                   Some(businessId),
-                                                                   Some(fromDate),
-                                                                   Some(toDate),
-                                                                   Some(status))
+          private val requestData =
+            request(Nino(nino), Some(MtdBusiness.`foreign-property`), Some(businessId), Some((fromDate, toDate)), Some(status))
 
           private val responseModel = RetrieveEOPSObligationsResponse(
             Seq(
@@ -137,12 +148,8 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
         "businessId filter is applied and there are no response objects with that businessId" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino),
-                                                                   Some(MtdBusiness.`foreign-property`),
-                                                                   Some(businessId),
-                                                                   Some(fromDate),
-                                                                   Some(toDate),
-                                                                   Some(status))
+          private val requestData =
+            request(Nino(nino), Some(MtdBusiness.`foreign-property`), Some(businessId), Some((fromDate, toDate)), Some(status))
 
           private val responseModel = RetrieveEOPSObligationsResponse(
             Seq(
@@ -157,7 +164,7 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
         }
 
         "the connector call returns an empty Seq due to JSON reads filtering out all obligations" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), None, None, None, None, None)
+          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), None, None, None, None)
 
           private val responseModel = RetrieveEOPSObligationsResponse(Seq())
 
@@ -175,7 +182,7 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
           s"a $desErrorCode error is returned from the service" in new Test {
 
             private val requestData =
-              RetrieveEOPSObligationsRequest(Nino(nino), Some(typeOfBusiness), Some(businessId), Some(fromDate), Some(toDate), Some(status))
+              request(Nino(nino), Some(typeOfBusiness), Some(businessId), Some((fromDate, toDate)), Some(status))
 
             MockRetrieveEOPSObligationsConnector
               .doConnectorThing(requestData)
@@ -202,4 +209,5 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
       }
     }
   }
+
 }

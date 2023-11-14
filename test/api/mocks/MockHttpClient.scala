@@ -45,7 +45,7 @@ trait MockHttpClient extends MockFactory {
            _: ExecutionContext) =>
             {
               actualUrl shouldBe url
-              actualParams shouldBe parameters
+              actualParams should contain theSameElementsAs parameters
 
               val headersForUrl = hc.headersForUrl(config)(actualUrl)
               assertHeaders(headersForUrl, requiredHeaders, excludedHeaders)

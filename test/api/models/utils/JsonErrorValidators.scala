@@ -25,10 +25,56 @@ trait JsonErrorValidators {
   type JsError  = (JsPath, Seq[JsonValidationError])
   type JsErrors = Seq[JsError]
 
+  implicit class JsErrorOps(err: JsError) {
+    def path: JsPath = err._1
+  }
+
+  implicit class AnyToJson[T: Writes](a: T) {
+    def toJson: JsValue = Json.toJson(a)
+  }
+
+  implicit class JsResultOps[T](res: JsResult[T]) {
+
+    def errors: JsErrors = res match {
+      case JsError(jsErrors) => jsErrors.map(item => (item._1, item._2.toList)).toList
+      case JsSuccess(_, _)   => fail("A JSON error was expected")
+    }
+  }
+
+  private def jsPathFrom(str: String) =
+    str.split("/").filter(_.nonEmpty).foldLeft[JsPath](__)(_ \ _)
+
+  implicit class JsValueOps(json: JsValue) {
+
+    def removeProperty(path: String): JsValue =
+      removeProperty(jsPathFrom(path))
+
+    def removeProperty(path: JsPath): JsValue = {
+      path
+        .prune(json)
+        .fold(
+          invalid = errs => fail(s"an error occurred when reading $path: $errs"),
+          valid = x => x
+        )
+    }
+
+    def update(path: String, replacement: JsValue): JsValue =
+      update(jsPathFrom(path), replacement)
+
+    def update(path: JsPath, replacement: JsValue): JsValue = {
+      val updateReads: Reads[JsObject] = __.json.update(path.json.put(replacement))
+      json.as[JsObject](updateReads)
+    }
+
+    def replaceWithEmptyObject(path: String): JsValue =
+      removeProperty(path).update(path, JsObject.empty)
+
+  }
+
   def testMandatoryProperty[A: Reads](json: JsValue)(property: String): Unit = {
     s"the JSON is missing the required property $property" should {
 
-      val jsPath: JsPath = property.split("/").filterNot(_ == "").foldLeft(JsPath())(_ \ _)
+      val jsPath: JsPath = jsPathFrom(property)
       val jsResult       = json.removeProperty(jsPath).validate[A]
 
       "only throw one error" in {
@@ -47,53 +93,16 @@ trait JsonErrorValidators {
     }
   }
 
-  implicit class JsErrorOps(err: JsError) {
-    def path: JsPath = err._1
-  }
-
-  implicit class AnyToJson[T: Writes](a: T) {
-    def toJson: JsValue = Json.toJson(a)
-  }
-
-  implicit class JsResultOps[T](res: JsResult[T]) {
-
-    def errors: JsErrors = res match {
-      case JsError(jsErrors) => jsErrors.map { case (path, errors) => (path, errors.toList) }.toList
-      case JsSuccess(_, _)   => fail("A JSON error was expected")
-    }
-  }
-
-  implicit class JsValueOps(json: JsValue) {
-
-    def removeProperty(path: JsPath): JsValue = {
-      path
-        .prune(json)
-        .fold(
-          invalid = errs => fail(s"an error occurred when reading $path: $errs"),
-          valid = x => x
-        )
-    }
-  }
-
-  private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
-    jsError match {
-      case (path, err :: Nil) if jsError.path == path => err
-      case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
-      case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
-      case (_, _)                                     => fail(s"no errors returned")
-    }
-  }
-
   def testPropertyType[T](json: JsValue)(path: String, replacement: JsValue, expectedError: String)(implicit rds: Reads[T]): Unit = {
 
-    val jsPath = path.split("/").filterNot(_ == "").foldLeft(JsPath())(_ \ _)
+    val jsPath = jsPathFrom(path)
 
     lazy val jsResult = {
       val amendedJson: JsValue = jsPath.json.pickBranch
         .reads(json)
         .fold(
           invalid = errs => fail(s"an error occurred when reading $path : $errs"),
-          valid = _ => overwriteJsonProperty(jsPath, json, replacement)
+          valid = _ => json.update(jsPath, replacement)
         )
       rds.reads(amendedJson)
     }
@@ -116,10 +125,13 @@ trait JsonErrorValidators {
     }
   }
 
-  private def overwriteJsonProperty(path: JsPath, json: JsValue, replacement: JsValue): JsValue = {
-    val updateReads: Reads[JsObject] = __.json.update(path.json.put(replacement))
-    json.as[JsObject](updateReads)
-  }
+  private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError =
+    jsError match {
+      case (path, err :: Nil) if jsError.path == path => err
+      case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
+      case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
+      case (_, _)                                     => fail(s"no errors returned")
+    }
 
   object JsonError {
     val NUMBER_OR_STRING_FORMAT_EXCEPTION = "error.expected.jsnumberorjsstring"
@@ -130,4 +142,5 @@ trait JsonErrorValidators {
     val JSARRAY_FORMAT_EXCEPTION          = "error.expected.jsarray"
     val PATH_MISSING_EXCEPTION            = "error.path.missing"
   }
+
 }

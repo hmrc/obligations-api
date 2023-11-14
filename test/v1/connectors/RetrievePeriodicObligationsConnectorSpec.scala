@@ -17,24 +17,54 @@
 package v1.connectors
 
 import api.connectors.ConnectorSpec
-import api.models.domain.Nino
+import api.models.domain.{DateRange, Nino}
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
 import api.models.outcomes.ResponseWrapper
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
 
   "RetrievePeriodicObligationsConnector" should {
     "return the expected response for a non-TYS request" when {
-      "a valid request is made" in new DesTest with Test {
+      "a valid request is made when no query parameters are supplied" in new DesTest with Test {
+        val request: RetrievePeriodicObligationsRequest = RetrievePeriodicObligationsRequest(Nino(nino), None, None, None, None)
+
         val outcome: Right[Nothing, ResponseWrapper[RetrievePeriodObligationsResponse]] = Right(ResponseWrapper(correlationId, response))
 
         willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA")
+          .returns(Future.successful(outcome))
+
+        await(connector.retrievePeriodicObligations(request)) shouldBe outcome
+      }
+
+      "a valid request is made when a date range is supplied" in new DesTest with Test {
+        val from = "2020-01-01"
+        val to   = "2021-01-01"
+
+        val request: RetrievePeriodicObligationsRequest =
+          RetrievePeriodicObligationsRequest(Nino(nino), None, None, Some(DateRange(LocalDate.parse(from), LocalDate.parse(to))), None)
+
+        val outcome: Right[Nothing, ResponseWrapper[RetrievePeriodObligationsResponse]] = Right(ResponseWrapper(correlationId, response))
+
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("from" -> from, "to" -> to))
+          .returns(Future.successful(outcome))
+
+        await(connector.retrievePeriodicObligations(request)) shouldBe outcome
+      }
+
+      "a valid request is made when a status is supplied" in new DesTest with Test {
+        val request: RetrievePeriodicObligationsRequest =
+          RetrievePeriodicObligationsRequest(Nino(nino), None, None, None, Some(MtdStatus.Open))
+
+        val outcome: Right[Nothing, ResponseWrapper[RetrievePeriodObligationsResponse]] = Right(ResponseWrapper(correlationId, response))
+
+        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
         await(connector.retrievePeriodicObligations(request)) shouldBe outcome
@@ -45,22 +75,18 @@ class RetrievePeriodicObligationsConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    lazy val request: RetrievePeriodicObligationsRequest = RetrievePeriodicObligationsRequest(Nino(nino), None, None, None, None, None)
     lazy val response: RetrievePeriodObligationsResponse = RetrievePeriodObligationsResponse(
       Seq(
         Obligation(
-          typeOfBusiness = typeOfBusiness,
-          businessId = businessId,
-          obligationDetails = Seq(ObligationDetail(fromDate, toDate, toDate, Some(fromDate), MtdStatus.Open))
+          typeOfBusiness = MtdBusiness.`foreign-property`,
+          businessId = "XAIS123456789012",
+          obligationDetails = Seq(ObligationDetail("2018-04-06", "2019-04-05", "2019-04-05", Some("2018-04-06"), MtdStatus.Open))
         )))
 
     val connector: RetrievePeriodicObligationsConnector =
       new RetrievePeriodicObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-    protected val nino                        = "AA123456A"
-    protected val fromDate                    = "2018-04-06"
-    protected val toDate                      = "2019-04-05"
-    protected val status: MtdStatus           = MtdStatus.Open
-    protected val typeOfBusiness: MtdBusiness = MtdBusiness.`foreign-property`
-    protected val businessId                  = "XAIS123456789012"
+
+    protected val nino = "AA123456A"
   }
+
 }

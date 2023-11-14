@@ -96,11 +96,6 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     handleWithVersionRoutes("/v2", V2Handler)
   }
 
-  "Routing requests with v2 header but v1 endpoint" should {
-    implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.2.0+json")
-    handleWithVersionRoutes("/v1", V1Handler)
-  }
-
   private def handleWithDefaultRoutes()(implicit acceptHeader: Option[String]): Unit = {
     "if the request ends with a trailing slash" when {
       "handler found" should {

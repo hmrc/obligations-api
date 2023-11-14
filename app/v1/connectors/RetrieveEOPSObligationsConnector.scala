@@ -18,38 +18,32 @@ package v1.connectors
 
 import api.connectors.DownstreamUri._
 import api.connectors.httpparsers.StandardDownstreamHttpParser._
-import api.connectors.{ BaseDownstreamConnector, DownstreamOutcome }
-import api.models.domain.status.MtdStatus
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class RetrieveEOPSObligationsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)(
-      implicit
+  def retrieveEOPSObligations(request: RetrieveEOPSObligationsRequest)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[RetrieveEOPSObligationsResponse]] = {
 
     import request._
 
-    val queryParams: Seq[(String, String)] = Seq(
-      "from"   -> fromDate,
-      "to"     -> toDate,
-      "status" -> status
-    ).collect {
-      case (k, Some(v: MtdStatus)) => k -> v.toDes.toString
-      case (k, Some(v: String))    => k -> v
-    }
+    val queryParams =
+      dateRange.toSeq.flatMap(range => Seq("from" -> range.startDateAsIso, "to" -> range.endDateAsIso)) ++
+        status.toSeq.map("status" -> _.toDes.toString)
 
     val url = DesUri[RetrieveEOPSObligationsResponse](s"enterprise/obligation-data/nino/$nino/ITSA")
 
     get(url, queryParams)
   }
+
 }

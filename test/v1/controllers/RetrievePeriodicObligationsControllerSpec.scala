@@ -16,21 +16,23 @@
 
 package v1.controllers
 
-import api.controllers.{ ControllerBaseSpec, ControllerTestRunner }
-import api.mocks.services.MockAuditService
-import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
-import api.models.domain.Nino
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
+import api.models.domain.{BusinessId, DateRange, Nino}
+import api.models.errors.{ErrorWrapper, NinoFormatError, RuleTaxYearNotSupportedError}
 import api.models.outcomes.ResponseWrapper
-import play.api.libs.json.{ JsValue, Json }
+import api.services.MockAuditService
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.mocks.requestParsers.MockRetrievePeriodicObligationsRequestParser
+import v1.controllers.validators.MockRetrievePeriodicObligationsValidatorFactory
 import v1.mocks.services.MockRetrievePeriodicObligationsService
-import v1.models.request.retrievePeriodObligations.{ RetrievePeriodicObligationsRawData, RetrievePeriodicObligationsRequest }
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -38,7 +40,7 @@ class RetrievePeriodicObligationsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockRetrievePeriodicObligationsService
-    with MockRetrievePeriodicObligationsRequestParser
+      with MockRetrievePeriodicObligationsValidatorFactory
     with MockAuditService {
 
   private val typeOfBusiness = "self-employment"
@@ -47,22 +49,12 @@ class RetrievePeriodicObligationsControllerSpec
   private val toDate         = "2019-06-06"
   private val status         = "Open"
 
-  private val rawData = RetrievePeriodicObligationsRawData(
-    nino,
-    Some(typeOfBusiness),
-    Some(businessId),
-    Some(fromDate),
-    Some(toDate),
-    Some(status)
-  )
-
   private val requestData =
     RetrievePeriodicObligationsRequest(
       Nino(nino),
       Some(MtdBusiness.`self-employment`),
-      Some(businessId),
-      Some(fromDate),
-      Some(toDate),
+      Some(BusinessId(businessId)),
+      dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
       Some(MtdStatus.Open)
     )
 
@@ -104,10 +96,7 @@ class RetrievePeriodicObligationsControllerSpec
   "handleRequest" should {
     "return a successful response with status 200 (OK)" when {
       "given a valid request" in new Test {
-
-        MockRetrievePeriodicObligationsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockRetrievePeriodicObligationsService
           .retrieve(requestData)
@@ -125,9 +114,20 @@ class RetrievePeriodicObligationsControllerSpec
     }
 
     "return the error as per spec" when {
-      "parser errors occur" must {}
+      "the parser validation fails" in new Test {
+        willUseValidator(returning(NinoFormatError))
+        runErrorTestWithAudit(NinoFormatError)
+      }
 
-      "service errors occur" must {}
+      "the service returns an error" in new Test {
+        willUseValidator(returningSuccess(requestData))
+
+        MockRetrievePeriodicObligationsService
+          .retrieve(requestData)
+          .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
+
+        runErrorTestWithAudit(RuleTaxYearNotSupportedError)
+      }
     }
   }
 
@@ -136,7 +136,7 @@ class RetrievePeriodicObligationsControllerSpec
     val controller = new RetrievePeriodicObligationsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockRequestParser,
+      validatorFactory = mockRetrievePeriodicObligationsValidatorFactory,
       service = mockService,
       auditService = mockAuditService,
       cc = cc,

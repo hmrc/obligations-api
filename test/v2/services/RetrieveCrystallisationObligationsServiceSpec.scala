@@ -17,14 +17,13 @@
 package v2.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.Nino
+import api.models.domain.{Nino, TaxYearRange}
 import api.models.domain.status.MtdStatus.Fulfilled
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.models.request.TaxYearRange
-import api.services.{ ServiceOutcome, ServiceSpec }
+import api.services.{ServiceOutcome, ServiceSpec}
 import uk.gov.hmrc.http.HeaderCarrier
-import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ desObligationModel, mtdObligationModel }
+import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{desObligationModel, mtdObligationModel}
 import v2.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse

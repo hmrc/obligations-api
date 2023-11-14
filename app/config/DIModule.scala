@@ -18,9 +18,12 @@ package config
 
 import com.google.inject.AbstractModule
 
+import java.time.Clock
+
 class DIModule extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
+    bind(classOf[Clock]).toInstance(Clock.systemUTC)
   }
 }
