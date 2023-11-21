@@ -17,13 +17,12 @@
 package v2.connectors
 
 import api.connectors.ConnectorSpec
-import api.models.domain.Nino
+import api.models.domain.{Nino, TaxYearRange}
 import api.models.domain.status.DesStatus.F
 import api.models.domain.status.MtdStatus
 import api.models.outcomes.ResponseWrapper
-import api.models.request.TaxYearRange
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
-import v2.models.response.retrieveCrystallisationObligations.des.{ DesObligation, DesRetrieveCrystallisationObligationsResponse }
+import v2.models.response.retrieveCrystallisationObligations.des.{DesObligation, DesRetrieveCrystallisationObligationsResponse}
 
 import scala.concurrent.Future
 

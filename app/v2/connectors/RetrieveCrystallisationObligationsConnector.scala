@@ -37,17 +37,18 @@ class RetrieveCrystallisationObligationsConnector @Inject()(val http: HttpClient
       correlationId: String): Future[DownstreamOutcome[DesRetrieveCrystallisationObligationsResponse]] = {
 
     import request.nino
-    import request.obligationsTaxYear.from.taxYearStart
-    import request.obligationsTaxYear.to.taxYearEnd
 
     val statusParam = request.status match {
       case Some(status) => s"&status=${status.toDes}"
       case None         => ""
     }
 
+    val fromDate = request.obligationsTaxYear.from.startDate.toString
+    val toDate = request.obligationsTaxYear.to.endDate.toString
+
     val url =
       DesUri[DesRetrieveCrystallisationObligationsResponse](
-        s"enterprise/obligation-data/nino/$nino/ITSA?from=$taxYearStart&to=$taxYearEnd$statusParam"
+        s"enterprise/obligation-data/nino/$nino/ITSA?from=$fromDate&to=$toDate$statusParam"
       )
 
     get(url)

@@ -16,20 +16,19 @@
 
 package v2.controllers
 
-import api.controllers.{ ControllerBaseSpec, ControllerTestRunner }
-import api.mocks.services.MockAuditService
-import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
-import api.models.domain.Nino
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.status.MtdStatus
+import api.models.domain.{Nino, TaxYearRange}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.models.request.TaxYearRange
-import play.api.libs.json.{ JsValue, Json }
+import api.services.MockAuditService
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v2.mocks.requestParsers.MockRetrieveCrystallisationObligationsRequestParser
+import v2.controllers.validators.MockRetrieveCrystallisationObligationsValidatorFactory
 import v2.mocks.services._
 import v2.models.request.retrieveCrystallisationObligations._
-import v2.models.response.retrieveCrystallisationObligations.{ Obligation, RetrieveCrystallisationObligationsResponse }
+import v2.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,14 +37,13 @@ class RetrieveCrystallisationObligationsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockRetrieveCrystallisationObligationsService
-    with MockRetrieveCrystallisationObligationsRequestParser
+    with MockRetrieveCrystallisationObligationsValidatorFactory
     with MockAuditService {
 
   private val taxYear          = "2017-18"
   private val maybeStatusParam = Option("Fulfilled")
   private val maybeStatus      = Option(MtdStatus.Fulfilled)
 
-  private val rawData     = RetrieveCrystallisationObligationsRawData(nino, Some(taxYear), maybeStatusParam)
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
 
   private val responseBodyModel: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
@@ -69,10 +67,7 @@ class RetrieveCrystallisationObligationsControllerSpec
   "handleRequest" should {
     "return a successful response with status 200 (OK)" when {
       "given a valid request" in new Test {
-
-        MockRetrieveCrystallisationObligationsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockRetrieveCrystallisationObligationsService
           .retrieve(requestData)
@@ -88,19 +83,13 @@ class RetrieveCrystallisationObligationsControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-
-        MockRetrieveCrystallisationObligationsRequestParser
-          .parse(rawData)
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
+        willUseValidator(returning(NinoFormatError))
 
         runErrorTestWithAudit(NinoFormatError)
       }
 
       "the service returns an error" in new Test {
-
-        MockRetrieveCrystallisationObligationsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockRetrieveCrystallisationObligationsService
           .retrieve(requestData)
@@ -116,7 +105,7 @@ class RetrieveCrystallisationObligationsControllerSpec
     val controller: RetrieveCrystallisationObligationsController = new RetrieveCrystallisationObligationsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockRetrieveCrystallisationObligationsRequestParser,
+      validatorFactory = mockRetrieveCrystallisationObligationsValidatorFactory,
       service = mockRetrieveCrystallisationObligationsService,
       auditService = mockAuditService,
       cc = cc,

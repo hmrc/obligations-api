@@ -48,22 +48,16 @@ object Version {
 
 sealed trait Version {
   val name: String
-  val configName: String
-  val maybePrevious: Option[Version] = None
 
   override def toString: String = name
 }
 
 case object Version1 extends Version {
   val name       = "1.0"
-  val configName = "1"
 }
 
 case object Version2 extends Version {
   val name       = "2.0"
-  val configName = "2"
-
-  override val maybePrevious: Option[Version] = Some(Version1)
 }
 
 object Versions {

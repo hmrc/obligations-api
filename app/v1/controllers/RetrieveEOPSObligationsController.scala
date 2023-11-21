@@ -17,20 +17,19 @@
 package v1.controllers
 
 import api.controllers._
-import api.services.{ AuditService, EnrolmentsAuthService, MtdIdLookupService }
-import play.api.mvc.{ Action, AnyContent, ControllerComponents }
-import utils.{ IdGenerator, Logging }
-import v1.controllers.requestParsers.RetrieveEOPSObligationsRequestParser
-import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRawData
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import utils.{IdGenerator, Logging}
+import v1.controllers.validators.RetrieveEOPSObligationsValidatorFactory
 import v1.services._
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAuthService,
                                                   val lookupService: MtdIdLookupService,
-                                                  parser: RetrieveEOPSObligationsRequestParser,
+                                                  validatorFactory: RetrieveEOPSObligationsValidatorFactory,
                                                   service: RetrieveEOPSObligationsService,
                                                   auditService: AuditService,
                                                   cc: ControllerComponents,
@@ -50,10 +49,10 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = RetrieveEOPSObligationsRawData(nino, typeOfBusiness, businessId, fromDate, toDate, status)
+      val validator = validatorFactory.validator(nino, typeOfBusiness, businessId, fromDate, toDate, status)
 
       val requestHandler = RequestHandler
-        .withParser(parser)
+        .withValidator(validator)
         .withService(service.retrieve)
         .withPlainJsonResult()
         .withAuditing(AuditHandler(
@@ -64,6 +63,6 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
           includeResponse = true
         ))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 }

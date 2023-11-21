@@ -17,20 +17,19 @@
 package v1.controllers
 
 import api.controllers._
-import api.services.{ AuditService, EnrolmentsAuthService, MtdIdLookupService }
-import play.api.mvc.{ Action, AnyContent, ControllerComponents }
-import utils.{ IdGenerator, Logging }
-import v1.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
-import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import utils.{IdGenerator, Logging}
+import v1.controllers.validators.RetrieveCrystallisationObligationsValidatorFactory
 import v1.services._
 
-import javax.inject.{ Inject, Singleton }
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class RetrieveCrystallisationObligationsController @Inject()(val authService: EnrolmentsAuthService,
                                                              val lookupService: MtdIdLookupService,
-                                                             parser: RetrieveCrystallisationObligationsRequestParser,
+                                                             validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
                                                              service: RetrieveCrystallisationObligationsService,
                                                              auditService: AuditService,
                                                              cc: ControllerComponents,
@@ -45,10 +44,10 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = RetrieveCrystallisationObligationsRawData(nino, taxYear)
+      val validator = validatorFactory.validator(nino, taxYear)
 
       val requestHandler = RequestHandler
-        .withParser(parser)
+        .withValidator(validator)
         .withService(service.retrieve)
         .withPlainJsonResult()
         .withAuditing(AuditHandler(
@@ -59,7 +58,7 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
           includeResponse = true
         ))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

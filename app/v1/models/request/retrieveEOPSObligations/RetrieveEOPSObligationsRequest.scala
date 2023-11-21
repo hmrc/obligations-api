@@ -16,13 +16,12 @@
 
 package v1.models.request.retrieveEOPSObligations
 
-import api.models.domain.Nino
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
+import api.models.domain.{BusinessId, DateRange, Nino}
 
 case class RetrieveEOPSObligationsRequest(nino: Nino,
                                           typeOfBusiness: Option[MtdBusiness],
-                                          businessId: Option[String],
-                                          fromDate: Option[String],
-                                          toDate: Option[String],
+                                          businessId: Option[BusinessId],
+                                          dateRange: Option[DateRange],
                                           status: Option[MtdStatus])

@@ -25,11 +25,11 @@ import v1.connectors.RetrieveEOPSObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligationsConnector) extends BaseService {
+class RetrieveEOPSObligationsService @Inject() (connector: RetrieveEOPSObligationsConnector) extends BaseService {
 
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
@@ -47,12 +47,14 @@ class RetrieveEOPSObligationsService @Inject()(connector: RetrieveEOPSObligation
       "SERVICE_UNAVAILABLE" -> InternalError
     )
 
-  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit ctx: RequestContext,
-                                                        ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
+  def retrieve(request: RetrieveEOPSObligationsRequest)(implicit
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
+      mtdResponseWrapper <- EitherT.fromEither[Future](
+        filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId.map(_.toString)))
     } yield mtdResponseWrapper
 
     result.value

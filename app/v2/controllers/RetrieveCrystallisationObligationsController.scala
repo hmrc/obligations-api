@@ -20,21 +20,20 @@ import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.{IdGenerator, Logging}
-import v2.controllers.requestParsers.RetrieveCrystallisationObligationsRequestParser
-import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRawData
+import v2.controllers.validators.RetrieveCrystallisationObligationsValidatorFactory
 import v2.services._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RetrieveCrystallisationObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                             val lookupService: MtdIdLookupService,
-                                                             parser: RetrieveCrystallisationObligationsRequestParser,
-                                                             service: RetrieveCrystallisationObligationsService,
-                                                             auditService: AuditService,
-                                                             cc: ControllerComponents,
-                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+class RetrieveCrystallisationObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                              val lookupService: MtdIdLookupService,
+                                                              validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
+                                                              service: RetrieveCrystallisationObligationsService,
+                                                              auditService: AuditService,
+                                                              cc: ControllerComponents,
+                                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext)
     extends AuthorisedController(cc)
     with Logging {
 
@@ -45,10 +44,10 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = RetrieveCrystallisationObligationsRawData(nino, taxYear, status)
+      val validator = validatorFactory.validator(nino, taxYear, status)
 
       val requestHandler = RequestHandler
-        .withParser(parser)
+        .withValidator(validator)
         .withService(service.retrieve)
         .withPlainJsonResult()
         .withAuditing(AuditHandler(
@@ -59,7 +58,7 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
           includeResponse = true
         ))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

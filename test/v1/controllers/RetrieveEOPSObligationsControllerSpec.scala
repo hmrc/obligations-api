@@ -16,22 +16,23 @@
 
 package v1.controllers
 
-import api.controllers.{ ControllerBaseSpec, ControllerTestRunner }
-import api.mocks.services.MockAuditService
-import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
-import api.models.domain.Nino
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatus
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import play.api.libs.json.{ JsValue, Json }
+import api.services.MockAuditService
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.mocks.requestParsers.MockRetrieveEOPSObligationsRequestParser
+import v1.controllers.validators.MockRetrieveEOPSObligationsValidatorFactory
 import v1.mocks.services.MockRetrieveEOPSObligationsService
 import v1.models.request.retrieveEOPSObligations._
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -39,7 +40,7 @@ class RetrieveEOPSObligationsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockRetrieveEOPSObligationsService
-    with MockRetrieveEOPSObligationsRequestParser
+    with MockRetrieveEOPSObligationsValidatorFactory
     with MockAuditService {
 
   private val typeOfBusiness = MtdBusiness.`self-employment`
@@ -49,21 +50,11 @@ class RetrieveEOPSObligationsControllerSpec
   private val dueDate        = "2020-04-05"
   private val status         = MtdStatus.Open
 
-  private val rawData = RetrieveEOPSObligationsRawData(
-    nino = nino,
-    typeOfBusiness = Some(typeOfBusiness.toString),
-    businessId = Some(businessId),
-    fromDate = Some(fromDate),
-    toDate = Some(toDate),
-    status = Some(status.toString)
-  )
-
   private val requestData = RetrieveEOPSObligationsRequest(
     nino = Nino(nino),
     typeOfBusiness = Some(typeOfBusiness),
-    businessId = Some(businessId),
-    fromDate = Some(fromDate),
-    toDate = Some(toDate),
+    businessId = Some(BusinessId(businessId)),
+    dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
     status = Some(status)
   )
 
@@ -105,10 +96,7 @@ class RetrieveEOPSObligationsControllerSpec
   "handleRequest" should {
     "return a successful response with status 200 (OK)" when {
       "given a valid request" in new Test {
-
-        MockRetrieveEOPSObligationsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockRetrieveEOPSObligationsService
           .retrieve(requestData)
@@ -124,17 +112,12 @@ class RetrieveEOPSObligationsControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockRetrieveEOPSObligationsRequestParser
-          .parse(rawData)
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
-
+        willUseValidator(returning(NinoFormatError))
         runErrorTestWithAudit(NinoFormatError)
       }
 
       "the service returns an error" in new Test {
-        MockRetrieveEOPSObligationsRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockRetrieveEOPSObligationsService
           .retrieve(requestData)
@@ -150,7 +133,7 @@ class RetrieveEOPSObligationsControllerSpec
     val controller: RetrieveEOPSObligationsController = new RetrieveEOPSObligationsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockRequestParser,
+      validatorFactory = mockRetrieveEOPSObligationsValidatorFactory,
       service = mockService,
       auditService = mockAuditService,
       cc = cc,
@@ -181,5 +164,7 @@ class RetrieveEOPSObligationsControllerSpec
         toDate = Some(toDate),
         status = Some(status.toString)
       )(fakeRequest)
+
   }
+
 }
