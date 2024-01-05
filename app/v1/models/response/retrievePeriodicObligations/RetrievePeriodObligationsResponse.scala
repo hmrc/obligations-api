@@ -16,11 +16,10 @@
 
 package v1.models.response.retrievePeriodicObligations
 
-import api.models.domain.business.DesBusiness
-import api.models.domain.{ PeriodKey, ReferenceType }
-import play.api.libs.json.{ JsPath, Json, OWrites, Reads }
+import api.models.domain.{PeriodKey, ReferenceType}
+import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v1.models.response.common.des.DesObligation
-import v1.models.response.common.{ Obligation, ObligationDetail }
+import v1.models.response.common.{Obligation, ObligationDetail}
 
 case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
 
@@ -30,23 +29,24 @@ object RetrievePeriodObligationsResponse {
     (JsPath \ "obligations")
       .read[Seq[DesObligation]]
       .map( // go inside Reads
-        _.collect { // go inside Seq
-          case ob if (ob.incomeSourceType != DesBusiness.ITSA) && (ob.referenceType == ReferenceType.MTDBIS.toString) =>
-            Obligation(
-              ob.incomeSourceType.toMtd,
-              ob.referenceNumber,
-              ob.obligationDetails.collect {
-                case det if (det.periodKey != PeriodKey.EOPS.toString && det.periodKey != PeriodKey.ITSA.toString) =>
-                  ObligationDetail(
-                    det.inboundCorrespondenceFromDate,
-                    det.inboundCorrespondenceToDate,
-                    det.inboundCorrespondenceDueDate,
-                    det.inboundCorrespondenceDateReceived,
-                    det.status.toMtd
-                  )
-              }
-            )
-        })
+        _.map(ob => (ob.incomeSourceType.toMtd, ob))
+          .collect {
+            case (Some(mtdBusiness), ob) if ob.referenceType == ReferenceType.MTDBIS.toString =>
+              Obligation(
+                mtdBusiness,
+                ob.referenceNumber,
+                ob.obligationDetails.collect {
+                  case det if det.periodKey != PeriodKey.EOPS.toString && det.periodKey != PeriodKey.ITSA.toString =>
+                    ObligationDetail(
+                      det.inboundCorrespondenceFromDate,
+                      det.inboundCorrespondenceToDate,
+                      det.inboundCorrespondenceDueDate,
+                      det.inboundCorrespondenceDateReceived,
+                      det.status.toMtd
+                    )
+                }
+              )
+          })
       .map(RetrievePeriodObligationsResponse(_))
   }
 

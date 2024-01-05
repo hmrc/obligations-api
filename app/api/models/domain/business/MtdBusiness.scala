@@ -40,7 +40,4 @@ object MtdBusiness {
 
   implicit val format: Format[MtdBusiness] = Enums.format[MtdBusiness]
 
-  case object `do-not-use` extends MtdBusiness {
-    override def toDes: DesBusiness = DesBusiness.ITSA
-  }
 }

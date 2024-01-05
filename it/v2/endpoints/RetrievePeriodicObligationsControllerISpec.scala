@@ -538,7 +538,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-01", "2019-06-06", "Open", BAD_REQUEST, FromDateFormatError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06", "Open", BAD_REQUEST, ToDateFormatError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2019-06-06", "Closed", BAD_REQUEST, StatusFormatError),
-          ("AA123456A", "walrus", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", BAD_REQUEST, TypeOfBusinessFormatError),
+          ("AA123456A", "do-not-use", "XAIS12345678901", "2019-01-01", "2019-06-06", "Open", BAD_REQUEST, TypeOfBusinessFormatError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-06-06", "2019-01-01", "Open", BAD_REQUEST, ToDateBeforeFromDateError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2017-01-01", "2018-01-01", "Open", BAD_REQUEST, RuleFromDateNotSupportedError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2020-06-06", "Open", BAD_REQUEST, RuleDateRangeInvalidError)
