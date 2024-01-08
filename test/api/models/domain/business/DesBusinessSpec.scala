@@ -20,6 +20,7 @@ import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
 
 class DesBusinessSpec extends UnitSpec with EnumJsonSpecSupport {
+
   testRoundTrip[DesBusiness](
     ("ITSP", DesBusiness.ITSP),
     ("ITSB", DesBusiness.ITSB),
@@ -29,15 +30,14 @@ class DesBusinessSpec extends UnitSpec with EnumJsonSpecSupport {
 
   "toMtd" should {
     Seq(
-      (DesBusiness.ITSF, MtdBusiness.`foreign-property`),
-      (DesBusiness.ITSB, MtdBusiness.`self-employment`),
-      (DesBusiness.ITSP, MtdBusiness.`uk-property`),
-      (DesBusiness.ITSA, MtdBusiness.`do-not-use`)
-    ).foreach {
-      case (desBusiness, mtdBusiness) =>
-        s"convert $desBusiness to $mtdBusiness" in {
-          desBusiness.toMtd shouldBe mtdBusiness
-        }
+      (DesBusiness.ITSF, Some(MtdBusiness.`foreign-property`)),
+      (DesBusiness.ITSB, Some(MtdBusiness.`self-employment`)),
+      (DesBusiness.ITSP, Some(MtdBusiness.`uk-property`)),
+      (DesBusiness.ITSA, None)
+    ).foreach { case (desBusiness, mtdBusiness) =>
+      s"convert $desBusiness to $mtdBusiness" in {
+        desBusiness.toMtd shouldBe mtdBusiness
+      }
     }
   }
 

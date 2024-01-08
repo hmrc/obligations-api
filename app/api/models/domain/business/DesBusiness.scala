@@ -20,27 +20,35 @@ import play.api.libs.json.Format
 import utils.enums.Enums
 
 sealed trait DesBusiness {
-  def toMtd: MtdBusiness
+  def toMtd: Option[MtdBusiness]
 }
 
 object DesBusiness {
   val parser: PartialFunction[String, DesBusiness] = Enums.parser[DesBusiness]
+  implicit val format: Format[DesBusiness]         = Enums.format[DesBusiness]
 
   case object ITSB extends DesBusiness {
-    override def toMtd: MtdBusiness = MtdBusiness.`self-employment`
+
+    override def toMtd: Option[MtdBusiness] = Some(
+      MtdBusiness.`self-employment`
+    )
+
   }
 
   case object ITSP extends DesBusiness {
-    override def toMtd: MtdBusiness = MtdBusiness.`uk-property`
+    override def toMtd: Option[MtdBusiness] = Some(MtdBusiness.`uk-property`)
   }
 
   case object ITSF extends DesBusiness {
-    override def toMtd: MtdBusiness = MtdBusiness.`foreign-property`
-  }
 
-  implicit val format: Format[DesBusiness] = Enums.format[DesBusiness]
+    override def toMtd: Option[MtdBusiness] = Some(
+      MtdBusiness.`foreign-property`
+    )
+
+  }
 
   case object ITSA extends DesBusiness {
-    override def toMtd: MtdBusiness = MtdBusiness.`do-not-use`
+    override def toMtd: Option[MtdBusiness] = None
   }
+
 }
