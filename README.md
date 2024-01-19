@@ -9,15 +9,15 @@ The Obligations API allows software packages to:
 ## Requirements
 
 - Scala 2.13.x
-- Java 8
-- sbt > 1.6.x
-- [Service Manager](https://github.com/hmrc/service-manager)
+- Java 11
+- sbt > 1.9.x
+- [Service Manager 2](https://github.com/hmrc/sm2)
 
 ## Running the microservice
 
 Run from the console using: `sbt run` (starts on port 7793 by default)
 
-Start the service manager profile: `sm --start MTDFB_OBLIGATIONS`
+Start the service manager profile: `sm2 --start MTDFB_OBLIGATIONS`
 
 ## Run Tests
 
