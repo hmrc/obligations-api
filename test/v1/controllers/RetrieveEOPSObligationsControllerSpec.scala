@@ -29,7 +29,7 @@ import play.api.mvc.Result
 import v1.controllers.validators.MockRetrieveEOPSObligationsValidatorFactory
 import v1.mocks.services.MockRetrieveEOPSObligationsService
 import v1.models.request.retrieveEOPSObligations._
-import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.common.{BusinessObligation, ObligationDetail}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import java.time.LocalDate
@@ -60,7 +60,7 @@ class RetrieveEOPSObligationsControllerSpec
 
   private val responseBodyModel = RetrieveEOPSObligationsResponse(
     obligations = Seq(
-      Obligation(
+      BusinessObligation(
         typeOfBusiness = MtdBusiness.`self-employment`,
         businessId = businessId,
         obligationDetails = Seq(

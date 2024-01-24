@@ -16,39 +16,12 @@
 
 package v1.models.response.retrievePeriodicObligations
 
-import api.models.domain.{PeriodKey, ReferenceType}
-import play.api.libs.json.{JsPath, Json, OWrites, Reads}
-import v1.models.response.common.des.DesObligation
-import v1.models.response.common.{Obligation, ObligationDetail}
+import play.api.libs.json.{Json, OWrites}
+import v1.models.response.common.BusinessObligation
 
-case class RetrievePeriodObligationsResponse(obligations: Seq[Obligation])
+case class RetrievePeriodObligationsResponse(obligations: Seq[BusinessObligation])
 
 object RetrievePeriodObligationsResponse {
-
-  implicit val reads: Reads[RetrievePeriodObligationsResponse] = {
-    (JsPath \ "obligations")
-      .read[Seq[DesObligation]]
-      .map( // go inside Reads
-        _.map(ob => (ob.incomeSourceType.toMtd, ob))
-          .collect {
-            case (Some(mtdBusiness), ob) if ob.referenceType == ReferenceType.MTDBIS.toString =>
-              Obligation(
-                mtdBusiness,
-                ob.referenceNumber,
-                ob.obligationDetails.collect {
-                  case det if det.periodKey != PeriodKey.EOPS.toString && det.periodKey != PeriodKey.ITSA.toString =>
-                    ObligationDetail(
-                      det.inboundCorrespondenceFromDate,
-                      det.inboundCorrespondenceToDate,
-                      det.inboundCorrespondenceDueDate,
-                      det.inboundCorrespondenceDateReceived,
-                      det.status.toMtd
-                    )
-                }
-              )
-          })
-      .map(RetrievePeriodObligationsResponse(_))
-  }
 
   implicit val writes: OWrites[RetrievePeriodObligationsResponse] = Json.writes[RetrievePeriodObligationsResponse]
 }

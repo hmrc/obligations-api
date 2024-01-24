@@ -36,7 +36,7 @@ object ResolveOptionalDateRange extends ResolverSupport {
       (
         fromDateResolver(fromString),
         toDateResolver(toString)
-      ).mapN(DateRange).map(Some(_))
+      ).mapN(DateRange(_, _)).map(Some(_))
 
     case (None, None)    => Valid(None)
     case (None, Some(_)) => Invalid(List(MissingFromDateError))

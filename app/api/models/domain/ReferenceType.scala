@@ -16,15 +16,6 @@
 
 package api.models.domain
 
-import play.api.libs.json.Format
-import utils.enums.Enums
-
-sealed trait ReferenceType
-
 object ReferenceType {
-  val parser: PartialFunction[String, ReferenceType] = Enums.parser[ReferenceType]
-
-  implicit val format: Format[ReferenceType] = Enums.format[ReferenceType]
-
-  case object MTDBIS extends ReferenceType
+  val MTDBIS = "MTDBIS"
 }

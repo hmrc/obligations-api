@@ -17,7 +17,25 @@
 package v1.services
 
 import api.controllers.RequestContextImplicits
+import api.models.domain.BusinessId
+import api.models.domain.business.MtdBusiness
 import utils.Logging
+import v1.models.response.common.BusinessObligation
+import v1.models.response.downstream.{DownstreamObligationDetail, DownstreamObligations}
 import v1.support.DownstreamResponseMappingSupport
 
-trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging
+trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging {
+
+  protected def toMtdBusinessObligations(downstreamObligations: DownstreamObligations, typeOfBusiness: Option[MtdBusiness], businessId: Option[BusinessId])(
+      detailsPredicate: DownstreamObligationDetail => Boolean): Seq[BusinessObligation] = {
+
+    def matchesBusiness(obligation: BusinessObligation): Boolean =
+      typeOfBusiness.forall(_ == obligation.typeOfBusiness) && businessId.forall(_.value == obligation.businessId)
+
+    for {
+      dsOb  <- downstreamObligations.obligations.map(_.filterObligationDetails(detailsPredicate))
+      mtdOb <- BusinessObligation.fromDownstream(dsOb) if matchesBusiness(mtdOb) && mtdOb.obligationDetails.nonEmpty
+    } yield mtdOb
+  }
+
+}

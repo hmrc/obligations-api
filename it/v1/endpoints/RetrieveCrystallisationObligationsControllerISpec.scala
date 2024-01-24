@@ -119,7 +119,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             |    "obligations": [
             |        {
             |            "identification": {
-            |                "incomeSourceType": "SOMETHING ELSE",
+            |                "incomeSourceType": "ITSF",
             |                "referenceNumber": "AB123456A",
             |                "referenceType": "NINO"
             |            },
@@ -337,7 +337,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                 |    "obligations": [
                 |        {
                 |            "identification": {
-                |                "incomeSourceType": "EOPS",
+                |                "incomeSourceType": "ITSF",
                 |                "referenceNumber": "AB123456A",
                 |                "referenceType": "NINO"
                 |            },

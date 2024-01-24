@@ -17,51 +17,188 @@
 package v2.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.{Nino, TaxYearRange}
+import api.models.domain.business.DesBusiness
 import api.models.domain.status.MtdStatus.Fulfilled
+import api.models.domain.{DateRange, Nino, TaxYear, TaxYearRange}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
 import uk.gov.hmrc.http.HeaderCarrier
-import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{desObligationModel, mtdObligationModel}
-import v2.mocks.connectors.MockRetrieveCrystallisationObligationsConnector
+import v2.connectors.MockRetrieveObligationsConnector
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
+import v2.models.response.common.ObligationsFixture
+import v2.models.response.downstream.{DownstreamObligations, DownstreamObligationsFixture}
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.Future
 
-class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
+class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with DownstreamObligationsFixture with ObligationsFixture {
 
-  val downstreamResponseModel: DesRetrieveCrystallisationObligationsResponse = DesRetrieveCrystallisationObligationsResponse(
-    Seq(desObligationModel()))
-
-  val mtdResponseModel: RetrieveCrystallisationObligationsResponse =
-    RetrieveCrystallisationObligationsResponse(Seq(mtdObligationModel()))
   private val nino   = "AA123456A"
   private val status = Fulfilled
-  private val requestData =
-    RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2018-19"), Some(status))
 
-  trait Test extends MockRetrieveCrystallisationObligationsConnector {
+  private val requestData =
+    RetrieveCrystallisationObligationsRequest(
+      Nino(nino),
+      TaxYearRange(from = TaxYear.fromMtd("2018-19"), to = TaxYear.fromMtd("2020-21")),
+      Some(status))
+
+  private val taxYearRangeDateRange = DateRange.parse("2018-04-06", "2021-04-05")
+
+  trait Test extends MockRetrieveObligationsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new RetrieveCrystallisationObligationsService(
-      connector = mockRetrieveCrystallisationObligationsConnector
+      connector = mockRetrieveObligationsConnector
     )
+
   }
 
-  "service" should {
-    "return a successful response" when {
-      "a successful response is pased through" in new Test {
+  "service" when {
+    "connector call is successful" when {
+      "a single obligation is returned from downstream" must {
+        "return the obligation" in new Test {
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA))),
+                obligationDetails = Seq(downstreamObligationDetail())
+              )
+            ))
 
-        MockRetrieveCrystallisationObligationsConnector
-          .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResponseModel))))
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
 
-        val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
-        result shouldBe Right(ResponseWrapper(correlationId, mtdResponseModel))
+          private val result = RetrieveCrystallisationObligationsResponse(
+            Seq(
+              obligationDetail()
+            ))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      "some obligations are not ITSA" must {
+        "remove them" in new Test {
+          // To label obligation details so we can tell them apart...
+          val itsaDate    = "2001-01-01"
+          val nonItsaDate = "2002-02-02"
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification()),
+                obligationDetails = Seq(downstreamObligationDetail(inboundCorrespondenceFromDate = nonItsaDate))
+              ),
+              downstreamObligation(
+                identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA))),
+                obligationDetails = Seq(downstreamObligationDetail(inboundCorrespondenceFromDate = itsaDate))
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
+
+          private val result = RetrieveCrystallisationObligationsResponse(
+            Seq(
+              obligationDetail(periodStartDate = itsaDate)
+            ))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      "multiple obligation details are present within a single ITSA obligation" must {
+        "combine them" in new Test {
+          val date1 = "2001-01-01"
+          val date2 = "2002-02-02"
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA))),
+                obligationDetails = Seq(
+                  downstreamObligationDetail(inboundCorrespondenceFromDate = date1),
+                  downstreamObligationDetail(inboundCorrespondenceFromDate = date2))
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
+
+          private val result = RetrieveCrystallisationObligationsResponse(
+            Seq(
+              obligationDetail(periodStartDate = date1),
+              obligationDetail(periodStartDate = date2)
+            ))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      "obligation details are present within a multiple ITSA obligations" must {
+        "combine them" in new Test {
+          val date1 = "2001-01-01"
+          val date2 = "2002-02-02"
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA))),
+                obligationDetails = Seq(downstreamObligationDetail(inboundCorrespondenceFromDate = date1))
+              ),
+              downstreamObligation(
+                identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA))),
+                obligationDetails = Seq(downstreamObligationDetail(inboundCorrespondenceFromDate = date2))
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
+
+          private val result = RetrieveCrystallisationObligationsResponse(
+            Seq(
+              obligationDetail(periodStartDate = date1),
+              obligationDetail(periodStartDate = date2)
+            ))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      "no ITSA obligation details are present" must {
+        "return a NoObligationsFoundError" in new Test {
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification()),
+                obligationDetails = Seq(downstreamObligationDetail())
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
+        }
+      }
+
+      "no obligations at all are present" must {
+        "return a NoObligationsFoundError" in new Test {
+          private val downstreamResult = DownstreamObligations(Nil)
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(Nino(nino), dateRange = Some(taxYearRangeDateRange), status = Some(status))
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResult))))
+
+          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
+        }
       }
     }
 
@@ -71,8 +208,8 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
         def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
           s"a $downstreamErrorCode error is returned from the service" in new Test {
 
-            MockRetrieveCrystallisationObligationsConnector
-              .retrieve(requestData)
+            MockRetrieveObligationsConnector
+              .retrieveObligations(Nino(nino), Some(taxYearRangeDateRange), Some(status))
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
             val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
@@ -96,17 +233,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec {
 
         input.foreach(args => (serviceError _).tupled(args))
       }
-
-      "error when the connector returns an empty obligations list (JSON Reads filter out other obligations)" in new Test {
-        val responseModel: DesRetrieveCrystallisationObligationsResponse = DesRetrieveCrystallisationObligationsResponse(Seq())
-
-        MockRetrieveCrystallisationObligationsConnector
-          .retrieve(requestData)
-          .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
-
-        val result: ServiceOutcome[RetrieveCrystallisationObligationsResponse] = await(service.retrieve(requestData))
-        result shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
-      }
     }
   }
+
 }

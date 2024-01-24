@@ -29,7 +29,7 @@ import play.api.mvc.Result
 import v1.controllers.validators.MockRetrievePeriodicObligationsValidatorFactory
 import v1.mocks.services.MockRetrievePeriodicObligationsService
 import v1.models.request.retrievePeriodObligations.RetrievePeriodicObligationsRequest
-import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.common.{BusinessObligation, ObligationDetail}
 import v1.models.response.retrievePeriodicObligations.RetrievePeriodObligationsResponse
 
 import java.time.LocalDate
@@ -60,7 +60,7 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val response = RetrievePeriodObligationsResponse(
     Seq(
-      Obligation(MtdBusiness.`self-employment`,
+      BusinessObligation(MtdBusiness.`self-employment`,
                  businessId,
                  Seq(
                    ObligationDetail(

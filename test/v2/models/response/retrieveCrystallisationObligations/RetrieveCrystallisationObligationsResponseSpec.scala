@@ -17,16 +17,54 @@
 package v2.models.response.retrieveCrystallisationObligations
 
 import api.models.domain.status.MtdStatus
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
-import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ mtdObligationJson, mtdObligationJsonNoReceivedDate, mtdObligationModel }
+import v2.models.response.common.{ObligationDetail, ObligationsFixture}
 
-class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
+class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec with ObligationsFixture {
+
+  private def mtdObligationModel(status: MtdStatus = MtdStatus.Fulfilled, receivedDate: Option[String] = Some("2020-01-25")): ObligationDetail =
+    ObligationDetail(
+      periodStartDate = "2018-04-06",
+      periodEndDate = "2019-04-05",
+      dueDate = "1920-01-31",
+      status = status,
+      receivedDate = receivedDate
+    )
+
+  val mtdObligationJsonNoReceivedDate: JsValue =
+    Json.parse(s"""
+                  |{
+                  |    "periodStartDate": "2018-04-06",
+                  |    "periodEndDate": "2019-04-05",
+                  |    "dueDate": "1920-01-31",
+                  |    "status": "Fulfilled"
+                  |}
+                  |""".stripMargin)
+
+  def mtdObligationJson(status: String = "Fulfilled"): JsValue =
+    Json.parse(s"""
+                  |{
+                  |    "periodStartDate": "2018-04-06",
+                  |    "periodEndDate": "2019-04-05",
+                  |    "dueDate": "1920-01-31",
+                  |    "status": "$status",
+                  |    "receivedDate": "2020-01-25"
+                  |}
+                  |""".stripMargin)
 
   "writes" should {
     "write to JSON" when {
       "passed a response with multiple obligations" in {
-        val json = Json.parse(s"""
+        val model = RetrieveCrystallisationObligationsResponse(
+          List(
+            mtdObligationModel(status = MtdStatus.Fulfilled),
+            mtdObligationModel(status = MtdStatus.Open),
+            mtdObligationModel(receivedDate = None)
+          ))
+
+        Json.toJson(model) shouldBe Json.parse(
+          s"""
              |{
              |    "obligations": [
              |        ${mtdObligationJson("Fulfilled")},
@@ -35,16 +73,8 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
              |    ]
              |}
              |""".stripMargin)
-
-        val model = RetrieveCrystallisationObligationsResponse(
-          List(
-            mtdObligationModel(status = MtdStatus.Fulfilled),
-            mtdObligationModel(status = MtdStatus.Open),
-            mtdObligationModel(receivedDate = None),
-          ))
-
-        Json.toJson(model) shouldBe json
       }
     }
   }
+
 }

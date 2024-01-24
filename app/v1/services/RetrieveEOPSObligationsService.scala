@@ -17,19 +17,23 @@
 package v1.services
 
 import api.controllers.RequestContext
+import api.models.domain.{BusinessId, PeriodKey}
+import api.models.domain.business.MtdBusiness
 import api.models.errors._
+import api.models.outcomes.ResponseWrapper
 import api.services.ServiceOutcome
 import cats.data.EitherT
 import cats.implicits._
-import v1.connectors.RetrieveEOPSObligationsConnector
+import v1.connectors.RetrieveObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
+import v1.models.response.downstream.DownstreamObligations
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject() (connector: RetrieveEOPSObligationsConnector) extends BaseService {
+class RetrieveEOPSObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
@@ -52,13 +56,21 @@ class RetrieveEOPSObligationsService @Inject() (connector: RetrieveEOPSObligatio
       ec: ExecutionContext): Future[ServiceOutcome[RetrieveEOPSObligationsResponse]] = {
 
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveEOPSObligations(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](
-        filterEOPSValues(downstreamResponseWrapper, request.typeOfBusiness, request.businessId.map(_.toString)))
+      downstreamResponseWrapper <- EitherT(connector.retrieveObligations(request.nino, request.dateRange, request.status))
+        .leftMap(mapDownstreamErrors(downstreamErrorMap))
+      mtdResponseWrapper <- EitherT.fromEither[Future](extractMtdResponse(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
     } yield mtdResponseWrapper
 
     result.value
 
   }
+
+  private def extractMtdResponse(responseWrapper: ResponseWrapper[DownstreamObligations],
+                                 typeOfBusiness: Option[MtdBusiness],
+                                 businessId: Option[BusinessId]) =
+    toMtdBusinessObligations(responseWrapper.responseData, typeOfBusiness, businessId)(_.periodKey == PeriodKey.EOPS) match {
+      case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
+      case obs => Right(ResponseWrapper(responseWrapper.correlationId, RetrieveEOPSObligationsResponse(obs)))
+    }
 
 }

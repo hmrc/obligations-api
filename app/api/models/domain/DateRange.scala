@@ -23,3 +23,7 @@ case class DateRange(startDate: LocalDate, endDate: LocalDate) {
   val startDateAsIso: String = startDate.format(DateTimeFormatter.ISO_DATE)
   val endDateAsIso: String   = endDate.format(DateTimeFormatter.ISO_DATE)
 }
+
+object DateRange {
+  def parse(from: String, to: String): DateRange = DateRange(LocalDate.parse(from), LocalDate.parse(to))
+}

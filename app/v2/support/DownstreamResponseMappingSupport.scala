@@ -20,20 +20,9 @@ import api.controllers.EndpointLogContext
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import utils.Logging
-import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 trait DownstreamResponseMappingSupport {
   self: Logging =>
-
-  final def filterCrystallisationValues(
-      responseWrapper: ResponseWrapper[DesRetrieveCrystallisationObligationsResponse]
-  ): Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]] = {
-    responseWrapper.responseData.obligationDetails.toList match {
-      case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
-      case _   => Right(ResponseWrapper(responseWrapper.correlationId, responseWrapper.responseData.toMtd))
-    }
-  }
 
   final def mapDownstreamErrors[A](errorCodeMap: PartialFunction[String, MtdError])(downstreamResponseWrapper: ResponseWrapper[DownstreamError])(
       implicit logContext: EndpointLogContext): ErrorWrapper = {
