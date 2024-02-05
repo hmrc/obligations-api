@@ -26,7 +26,7 @@ case class BusinessObligation(typeOfBusiness: MtdBusiness, businessId: String, o
 object BusinessObligation {
   implicit val writes: OWrites[BusinessObligation] = Json.writes[BusinessObligation]
 
-  /** Note: this returns an [[Option]] because:
+  /** Note: this returns an Option because:
     *   - it requires a DownstreamObligation with an identification which
     *     - must have a referenceType of MTDBIS
     *   - it must have an incomeSourceType
