@@ -23,7 +23,7 @@ case class ITSAObligation(obligationDetails: Seq[ObligationDetail])
 
 object ITSAObligation {
 
-  /** Note: this returns an [[Option]] because:
+  /** Note: this returns an Option because:
     *   - it requires a DownstreamObligation with an identification which
     *   - must have an incomeSourceType with a value ITSA.
     */
