@@ -16,6 +16,6 @@
 
 package api.models.domain
 
-case class BusinessId(businessId: String) {
-  override def toString: String = businessId
+case class BusinessId(value: String) {
+  override def toString: String = value
 }

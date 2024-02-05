@@ -17,19 +17,23 @@
 package v2.services
 
 import api.controllers.RequestContext
+import api.models.domain.DateRange
 import api.models.errors._
+import api.models.outcomes.ResponseWrapper
 import api.services.ServiceOutcome
 import cats.data.EitherT
 import cats.implicits._
-import v2.connectors.RetrieveCrystallisationObligationsConnector
+import v2.connectors.RetrieveObligationsConnector
 import v2.models.request.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsRequest
+import v2.models.response.common.ITSAObligation
+import v2.models.response.downstream.DownstreamObligations
 import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCrystallisationObligationsConnector) extends BaseService {
+class RetrieveCrystallisationObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
   private val errorMap: Map[String, MtdError] =
     Map(
@@ -47,16 +51,39 @@ class RetrieveCrystallisationObligationsService @Inject()(connector: RetrieveCry
       "SERVICE_UNAVAILABLE" -> InternalError
     )
 
-  def retrieve(request: RetrieveCrystallisationObligationsRequest)(
-      implicit ctx: RequestContext,
+  def retrieve(request: RetrieveCrystallisationObligationsRequest)(implicit
+      ctx: RequestContext,
       ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
 
+    val taxYearRange = request.obligationsTaxYear
+    val dateRange    = DateRange(taxYearRange.from.startDate, taxYearRange.to.endDate)
+
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieveCrystallisationObligations(request)).leftMap(mapDownstreamErrors(errorMap))
-      mtdResponseWrapper        <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
+      downstreamResponseWrapper <- EitherT(connector.retrieveObligations(request.nino, Some(dateRange), request.status))
+        .leftMap(mapDownstreamErrors(errorMap))
+      mtdResponseWrapper <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 
     result.value
+  }
+
+  private def filterCrystallisationValues(
+      responseWrapper: ResponseWrapper[DownstreamObligations]
+  ): Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]] = {
+
+    val downstreamObligations = responseWrapper.responseData.obligations
+
+    val obDetails = for {
+      dsOb     <- downstreamObligations
+      mtdOb    <- ITSAObligation.fromDownstream(dsOb).toSeq
+      obDetail <- mtdOb.obligationDetails
+    } yield obDetail
+
+    obDetails match {
+      case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
+      case obs => Right(ResponseWrapper(responseWrapper.correlationId, RetrieveCrystallisationObligationsResponse(obs)))
+    }
 
   }
+
 }

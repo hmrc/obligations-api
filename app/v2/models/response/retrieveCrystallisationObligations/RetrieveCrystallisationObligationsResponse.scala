@@ -16,10 +16,11 @@
 
 package v2.models.response.retrieveCrystallisationObligations
 
-import play.api.libs.json.{ Json, OWrites }
+import play.api.libs.json.{Json, OWrites}
+import v2.models.response.common.ObligationDetail
 
 case class RetrieveCrystallisationObligationsResponse(
-    obligations: Seq[Obligation]
+    obligations: Seq[ObligationDetail]
 )
 
 object RetrieveCrystallisationObligationsResponse {

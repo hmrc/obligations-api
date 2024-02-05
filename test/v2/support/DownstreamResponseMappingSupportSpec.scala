@@ -17,15 +17,11 @@
 package v2.support
 
 import api.controllers.EndpointLogContext
-import api.models.domain.status.{ DesStatus, MtdStatus }
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.BAD_REQUEST
 import support.UnitSpec
 import utils.Logging
-import v2.fixtures.RetrieveCrystallisationObligationsFixtures.{ desObligationModel, mtdObligationModel }
-import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
-import v2.models.response.retrieveCrystallisationObligations.des.DesRetrieveCrystallisationObligationsResponse
 
 class DownstreamResponseMappingSupportSpec extends UnitSpec {
 
@@ -114,42 +110,4 @@ class DownstreamResponseMappingSupportSpec extends UnitSpec {
       }
     }
   }
-
-  "filterCrystallisationValues" when {
-    "passed a valid DES response" should {
-      "return an MTD response with the obligation" in {
-        val desResponse = DesRetrieveCrystallisationObligationsResponse(Seq(desObligationModel()))
-        val mtdResponse = RetrieveCrystallisationObligationsResponse(Seq(mtdObligationModel()))
-
-        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desResponse)) shouldBe Right(ResponseWrapper(correlationId, mtdResponse))
-      }
-    }
-
-    "passed a DES model with nothing in the array" should {
-      "return a NO_OBLIGATIONS_FOUND error" in {
-        val desResponse = DesRetrieveCrystallisationObligationsResponse(Seq())
-        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desResponse)) shouldBe Left(
-          ErrorWrapper(correlationId, NoObligationsFoundError))
-      }
-    }
-
-    "passed a DES response with more than one obligation in the array" should {
-      "return an MTD response with all obligations" in {
-        val desResponse = DesRetrieveCrystallisationObligationsResponse(
-          Seq(
-            desObligationModel(status = DesStatus.F),
-            desObligationModel(status = DesStatus.O),
-          ))
-
-        val mtdResponse = RetrieveCrystallisationObligationsResponse(
-          Seq(
-            mtdObligationModel(status = MtdStatus.Fulfilled),
-            mtdObligationModel(status = MtdStatus.Open),
-          ))
-
-        mapping.filterCrystallisationValues(ResponseWrapper(correlationId, desResponse)) shouldBe Right(ResponseWrapper(correlationId, mtdResponse))
-      }
-    }
-  }
-
 }

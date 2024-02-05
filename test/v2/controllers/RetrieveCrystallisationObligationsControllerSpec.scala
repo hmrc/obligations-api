@@ -28,7 +28,8 @@ import play.api.mvc.Result
 import v2.controllers.validators.MockRetrieveCrystallisationObligationsValidatorFactory
 import v2.mocks.services._
 import v2.models.request.retrieveCrystallisationObligations._
-import v2.models.response.retrieveCrystallisationObligations.{Obligation, RetrieveCrystallisationObligationsResponse}
+import v2.models.response.common.ObligationDetail
+import v2.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -47,7 +48,13 @@ class RetrieveCrystallisationObligationsControllerSpec
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
 
   private val responseBodyModel: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
-    obligations = List(Obligation("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25")))
+    obligations = List(
+      ObligationDetail(
+        periodStartDate = "2018-04-06",
+        periodEndDate = "2019-04-05",
+        dueDate = "2020-01-31",
+        status = MtdStatus.Fulfilled,
+        receivedDate = Some("2020-01-25")))
   )
 
   private val responseJson: JsValue = Json.parse("""
@@ -130,4 +137,5 @@ class RetrieveCrystallisationObligationsControllerSpec
     protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear), maybeStatusParam)(fakeGetRequest)
 
   }
+
 }

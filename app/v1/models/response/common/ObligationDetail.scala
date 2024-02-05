@@ -17,10 +17,29 @@
 package v1.models.response.common
 
 import api.models.domain.status.MtdStatus
-import play.api.libs.json.{ Json, OWrites }
+import play.api.libs.json.{Json, OWrites}
+import v1.models.response.downstream.DownstreamObligationDetail
 
-case class ObligationDetail(periodStartDate: String, periodEndDate: String, dueDate: String, receivedDate: Option[String], status: MtdStatus)
+case class ObligationDetail(
+    periodStartDate: String,
+    periodEndDate: String,
+    dueDate: String,
+    receivedDate: Option[String],
+    status: MtdStatus
+)
 
 object ObligationDetail {
   implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
+
+  def fromDownstream(downstreamObligationDetail: DownstreamObligationDetail): ObligationDetail = {
+    import downstreamObligationDetail._
+    ObligationDetail(
+      periodStartDate = inboundCorrespondenceFromDate,
+      periodEndDate = inboundCorrespondenceToDate,
+      dueDate = inboundCorrespondenceDueDate,
+      receivedDate = inboundCorrespondenceDateReceived,
+      status = status.toMtd
+    )
+  }
+
 }

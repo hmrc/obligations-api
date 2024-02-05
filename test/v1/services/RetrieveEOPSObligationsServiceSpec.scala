@@ -17,42 +17,34 @@
 package v1.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.{BusinessId, DateRange, Nino}
-import api.models.domain.business.MtdBusiness
+import api.models.domain.business.{DesBusiness, MtdBusiness}
 import api.models.domain.status.MtdStatus
+import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.mocks.connectors.MockRetrieveEOPSObligationsConnector
+import v1.connectors.MockRetrieveObligationsConnector
 import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
-import v1.models.response.common.{Obligation, ObligationDetail}
+import v1.models.response.common.ObligationsFixture
+import v1.models.response.downstream.{DownstreamObligationDetail, DownstreamObligations, DownstreamObligationsFixture}
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
+class RetrieveEOPSObligationsServiceSpec extends ServiceSpec with DownstreamObligationsFixture with ObligationsFixture {
 
-  private val nino           = "AA123456A"
-  private val typeOfBusiness = MtdBusiness.`self-employment`
-  private val businessId     = "XAIS123456789012"
-  private val fromDate       = "2018-04-06"
-  private val toDate         = "2019-04-05"
-  private val status         = MtdStatus.Open
-
-  private val fullResponseModel = RetrieveEOPSObligationsResponse(
-    Seq(
-      Obligation(MtdBusiness.`self-employment`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-      Obligation(MtdBusiness.`foreign-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-      Obligation(MtdBusiness.`uk-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
-    ))
+  private val nino     = "AA123456A"
+  private val fromDate = "2018-04-06"
+  private val toDate   = "2019-04-05"
+  private val status   = MtdStatus.Open
 
   private def request(nino: Nino,
-                      typeOfBusiness: Option[MtdBusiness],
-                      businessId: Option[String],
-                      dateRange: Option[(String, String)],
-                      status: Option[MtdStatus]) =
+                      typeOfBusiness: Option[MtdBusiness] = None,
+                      businessId: Option[String] = None,
+                      dateRange: Option[(String, String)] = None,
+                      status: Option[MtdStatus] = None) =
     RetrieveEOPSObligationsRequest(
       nino = nino,
       typeOfBusiness = typeOfBusiness,
@@ -61,131 +53,250 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec {
       status = status
     )
 
-  trait Test extends MockRetrieveEOPSObligationsConnector {
+  trait Test extends MockRetrieveObligationsConnector {
     implicit val hc: HeaderCarrier              = HeaderCarrier()
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service = new RetrieveEOPSObligationsService(
-      connector = mockRetrieveEOPSObligationsConnector
+      connector = mockRetrieveObligationsConnector
     )
+
+    def eopsDownstreamObligationDetail(inboundCorrespondenceFromDate: String = Defaults.fromDate): DownstreamObligationDetail =
+      downstreamObligationDetail(periodKey = "EOPS", inboundCorrespondenceFromDate = inboundCorrespondenceFromDate)
 
   }
 
   "service" when {
-    "connector call is successful" must {
-      "return mapped result with nothing filtered out" when {
-        "no typeOfBusiness or businessId are provided" in new Test {
-          private val requestData = request(Nino(nino), None, None, Some((fromDate, toDate)), Some(status))
+    "connector call is successful" when {
 
-          MockRetrieveEOPSObligationsConnector
-            .doConnectorThing(requestData)
-            .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
+      "only the date range and status are provided" must {
+        "pass these to the connector and return mapped result with nothing filtered out" in new Test {
+          val date1 = "2001-01-01"
+          val date2 = "2002-02-02"
 
-          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, fullResponseModel))
+          private val requestData = request(Nino(nino), dateRange = Some((fromDate, toDate)), status = Some(status))
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification()),
+                obligationDetails = Seq(
+                  eopsDownstreamObligationDetail(inboundCorrespondenceFromDate = date1),
+                  eopsDownstreamObligationDetail(inboundCorrespondenceFromDate = date2)
+                )
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, Some(DateRange.parse(fromDate, toDate)), Some(status)) returns
+            Future.successful(Right(ResponseWrapper(correlationId, downstreamResult)))
+
+          private val result = RetrieveEOPSObligationsResponse(
+            Seq(
+              obligation(obligationDetails = Seq(
+                obligationDetail(periodStartDate = date1),
+                obligationDetail(periodStartDate = date2)
+              ))
+            ))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
         }
       }
 
-      val businesses = Seq(MtdBusiness.`self-employment`, MtdBusiness.`foreign-property`, MtdBusiness.`uk-property`)
+      "some obligations are non-EOPs" must {
+        "remove them" in new Test {
 
-      businesses.foreach { business =>
-        s"return mapped result with only $business in it" when {
-          s"typeOfBusiness [$business] is provided " in new Test {
-            private val requestData = request(Nino(nino), Some(business), None, Some((fromDate, toDate)), Some(status))
+          // To label obligation details so we can tell them apart...
+          val eopsDate    = "2001-01-01"
+          val nonEopsDate = "2002-02-02"
 
-            private val filteredResponseModel = RetrieveEOPSObligationsResponse(
-              Seq(
-                Obligation(business, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
+          private val requestData = request(Nino(nino))
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification()),
+                obligationDetails = Seq(
+                  eopsDownstreamObligationDetail(inboundCorrespondenceFromDate = eopsDate),
+                  downstreamObligationDetail(inboundCorrespondenceFromDate = nonEopsDate)
+                )
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None) returns
+            Future.successful(Right(ResponseWrapper(correlationId, downstreamResult)))
+
+          private val result = RetrieveEOPSObligationsResponse(
+            Seq(
+              obligation(obligationDetails = Seq(
+                obligationDetail(periodStartDate = eopsDate)
               ))
+            ))
 
-            MockRetrieveEOPSObligationsConnector
-              .doConnectorThing(requestData)
-              .returns(Future.successful(Right(ResponseWrapper(correlationId, fullResponseModel))))
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
 
-            await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
+      "some obligations are not MTDBIS" must {
+        "remove them" in new Test {
+          private val requestData = request(Nino(nino))
+
+          private val downstreamResult = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "businessId1", referenceType = "MTDBIS")),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              ),
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "businessId2", referenceType = "OTHER")),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None) returns
+            Future.successful(Right(ResponseWrapper(correlationId, downstreamResult)))
+
+          private val result = RetrieveEOPSObligationsResponse(Seq(obligation(businessId = "businessId1", obligationDetails = Seq(obligationDetail()))))
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      Seq(MtdBusiness.`self-employment`, MtdBusiness.`foreign-property`, MtdBusiness.`uk-property`)
+        .foreach { businessType =>
+          s"typeOfBusiness $businessType is provided" must {
+            s"return mapped result with only $businessType in it" in new Test {
+              private val requestData = request(Nino(nino), typeOfBusiness = Some(businessType))
+
+              private val downstreamResultAllBusinessTypes = DownstreamObligations(
+                Seq(
+                  downstreamObligation(
+                    identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSB))),
+                    obligationDetails = Seq(eopsDownstreamObligationDetail())
+                  ),
+                  downstreamObligation(
+                    identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSP))),
+                    obligationDetails = Seq(eopsDownstreamObligationDetail())
+                  ),
+                  downstreamObligation(
+                    identification = Some(downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSF))),
+                    obligationDetails = Seq(eopsDownstreamObligationDetail())
+                  )
+                ))
+
+              MockRetrieveObligationsConnector
+                .retrieveObligations(requestData.nino, None, None)
+                .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResultAllBusinessTypes))))
+
+              private val result = RetrieveEOPSObligationsResponse(
+                Seq(obligation(typeOfBusiness = businessType, obligationDetails = Seq(obligationDetail())))
+              )
+
+              await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+            }
           }
         }
-      }
 
-      "filter out data with a different businessId" when {
-        "businessId is provided and not all of the response objects have that id" in new Test {
-          private val requestData = request(Nino(nino), None, Some(businessId), Some((fromDate, toDate)), Some(status))
+      "businessId is provided and not all of the response objects have that id" must {
+        "filter out data with a different businessId" in new Test {
+          private val businessId  = "someBusinessId"
+          private val requestData = request(Nino(nino), businessId = Some(businessId))
 
-          private val responseModel = RetrieveEOPSObligationsResponse(
+          private val downstreamResultMultipleBusinessIds = DownstreamObligations(
             Seq(
-              Obligation(MtdBusiness.`self-employment`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-              Obligation(MtdBusiness.`foreign-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-              Obligation(MtdBusiness.`uk-property`, "beans", Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = businessId)),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              ),
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "otherBusinessId")),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              )
             ))
 
-          private val filteredResponseModel = RetrieveEOPSObligationsResponse(
-            Seq(
-              Obligation(MtdBusiness.`self-employment`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open))),
-              Obligation(MtdBusiness.`foreign-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
-            ))
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResultMultipleBusinessIds))))
 
-          MockRetrieveEOPSObligationsConnector
-            .doConnectorThing(requestData)
-            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+          private val result = RetrieveEOPSObligationsResponse(
+            Seq(obligation(businessId = businessId, obligationDetails = Seq(obligationDetail())))
+          )
 
-          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, filteredResponseModel))
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
         }
       }
 
-      "return 404" when {
-        "typeOfBusiness filter is applied and there are no response objects with that typeOfBusiness" in new Test {
-          private val requestData =
-            request(Nino(nino), Some(MtdBusiness.`foreign-property`), Some(businessId), Some((fromDate, toDate)), Some(status))
+      "obligation details are empty for an obligation" must {
+        "remove that obligation" in new Test {
+          private val requestData = request(Nino(nino))
 
-          private val responseModel = RetrieveEOPSObligationsResponse(
+          private val downstreamResultMultipleBusinessIds = DownstreamObligations(
             Seq(
-              Obligation(MtdBusiness.`uk-property`, businessId, Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "businessId")),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              ),
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "businessId_NoDetails")),
+                obligationDetails = Nil
+              )
             ))
 
-          MockRetrieveEOPSObligationsConnector
-            .doConnectorThing(requestData)
-            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResultMultipleBusinessIds))))
+
+          private val result = RetrieveEOPSObligationsResponse(
+            Seq(obligation(businessId = "businessId", obligationDetails = Seq(obligationDetail())))
+          )
+
+          await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
+        }
+      }
+
+      "filtering removes all obligations" must {
+        "return NoObligationsFoundError" in new Test {
+          private val requestData = request(Nino(nino), businessId = Some("businessId"))
+
+          private val downstreamResultMultipleBusinessIds = DownstreamObligations(
+            Seq(
+              downstreamObligation(
+                identification = Some(downstreamIdentification(referenceNumber = "otherBusinessId")),
+                obligationDetails = Seq(eopsDownstreamObligationDetail())
+              )
+            ))
+
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, downstreamResultMultipleBusinessIds))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
-        "businessId filter is applied and there are no response objects with that businessId" in new Test {
-          private val requestData =
-            request(Nino(nino), Some(MtdBusiness.`foreign-property`), Some(businessId), Some((fromDate, toDate)), Some(status))
+      }
 
-          private val responseModel = RetrieveEOPSObligationsResponse(
-            Seq(
-              Obligation(MtdBusiness.`foreign-property`, "beans", Seq(ObligationDetail(fromDate, toDate, fromDate, Some(toDate), MtdStatus.Open)))
-            ))
+      "the connector call returns an empty obligations" must {
+        "return NoObligationsFoundError" in new Test {
+          private val requestData = request(Nino(nino))
 
-          MockRetrieveEOPSObligationsConnector
-            .doConnectorThing(requestData)
-            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
-
-          await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
-        }
-
-        "the connector call returns an empty Seq due to JSON reads filtering out all obligations" in new Test {
-          private val requestData = RetrieveEOPSObligationsRequest(Nino(nino), None, None, None, None)
-
-          private val responseModel = RetrieveEOPSObligationsResponse(Seq())
-
-          MockRetrieveEOPSObligationsConnector
-            .doConnectorThing(requestData)
-            .returns(Future.successful(Right(ResponseWrapper(correlationId, responseModel))))
+          MockRetrieveObligationsConnector
+            .retrieveObligations(requestData.nino, None, None)
+            .returns(Future.successful(Right(ResponseWrapper(correlationId, DownstreamObligations(Nil)))))
 
           await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, NoObligationsFoundError))
         }
       }
     }
+
     "connector call is unsuccessful" must {
       "map errors according to spec" when {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
+            private val requestData = request(Nino(nino))
 
-            private val requestData =
-              request(Nino(nino), Some(typeOfBusiness), Some(businessId), Some((fromDate, toDate)), Some(status))
-
-            MockRetrieveEOPSObligationsConnector
-              .doConnectorThing(requestData)
+            MockRetrieveObligationsConnector
+              .retrieveObligations(requestData.nino, None, None)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
             await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
