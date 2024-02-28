@@ -17,14 +17,19 @@
 package api.controllers
 
 import api.controllers.ControllerTestRunner.validNino
-import api.models.audit.{ AuditError, AuditEvent, AuditResponse, GenericAuditDetail }
+import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.errors.MtdError
 import api.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import play.api.http.{ HeaderNames, MimeTypes, Status }
+import cats.implicits.catsSyntaxValidatedId
+import config.AppConfig
+import config.Deprecation.NotDeprecated
+import mocks.MockAppConfig
+import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
-import play.api.mvc.{ AnyContentAsEmpty, ControllerComponents, Result }
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents, Result}
 import play.api.test.Helpers.stubControllerComponents
-import play.api.test.{ FakeRequest, ResultExtractors }
+import play.api.test.{FakeRequest, ResultExtractors}
+import routing.{Version, Version1, Version2}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockIdGenerator
@@ -38,9 +43,16 @@ class ControllerBaseSpec
     with HeaderNames
     with ResultExtractors
     with MockAuditService
-    with ControllerSpecHateoasSupport {
+    with ControllerSpecHateoasSupport
+    with MockAppConfig {
 
-  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
+  implicit val appConfig: AppConfig = mockAppConfig
+
+  implicit val apiVersion1: Version = Version1
+  implicit val apiVersion2: Version = Version2
+
+  implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest().withHeaders(HeaderNames.ACCEPT -> s"application/vnd.hmrc.${apiVersion1.name}+json")
 
   lazy val cc: ControllerComponents = stubControllerComponents()
 
@@ -61,6 +73,8 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
     MockIdGenerator.generateCorrelationId.returns(correlationId)
+    MockAppConfig.deprecationFor(apiVersion1).returns(NotDeprecated.valid).anyNumberOfTimes()
+    MockAppConfig.deprecationFor(apiVersion2).returns(NotDeprecated.valid).anyNumberOfTimes()
 
     def runOkTest(expectedStatus: Int, maybeExpectedResponseBody: Option[JsValue] = None): Unit = {
       val result: Future[Result] = callController()
