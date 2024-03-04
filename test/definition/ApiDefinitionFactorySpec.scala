@@ -48,11 +48,11 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
       def testDefinitionWithConfidence(confidenceLevelConfig: ConfidenceLevelConfig): Unit = new Test {
         MockAppConfig.apiStatus(Version1) returns "ALPHA"
-        MockAppConfig.apiStatus(Version2) returns "ALPHA"
-        MockAppConfig.endpointsEnabled(Version1) returns true
-        MockAppConfig.endpointsEnabled(Version2) returns true
-        MockAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
-        MockAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+Seq(Version1, Version2).foreach {version =>
+          MockAppConfig.apiStatus(version) returns "ALPHA"
+          MockAppConfig.endpointsEnabled(version) returns true
+          MockAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
+        }
         MockAppConfig.confidenceLevelCheckEnabled.returns(confidenceLevelConfig).anyNumberOfTimes()
 
         val readScope: String                = "read:self-assessment"
