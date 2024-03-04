@@ -39,10 +39,10 @@ import scala.concurrent.{ExecutionContext, Future}
 trait RequestHandler {
 
   def handleRequest()(implicit
-                      ctx: RequestContext,
-                      request: UserRequest[_],
-                      ec: ExecutionContext,
-                      appConfig: AppConfig
+      ctx: RequestContext,
+      request: UserRequest[_],
+      ec: ExecutionContext,
+      appConfig: AppConfig
   ): Future[Result]
 
 }
@@ -60,13 +60,13 @@ object RequestHandler {
   }
 
   case class RequestHandlerBuilder[Input, Output] private[RequestHandler] (
-                                                                            validator: Validator[Input],
-                                                                            service: Input => Future[ServiceOutcome[Output]],
-                                                                            errorHandling: ErrorHandling = ErrorHandling.Default,
-                                                                            resultCreator: ResultCreator[Input, Output] = ResultCreator.noContent[Input, Output](),
-                                                                            auditHandler: Option[AuditHandler] = None,
-                                                                            modelHandler: Option[Output => Output] = None
-                                                                          ) extends RequestHandler {
+      validator: Validator[Input],
+      service: Input => Future[ServiceOutcome[Output]],
+      errorHandling: ErrorHandling = ErrorHandling.Default,
+      resultCreator: ResultCreator[Input, Output] = ResultCreator.noContent[Input, Output](),
+      auditHandler: Option[AuditHandler] = None,
+      modelHandler: Option[Output => Output] = None
+  ) extends RequestHandler {
 
     def handleRequest()(implicit ctx: RequestContext, request: UserRequest[_], ec: ExecutionContext, appConfig: AppConfig): Future[Result] =
       Delegate.handleRequest()
@@ -81,18 +81,18 @@ object RequestHandler {
       copy(modelHandler = Option(modelHandler))
 
     /** Shorthand for
-     * {{{
-     * withResultCreator(ResultCreator.plainJson(successStatus))
-     * }}}
-     */
+      * {{{
+      * withResultCreator(ResultCreator.plainJson(successStatus))
+      * }}}
+      */
     def withPlainJsonResult(successStatus: Int = Status.OK)(implicit ws: Writes[Output]): RequestHandlerBuilder[Input, Output] =
       withResultCreator(ResultCreator.plainJson(successStatus))
 
     /** Shorthand for
-     * {{{
-     * withResultCreator(ResultCreator.noContent)
-     * }}}
-     */
+      * {{{
+      * withResultCreator(ResultCreator.noContent)
+      * }}}
+      */
     def withNoContentResult(successStatus: Int = Status.NO_CONTENT): RequestHandlerBuilder[Input, Output] =
       withResultCreator(ResultCreator.noContent(successStatus))
 
@@ -100,24 +100,24 @@ object RequestHandler {
       copy(resultCreator = resultCreator)
 
     /** Shorthand for
-     * {{{
-     * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
-     * }}}
-     */
+      * {{{
+      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
+      * }}}
+      */
     def withHateoasResultFrom[HData <: HateoasData](
-                                                     hateoasFactory: HateoasFactory)(data: (Input, Output) => HData, successStatus: Int = Status.OK)(implicit
-                                                                                                                                                     linksFactory: HateoasLinksFactory[Output, HData],
-                                                                                                                                                     writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[Input, Output] =
+        hateoasFactory: HateoasFactory)(data: (Input, Output) => HData, successStatus: Int = Status.OK)(implicit
+        linksFactory: HateoasLinksFactory[Output, HData],
+        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[Input, Output] =
       withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)(data))
 
     /** Shorthand for
-     * {{{
-     * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_,_) => data))
-     * }}}
-     */
+      * {{{
+      * withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_,_) => data))
+      * }}}
+      */
     def withHateoasResult[HData <: HateoasData](hateoasFactory: HateoasFactory)(data: HData, successStatus: Int = Status.OK)(implicit
-                                                                                                                             linksFactory: HateoasLinksFactory[Output, HData],
-                                                                                                                             writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[Input, Output] =
+        linksFactory: HateoasLinksFactory[Output, HData],
+        writes: Writes[HateoasWrapper[Output]]): RequestHandlerBuilder[Input, Output] =
       withResultCreator(ResultCreator.hateoasWrapping(hateoasFactory, successStatus)((_, _) => data))
 
     // Scoped as a private delegate so as to keep the logic completely separate from the configuration
@@ -159,10 +159,10 @@ object RequestHandler {
       }
 
       def handleRequest()(implicit
-                          ctx: RequestContext,
-                          request: UserRequest[_],
-                          ec: ExecutionContext,
-                          appConfig: AppConfig
+          ctx: RequestContext,
+          request: UserRequest[_],
+          ec: ExecutionContext,
+          appConfig: AppConfig
       ): Future[Result] = {
 
         logger.info(
@@ -174,12 +174,7 @@ object RequestHandler {
             parsedRequest   <- EitherT.fromEither[Future](validator.validateAndWrapResult())
             serviceResponse <- EitherT(service(parsedRequest))
           } yield doWithContext(ctx.withCorrelationId(serviceResponse.correlationId)) { implicit ctx: RequestContext =>
-            modelHandler match {
-              case Some(responseHandler) =>
-                handleSuccess(parsedRequest, serviceResponse.copy(responseData = responseHandler(serviceResponse.responseData)))
-              case None =>
-                handleSuccess(parsedRequest, serviceResponse)
-            }
+            handleSuccess(parsedRequest, serviceResponse)
           }
 
         result.leftMap { errorWrapper =>
@@ -192,10 +187,10 @@ object RequestHandler {
       private def doWithContext[A](ctx: RequestContext)(f: RequestContext => A): A = f(ctx)
 
       private def handleSuccess(parsedRequest: Input, serviceResponse: ResponseWrapper[Output])(implicit
-                                                                                                ctx: RequestContext,
-                                                                                                request: UserRequest[_],
-                                                                                                ec: ExecutionContext,
-                                                                                                appConfig: AppConfig
+          ctx: RequestContext,
+          request: UserRequest[_],
+          ec: ExecutionContext,
+          appConfig: AppConfig
       ): Result = {
 
         implicit val apiVersion: Version = Version(request)
@@ -213,10 +208,10 @@ object RequestHandler {
       }
 
       private def handleFailure(errorWrapper: ErrorWrapper)(implicit
-                                                            ctx: RequestContext,
-                                                            request: UserRequest[_],
-                                                            ec: ExecutionContext,
-                                                            appConfig: AppConfig
+          ctx: RequestContext,
+          request: UserRequest[_],
+          ec: ExecutionContext,
+          appConfig: AppConfig
       ): Result = {
 
         implicit val apiVersion: Version = Version(request)
@@ -239,9 +234,9 @@ object RequestHandler {
       }
 
       def auditIfRequired(httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
-                                                                                            ctx: RequestContext,
-                                                                                            request: UserRequest[_],
-                                                                                            ec: ExecutionContext): Unit =
+          ctx: RequestContext,
+          request: UserRequest[_],
+          ec: ExecutionContext): Unit =
         auditHandler.foreach { creator =>
           creator.performAudit(request.userDetails, httpStatus, response)
         }
