@@ -18,6 +18,7 @@ package v1.controllers
 
 import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.{IdGenerator, Logging}
 import v1.controllers.validators.RetrieveCrystallisationObligationsValidatorFactory
@@ -33,7 +34,7 @@ class RetrieveCrystallisationObligationsController @Inject()(val authService: En
                                                              service: RetrieveCrystallisationObligationsService,
                                                              auditService: AuditService,
                                                              cc: ControllerComponents,
-                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
