@@ -49,7 +49,7 @@ components:
         URL of the documentation for the API.
       schema:
         type: string
-        example: "https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/cis-deductions-api"
+        example: "https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/obligations-api"
       required: false
 
     deprecationHeader:
