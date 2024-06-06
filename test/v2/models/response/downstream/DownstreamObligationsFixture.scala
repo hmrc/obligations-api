@@ -18,7 +18,7 @@ package v2.models.response.downstream
 
 import api.models.domain.business.DesBusiness
 import api.models.domain.status.DesStatus
-import v2.models.response.common.FixtureDefaults
+import v2.models.response.domain.FixtureDefaults
 
 trait DownstreamObligationsFixture extends FixtureDefaults {
 
