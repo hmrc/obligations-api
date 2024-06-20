@@ -18,7 +18,13 @@ package config
 
 import play.api.Configuration
 
-case class FeatureSwitches(featureSwitchConfig: Configuration) {}
+case class FeatureSwitches(featureSwitchConfig: Configuration) {
+
+  val isHideEopsEnabled: Boolean          = isEnabled("hideEops")
+  def isEnabled(feature: String): Boolean = isConfigTrue(feature + ".enabled")
+
+  private def isConfigTrue(key: String): Boolean = featureSwitchConfig.getOptional[Boolean](key).getOrElse(true)
+}
 
 object FeatureSwitches {
   def apply()(implicit appConfig: AppConfig): FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)

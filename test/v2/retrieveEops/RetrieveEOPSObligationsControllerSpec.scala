@@ -24,6 +24,7 @@ import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.MockAuditService
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v2.models.response.domain.{BusinessObligation, ObligationDetail}
@@ -100,6 +101,10 @@ class RetrieveEOPSObligationsControllerSpec
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
 
+        MockAppConfig.featureSwitches
+          .returns(Configuration("hideEops.enabled" -> false))
+          .anyNumberOfTimes()
+
         runOkTestWithAudit(
           expectedStatus = OK,
           maybeExpectedResponseBody = Some(responseJson),
@@ -108,9 +113,24 @@ class RetrieveEOPSObligationsControllerSpec
       }
     }
 
+    "return 404 NOT FOUND error" when {
+      "hideEops feature switch is turned on" in new Test {
+        MockAppConfig.featureSwitches
+          .returns(Configuration("hideEops.enabled" -> true))
+          .anyNumberOfTimes()
+
+        runNotFoundTest()
+      }
+    }
+
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
+
+        MockAppConfig.featureSwitches
+          .returns(Configuration("hideEops.enabled" -> false))
+          .anyNumberOfTimes()
+
         runErrorTestWithAudit(NinoFormatError)
       }
 
@@ -120,6 +140,10 @@ class RetrieveEOPSObligationsControllerSpec
         MockRetrieveEOPSObligationsService
           .retrieve(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
+
+        MockAppConfig.featureSwitches
+          .returns(Configuration("hideEops.enabled" -> false))
+          .anyNumberOfTimes()
 
         runErrorTestWithAudit(RuleTaxYearNotSupportedError)
       }
@@ -152,6 +176,12 @@ class RetrieveEOPSObligationsControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    protected def runNotFoundTest(): Unit = {
+      val result: Future[Result] = callController()
+
+      status(result) shouldBe NOT_FOUND
+    }
 
     protected def callController(): Future[Result] =
       controller.handleRequest(

@@ -28,129 +28,6 @@ import v2.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
-  private trait Test {
-
-    val nino                  = "AA123456A"
-    val typeOfBusiness        = "self-employment"
-    val businessId            = "XAIS12345678901"
-    val fromDate              = "2018-04-06"
-    val toDate                = "2019-04-05"
-    val status                = "Open"
-    val desResponse: JsValue  = Json.parse("""
-        |{
-        |    "obligations": [
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2018-01-01",
-        |                    "inboundCorrespondenceToDate": "2018-12-31",
-        |                    "inboundCorrespondenceDateReceived": "2019-05-13",
-        |                    "inboundCorrespondenceDueDate": "2020-01-31",
-        |                    "periodKey": "EOPS"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-03-31",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-04-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-30",
-        |                    "inboundCorrespondenceDateReceived": "2019-07-01",
-        |                    "inboundCorrespondenceDueDate": "2019-07-31",
-        |                    "periodKey": "#002"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-07-01",
-        |                    "inboundCorrespondenceToDate": "2019-09-30",
-        |                    "inboundCorrespondenceDateReceived": "2019-10-08",
-        |                    "inboundCorrespondenceDueDate": "2019-10-31",
-        |                    "periodKey": "#003"
-        |                },
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-10-01",
-        |                    "inboundCorrespondenceToDate": "2019-12-31",
-        |                    "inboundCorrespondenceDueDate": "2020-01-31",
-        |                    "periodKey": "#004"
-        |                },
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-12-31",
-        |                    "inboundCorrespondenceDueDate": "2021-01-31",
-        |                    "periodKey": "EOPS"
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}""".stripMargin)
-    val responseBody: JsValue = Json.parse(s"""
-                                              |{
-                                              |  "obligations": [
-                                              |     {
-                                              |       "typeOfBusiness": "self-employment",
-                                              |       "businessId": "XAIS12345678901",
-                                              |       "obligationDetails": [
-                                              |         {
-                                              |           "periodStartDate": "2018-01-01",
-                                              |           "periodEndDate": "2018-12-31",
-                                              |           "dueDate": "2020-01-31",
-                                              |           "receivedDate": "2019-05-13",
-                                              |           "status": "Fulfilled"
-                                              |         },
-                                              |         {
-                                              |           "periodStartDate": "2019-01-01",
-                                              |           "periodEndDate": "2019-12-31",
-                                              |           "dueDate": "2021-01-31",
-                                              |           "status": "Open"
-                                              |         }
-                                              |       ]
-                                              |    }
-                                              |  ]
-                                              |}""".stripMargin)
-
-    def setupStubs(): StubMapping
-
-    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
-
-    def queryParams: Map[String, String] = Map(
-      "from"   -> fromDate,
-      "to"     -> toDate,
-      "status" -> "O"
-    )
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.2.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-    def uri: String = s"/$nino/end-of-period-statement"
-
-    def errorBody(code: String): String =
-      s"""
-         |      {
-         |        "code": "$code",
-         |        "reason": "des message"
-         |      }
-    """.stripMargin
-  }
-
   "Calling the retrieve EOPS obligations endpoint" should {
 
     "return a 200 status code" when {
@@ -499,10 +376,10 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
               request()
                 .withQueryStringParameters(
                   requestTypeOfBusiness.map("typeOfBusiness" -> _).getOrElse(("", "")),
-                  requestBusinessId.map("businessId"         -> _).getOrElse(("", "")),
-                  requestFromDate.map("fromDate"             -> _).getOrElse(("", "")),
-                  requestToDate.map("toDate"                 -> _).getOrElse(("", "")),
-                  requestStatus.map("status"                 -> _).getOrElse(("", ""))
+                  requestBusinessId.map("businessId" -> _).getOrElse(("", "")),
+                  requestFromDate.map("fromDate" -> _).getOrElse(("", "")),
+                  requestToDate.map("toDate" -> _).getOrElse(("", "")),
+                  requestStatus.map("status" -> _).getOrElse(("", ""))
                 )
                 .get())
             response.status shouldBe expectedStatus
@@ -511,15 +388,17 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = List(
-          ("BEANS",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           NinoFormatError),
-          ("AA123456A",
+          (
+            "BEANS",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            NinoFormatError),
+          (
+            "AA123456A",
             Some("do-not-use"),
             Some("XAIS12345678901"),
             Some("2018-04-06"),
@@ -527,65 +406,72 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             Some("Open"),
             BAD_REQUEST,
             TypeOfBusinessFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("beans"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           BusinessIdFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("bad-date"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           FromDateFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2019-04-05"),
-           Some("bad-date"),
-           Some("Open"),
-           BAD_REQUEST,
-           ToDateFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Somewhat-Open"),
-           BAD_REQUEST,
-           StatusFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("beans"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            BusinessIdFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("bad-date"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            FromDateFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2019-04-05"),
+            Some("bad-date"),
+            Some("Open"),
+            BAD_REQUEST,
+            ToDateFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Somewhat-Open"),
+            BAD_REQUEST,
+            StatusFormatError),
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), None, Some("Open"), BAD_REQUEST, MissingToDateError),
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), None, Some("2019-04-05"), Some("Open"), BAD_REQUEST, MissingFromDateError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2020-04-05"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           ToDateBeforeFromDateError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2020-04-05"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            ToDateBeforeFromDateError),
           ("AA123456A", None, Some("XAIS12345678901"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), BAD_REQUEST, MissingTypeOfBusinessError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2019-04-05"),
-           Some("2021-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           RuleDateRangeInvalidError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2016-04-05"),
-           Some("2017-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           RuleFromDateNotSupportedError)
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2019-04-05"),
+            Some("2021-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            RuleDateRangeInvalidError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2016-04-05"),
+            Some("2017-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            RuleFromDateNotSupportedError)
         )
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -795,4 +681,131 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
+  private trait Test {
+
+    val nino           = "AA123456A"
+    val typeOfBusiness = "self-employment"
+    val businessId     = "XAIS12345678901"
+    val fromDate       = "2018-04-06"
+    val toDate         = "2019-04-05"
+    val status         = "Open"
+
+    val desResponse: JsValue = Json.parse("""
+        |{
+        |    "obligations": [
+        |        {
+        |            "identification": {
+        |                "incomeSourceType": "ITSB",
+        |                "referenceNumber": "XAIS12345678901",
+        |                "referenceType": "MTDBIS"
+        |            },
+        |            "obligationDetails": [
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2018-01-01",
+        |                    "inboundCorrespondenceToDate": "2018-12-31",
+        |                    "inboundCorrespondenceDateReceived": "2019-05-13",
+        |                    "inboundCorrespondenceDueDate": "2020-01-31",
+        |                    "periodKey": "EOPS"
+        |                },
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2019-01-01",
+        |                    "inboundCorrespondenceToDate": "2019-03-31",
+        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
+        |                    "inboundCorrespondenceDueDate": "2019-04-30",
+        |                    "periodKey": "#001"
+        |                },
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2019-04-01",
+        |                    "inboundCorrespondenceToDate": "2019-06-30",
+        |                    "inboundCorrespondenceDateReceived": "2019-07-01",
+        |                    "inboundCorrespondenceDueDate": "2019-07-31",
+        |                    "periodKey": "#002"
+        |                },
+        |                {
+        |                    "status": "F",
+        |                    "inboundCorrespondenceFromDate": "2019-07-01",
+        |                    "inboundCorrespondenceToDate": "2019-09-30",
+        |                    "inboundCorrespondenceDateReceived": "2019-10-08",
+        |                    "inboundCorrespondenceDueDate": "2019-10-31",
+        |                    "periodKey": "#003"
+        |                },
+        |                {
+        |                    "status": "O",
+        |                    "inboundCorrespondenceFromDate": "2019-10-01",
+        |                    "inboundCorrespondenceToDate": "2019-12-31",
+        |                    "inboundCorrespondenceDueDate": "2020-01-31",
+        |                    "periodKey": "#004"
+        |                },
+        |                {
+        |                    "status": "O",
+        |                    "inboundCorrespondenceFromDate": "2019-01-01",
+        |                    "inboundCorrespondenceToDate": "2019-12-31",
+        |                    "inboundCorrespondenceDueDate": "2021-01-31",
+        |                    "periodKey": "EOPS"
+        |                }
+        |            ]
+        |        }
+        |    ]
+        |}""".stripMargin)
+
+    val responseBody: JsValue = Json.parse(s"""
+         |{
+         |  "obligations": [
+         |     {
+         |       "typeOfBusiness": "self-employment",
+         |       "businessId": "XAIS12345678901",
+         |       "obligationDetails": [
+         |         {
+         |           "periodStartDate": "2018-01-01",
+         |           "periodEndDate": "2018-12-31",
+         |           "dueDate": "2020-01-31",
+         |           "receivedDate": "2019-05-13",
+         |           "status": "Fulfilled"
+         |         },
+         |         {
+         |           "periodStartDate": "2019-01-01",
+         |           "periodEndDate": "2019-12-31",
+         |           "dueDate": "2021-01-31",
+         |           "status": "Open"
+         |         }
+         |       ]
+         |    }
+         |  ]
+         |}""".stripMargin)
+
+    def setupStubs(): StubMapping
+
+    def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+
+    def queryParams: Map[String, String] = Map(
+      "from"   -> fromDate,
+      "to"     -> toDate,
+      "status" -> "O"
+    )
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.2.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def uri: String = s"/$nino/end-of-period-statement"
+
+    def errorBody(code: String): String =
+      s"""
+         |      {
+         |        "code": "$code",
+         |        "reason": "des message"
+         |      }
+    """.stripMargin
+
+  }
+
 }

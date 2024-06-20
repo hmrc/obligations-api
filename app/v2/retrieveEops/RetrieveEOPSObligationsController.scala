@@ -18,26 +18,29 @@ package v2.retrieveEops
 
 import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
+import config.{AppConfig, FeatureSwitches}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.{IdGenerator, Logging}
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                  val lookupService: MtdIdLookupService,
-                                                  validatorFactory: RetrieveEOPSObligationsValidatorFactory,
-                                                  service: RetrieveEOPSObligationsService,
-                                                  auditService: AuditService,
-                                                  cc: ControllerComponents,
-                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+class RetrieveEOPSObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                   val lookupService: MtdIdLookupService,
+                                                   validatorFactory: RetrieveEOPSObligationsValidatorFactory,
+                                                   service: RetrieveEOPSObligationsService,
+                                                   auditService: AuditService,
+                                                   cc: ControllerComponents,
+                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
+
+  private lazy val featureSwitches = FeatureSwitches()(appConfig)
+  import featureSwitches.isHideEopsEnabled
 
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],
@@ -48,20 +51,25 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val validator = validatorFactory.validator(nino, typeOfBusiness, businessId, fromDate, toDate, status)
+      if (isHideEopsEnabled) {
+        Future.successful(Status(NOT_FOUND))
+      } else {
+        val validator = validatorFactory.validator(nino, typeOfBusiness, businessId, fromDate, toDate, status)
 
-      val requestHandler = RequestHandler
-        .withValidator(validator)
-        .withService(service.retrieve)
-        .withPlainJsonResult()
-        .withAuditing(AuditHandler(
-          auditService = auditService,
-          auditType = "retrieveEOPSObligations",
-          transactionName = "retrieve-eops-obligations",
-          pathParams = Map("nino" -> nino),
-          includeResponse = true
-        ))
+        val requestHandler = RequestHandler
+          .withValidator(validator)
+          .withService(service.retrieve)
+          .withPlainJsonResult()
+          .withAuditing(AuditHandler(
+            auditService = auditService,
+            auditType = "retrieveEOPSObligations",
+            transactionName = "retrieve-eops-obligations",
+            pathParams = Map("nino" -> nino),
+            includeResponse = true
+          ))
 
-      requestHandler.handleRequest()
+        requestHandler.handleRequest()
+      }
     }
+
 }
