@@ -17,6 +17,7 @@
 package api.connectors
 
 import api.mocks.MockHttpClient
+import config.DownstreamConfig
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, MimeTypes, Status}
@@ -30,7 +31,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   lazy val baseUrl                   = "http://test-BaseUrl"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  val otherHeaders: Seq[(String, String)] = Seq(
+  val otherHeaders: Seq[(String, String)] = List(
     "Gov-Test-Scenario" -> "DEFAULT",
     "AnotherHeader"     -> "HeaderValue"
   )
@@ -38,21 +39,56 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val dummyDesHeaderCarrierConfig: HeaderCarrier.Config =
+  val dummyHeaderCarrierConfig: HeaderCarrier.Config =
     HeaderCarrier.Config(
-      Seq("^not-test-BaseUrl?$".r),
+      List("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("obligations-api")
+      Some("this-api")
     )
 
-  val requiredDesHeaders: Seq[(String, String)] = Seq(
+  val requiredDesHeaders: Seq[(String, String)] = List(
     "Authorization"     -> "Bearer des-token",
     "Environment"       -> "des-environment",
-    "User-Agent"        -> "obligations-api",
+    "User-Agent"        -> "this-api",
+    "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
 
-  val allowedDesHeaders: Seq[String] = Seq(
+  val allowedDesHeaders: Seq[String] = List(
+    "Accept",
+    "Gov-Test-Scenario",
+    "Content-Type",
+    "Location",
+    "X-Request-Timestamp",
+    "X-Session-Id"
+  )
+
+  val requiredIfsHeaders: Seq[(String, String)] = List(
+    "Authorization"     -> "Bearer ifs-token",
+    "Environment"       -> "ifs-environment",
+    "User-Agent"        -> "this-api",
+    "CorrelationId"     -> correlationId,
+    "Gov-Test-Scenario" -> "DEFAULT"
+  )
+
+  val allowedIfsHeaders: Seq[String] = List(
+    "Accept",
+    "Gov-Test-Scenario",
+    "Content-Type",
+    "Location",
+    "X-Request-Timestamp",
+    "X-Session-Id"
+  )
+
+  val requiredTysIfsHeaders: Seq[(String, String)] = List(
+    "Authorization"     -> "Bearer TYS-IFS-token",
+    "Environment"       -> "TYS-IFS-environment",
+    "User-Agent"        -> "this-api",
+    "CorrelationId"     -> correlationId,
+    "Gov-Test-Scenario" -> "DEFAULT"
+  )
+
+  val allowedTysIfsHeaders: Seq[String] = List(
     "Accept",
     "Gov-Test-Scenario",
     "Content-Type",
@@ -68,14 +104,46 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     protected val requiredHeaders: Seq[(String, String)]
 
-    protected def willGet[T](url: String, parameters: Seq[(String, String)] = Seq.empty): CallHandler[Future[T]] = {
+    protected def willGet[T](url: String, parameters: Seq[(String, String)] = Nil): CallHandler[Future[T]] = {
       MockedHttpClient
         .get(
           url = url,
-          config = dummyDesHeaderCarrierConfig,
           parameters = parameters,
+          config = dummyHeaderCarrierConfig,
           requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+    protected def willPost[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .post(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          body = body,
+          requiredHeaders = requiredHeaders ++ List("Content-Type" -> "application/json"),
+          excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+    protected def willPut[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .put(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          body = body,
+          requiredHeaders = requiredHeaders ++ List("Content-Type" -> "application/json"),
+          excludedHeaders = List("AnotherHeader" -> "HeaderValue")
+        )
+    }
+
+    protected def willDelete[T](url: String): CallHandler[Future[T]] = {
+      MockedHttpClient
+        .delete(
+          url = url,
+          config = dummyHeaderCarrierConfig,
+          requiredHeaders = requiredHeaders,
+          excludedHeaders = List("AnotherHeader" -> "HeaderValue")
         )
     }
 
@@ -89,6 +157,38 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     MockAppConfig.desToken returns "des-token"
     MockAppConfig.desEnvironment returns "des-environment"
     MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+
+    MockAppConfig.desDownstreamConfig
+      .anyNumberOfTimes() returns DownstreamConfig(this.baseUrl, "des-environment", "des-token", Some(allowedDesHeaders))
+
+  }
+
+  protected trait IfsTest extends ConnectorTest {
+
+    protected lazy val requiredHeaders: Seq[(String, String)] = requiredIfsHeaders
+
+    MockAppConfig.ifsBaseUrl returns this.baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+
+    MockAppConfig.ifsDownstreamConfig
+      .anyNumberOfTimes() returns DownstreamConfig(this.baseUrl, "ifs-environment", "ifs-token", Some(allowedIfsHeaders))
+
+  }
+
+  protected trait TysIfsTest extends ConnectorTest {
+
+    protected lazy val requiredHeaders: Seq[(String, String)] = requiredTysIfsHeaders
+
+    MockAppConfig.tysIfsBaseUrl returns this.baseUrl
+    MockAppConfig.tysIfsToken returns "TYS-IFS-token"
+    MockAppConfig.tysIfsEnvironment returns "TYS-IFS-environment"
+    MockAppConfig.tysIfsEnvironmentHeaders returns Some(allowedTysIfsHeaders)
+
+    MockAppConfig.tysIfsDownstreamConfig
+      .anyNumberOfTimes() returns DownstreamConfig(this.baseUrl, "TYS-IFS-environment", "TYS-IFS-token", Some(allowedTysIfsHeaders))
+
   }
 
 }

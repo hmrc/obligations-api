@@ -17,13 +17,15 @@
 package config
 
 import com.google.inject.AbstractModule
+import definition.{ApiDefinitionFactory, ObligationsApiDefinitionFactory}
 
 import java.time.Clock
 
 class DIModule extends AbstractModule {
 
   override def configure(): Unit = {
-    bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
+    bind(classOf[ApiDefinitionFactory]).to(classOf[ObligationsApiDefinitionFactory]).asEagerSingleton()
     bind(classOf[Clock]).toInstance(Clock.systemUTC)
   }
+
 }

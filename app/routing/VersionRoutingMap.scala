@@ -42,7 +42,7 @@ case class VersionRoutingMapImpl @Inject()(
     v2Router: v2.Routes
 ) extends VersionRoutingMap {
 
-  lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
+  lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitchConfig)
 
   val map: Map[Version, Router] = Map(
     Version1 -> v1Router,

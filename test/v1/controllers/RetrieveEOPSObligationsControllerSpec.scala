@@ -51,7 +51,7 @@ class RetrieveEOPSObligationsControllerSpec
   private val status         = MtdStatus.Open
 
   private val requestData = RetrieveEOPSObligationsRequest(
-    nino = Nino(nino),
+    nino = Nino(validNino),
     typeOfBusiness = Some(typeOfBusiness),
     businessId = Some(BusinessId(businessId)),
     dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
@@ -147,7 +147,7 @@ class RetrieveEOPSObligationsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino),
+          pathParams = Map("nino" -> validNino),
           queryParams = None,
           requestBody = requestBody,
           `X-CorrelationId` = correlationId,
@@ -157,7 +157,7 @@ class RetrieveEOPSObligationsControllerSpec
 
     protected def callController(): Future[Result] =
       controller.handleRequest(
-        nino = nino,
+        nino = validNino,
         typeOfBusiness = Some(typeOfBusiness.toString),
         businessId = Some(businessId),
         fromDate = Some(fromDate),

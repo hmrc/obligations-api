@@ -30,60 +30,79 @@ import java.time.format.{DateTimeFormatter, DateTimeFormatterBuilder}
 import java.time.temporal.ChronoField
 import javax.inject.{Inject, Singleton}
 
-trait AppConfig {
+@Singleton
+class AppConfig @Inject() (config: ServicesConfig, configuration: Configuration) {
 
-  lazy val desDownstreamConfig: DownstreamConfig =
+  def appName: String = config.getString("appName")
+
+  // MTD ID Lookup Config
+  def mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
+
+  // DES Config
+  def desBaseUrl: String                         = config.baseUrl("des")
+  def desEnv: String                             = config.getString("microservice.services.des.env")
+  def desToken: String                           = config.getString("microservice.services.des.token")
+  def desEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.des.environmentHeaders")
+
+  def desDownstreamConfig: DownstreamConfig =
     DownstreamConfig(baseUrl = desBaseUrl, env = desEnv, token = desToken, environmentHeaders = desEnvironmentHeaders)
 
-  // MTD ID Lookup Config
-  def mtdIdBaseUrl: String
+  // IFS Config
+  def ifsBaseUrl: String = config.baseUrl("ifs")
 
-  // DES Config
-  def desBaseUrl: String
+  def ifsEnv: String = config.getString("microservice.services.ifs.env")
 
-  def desEnv: String
+  def ifsToken: String = config.getString("microservice.services.ifs.token")
 
-  def desToken: String
+  def ifsEnabled: Boolean = config.getBoolean("microservice.services.ifs.enabled")
 
-  def desEnvironmentHeaders: Option[Seq[String]]
+  def ifsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.ifs.environmentHeaders")
 
-  // API Config
-  def apiGatewayContext: String
-  def apiStatus(version: Version): String
-  def featureSwitches: Configuration
-  def endpointsEnabled(version: Version): Boolean
-  def confidenceLevelConfig: ConfidenceLevelConfig
-  def deprecationFor(version: Version): Validated[String, Deprecation]
+  def ifsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = ifsBaseUrl, env = ifsEnv, token = ifsToken, environmentHeaders = ifsEnvironmentHeaders)
 
-  def apiDocumentationUrl: String
-}
+  // Tax Year Specific (TYS) IFS Config
+  def tysIfsBaseUrl: String = config.baseUrl("tys-ifs")
 
-@Singleton
-class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
+  def tysIfsEnv: String = config.getString("microservice.services.tys-ifs.env")
 
-  val appName: String = config.getString("appName")
+  def tysIfsToken: String = config.getString("microservice.services.tys-ifs.token")
 
-  // MTD ID Lookup Config
-  val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
+  def tysIfsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.tys-ifs.environmentHeaders")
 
-  // DES Config
-  val desBaseUrl: String                         = config.baseUrl("des")
-  val desEnv: String                             = config.getString("microservice.services.des.env")
-  val desToken: String                           = config.getString("microservice.services.des.token")
-  val desEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.des.environmentHeaders")
+  def tysIfsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = tysIfsBaseUrl, env = tysIfsEnv, token = tysIfsToken, environmentHeaders = tysIfsEnvironmentHeaders)
 
   // API Config
-  val apiGatewayContext: String                    = config.getString("api.gateway.context")
-  val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
+  def apiGatewayContext: String                    = config.getString("api.gateway.context")
+  def confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
 
   def apiStatus(version: Version): String = config.getString(s"api.${version.name}.status")
 
-  def featureSwitches: Configuration = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
+  def featureSwitchConfig: Configuration = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
 
-  def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.${version.name}.endpoints.enabled")
+  def safeEndpointsEnabled(version: String): Boolean =
+    configuration
+      .getOptional[Boolean](s"api.$version.endpoints.enabled")
+      .getOrElse(false)
 
-  val apiDocumentationUrl: String =
-    config.getConfString("api.documentation-url", defString = s"https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/$appName")
+  def endpointsEnabled(version: String): Boolean  = config.getBoolean(s"api.$version.endpoints.enabled")
+  def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.$version.endpoints.enabled")
+
+  def apiVersionReleasedInProduction(version: String): Boolean = config.getBoolean(s"api.$version.endpoints.api-released-in-production")
+
+  def endpointReleasedInProduction(version: String, name: String): Boolean = {
+    val versionReleasedInProd = apiVersionReleasedInProduction(version)
+    val path                  = s"api.$version.endpoints.released-in-production.$name"
+
+    val conf = configuration.underlying
+    if (versionReleasedInProd && conf.hasPath(path)) config.getBoolean(path) else versionReleasedInProd
+  }
+
+  def apiDocumentationUrl: String =
+    configuration
+      .get[Option[String]]("api.documentation-url")
+      .getOrElse(s"https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/$appName")
 
   private val DATE_FORMATTER = new DateTimeFormatterBuilder()
     .append(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -128,11 +147,6 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
     }
   }
 
-}
-
-trait FixedConfig {
-  // Minimum tax year for MTD
-  val minimumTaxYear = 2018
 }
 
 case class ConfidenceLevelConfig(confidenceLevel: ConfidenceLevel, definitionEnabled: Boolean, authValidationEnabled: Boolean)

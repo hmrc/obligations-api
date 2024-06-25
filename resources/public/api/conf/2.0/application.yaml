@@ -52,5 +52,7 @@ paths:
     $ref: './retrieve_income_tax_income_expenditure.yaml'
   /obligations/details/{nino}/crystallisation:
     $ref: './retrieve_income_tax_crystallisation.yaml'
+  {{#unless (enabled 'hideEops')}}
   /obligations/details/{nino}/end-of-period-statement:
     $ref: './retrieve_income_tax_eops.yaml'
+  {{/unless}}

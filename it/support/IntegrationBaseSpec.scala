@@ -16,21 +16,26 @@
 
 package support
 
-import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach }
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSClient, WSRequest, WSResponse }
-import play.api.{ Application, Environment, Mode }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.{Application, Environment, Mode}
 
 trait IntegrationBaseSpec extends UnitSpec with WireMockHelper with GuiceOneServerPerSuite with BeforeAndAfterEach with BeforeAndAfterAll {
   lazy val client: WSClient = app.injector.instanceOf[WSClient]
-  val mockHost: String      = WireMockHelper.host
-  val mockPort: String      = WireMockHelper.wireMockPort.toString
 
-  def servicesConfig: Map[String, String] = Map(
+  lazy val mockHost: String = WireMockHelper.host
+  lazy val mockPort: String = WireMockHelper.wireMockPort.toString
+
+  def servicesConfig: Map[String, Any] = Map(
     "microservice.services.des.host"           -> mockHost,
     "microservice.services.des.port"           -> mockPort,
+    "microservice.services.ifs.host"           -> mockHost,
+    "microservice.services.ifs.port"           -> mockPort,
+    "microservice.services.tys-ifs.host"       -> mockHost,
+    "microservice.services.tys-ifs.port"       -> mockPort,
     "microservice.services.mtd-id-lookup.host" -> mockHost,
     "microservice.services.mtd-id-lookup.port" -> mockPort,
     "microservice.services.auth.host"          -> mockHost,
@@ -51,6 +56,11 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockHelper with GuiceOneServ
   override def afterAll(): Unit = {
     stopWireMock()
     super.afterAll()
+  }
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    resetWireMock()
   }
 
   def buildRequest(path: String): WSRequest = client.url(s"http://localhost:$port$path").withFollowRedirects(false)

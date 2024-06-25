@@ -28,11 +28,12 @@ trait MockMtdIdLookupConnector extends MockFactory {
 
   object MockedMtdIdLookupConnector {
 
-    def lookup(nino: String): CallHandler[Future[MtdIdLookupOutcome]] = {
+    def lookup(nino: String): CallHandler[Future[MtdIdLookupConnector.Outcome]] = {
       (mockMtdIdLookupConnector
         .getMtdId(_: String)(_: HeaderCarrier, _: ExecutionContext))
         .expects(nino, *, *)
     }
+
   }
 
 }

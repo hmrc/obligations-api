@@ -16,15 +16,14 @@
 
 package api.connectors.httpparsers
 
-import api.models.errors.{ BVRError, DownstreamError, DownstreamErrorCode, DownstreamErrors, InternalError, OutboundError }
-import play.api.Logger
+import api.models.errors.{BVRError, DownstreamError, DownstreamErrorCode, DownstreamErrors, InternalError, OutboundError}
 import play.api.libs.json._
 import uk.gov.hmrc.http.HttpResponse
+import utils.Logging
 
-import scala.util.{ Success, Try }
+import scala.util.{Success, Try}
 
-trait HttpParser {
-  private val logger: Logger = Logger(this.getClass)
+trait HttpParser extends Logging {
 
   implicit class KnownJsonResponse(response: HttpResponse) {
 
@@ -38,7 +37,6 @@ trait HttpParser {
     }
 
     def parseResult[T](json: JsValue)(implicit reads: Reads[T]): Option[T] = json.validate[T] match {
-
       case JsSuccess(value, _) => Some(value)
       case JsError(error) =>
         logger.warn(s"[KnownJsonResponse][validateJson] Unable to parse JSON: $error")
@@ -47,18 +45,20 @@ trait HttpParser {
 
   }
 
-  private val multipleErrorReads: Reads[List[DownstreamErrorCode]] = (__ \ "failures").read[List[DownstreamErrorCode]]
+  def retrieveCorrelationId(response: HttpResponse): String = response.header("CorrelationId").getOrElse("")
+
+  private val multipleErrorReads: Reads[Seq[DownstreamErrorCode]] = (__ \ "failures").read[Seq[DownstreamErrorCode]]
+
   private val bvrErrorReads: Reads[Seq[DownstreamErrorCode]] = {
     implicit val errorIdReads: Reads[DownstreamErrorCode] = (__ \ "id").read[String].map(DownstreamErrorCode(_))
     (__ \ "bvrfailureResponseElement" \ "validationRuleFailures").read[Seq[DownstreamErrorCode]]
   }
 
-  def retrieveCorrelationId(response: HttpResponse): String = response.header("CorrelationId").getOrElse("")
-
   def parseErrors(response: HttpResponse): DownstreamError = {
     val singleError         = response.validateJson[DownstreamErrorCode].map(err => DownstreamErrors(List(err)))
     lazy val multipleErrors = response.validateJson(multipleErrorReads).map(errs => DownstreamErrors(errs))
     lazy val bvrErrors      = response.validateJson(bvrErrorReads).map(errs => OutboundError(BVRError, Some(errs.map(_.toMtd(BVRError.httpStatus)))))
+
     lazy val unableToParseJsonError = {
       logger.warn(s"unable to parse errors from response: ${response.body}")
       OutboundError(InternalError)

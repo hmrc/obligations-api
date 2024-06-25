@@ -50,7 +50,7 @@ class RetrieveEOPSObligationsControllerSpec
   private val status         = MtdStatus.Open
 
   private val requestData = RetrieveEOPSObligationsRequest(
-    nino = Nino(nino),
+    nino = Nino(validNino),
     typeOfBusiness = Some(typeOfBusiness),
     businessId = Some(BusinessId(businessId)),
     dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
@@ -101,7 +101,7 @@ class RetrieveEOPSObligationsControllerSpec
           .retrieve(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseBodyModel))))
 
-        MockAppConfig.featureSwitches
+        MockAppConfig.featureSwitchConfig
           .returns(Configuration("hideEops.enabled" -> false))
           .anyNumberOfTimes()
 
@@ -115,7 +115,7 @@ class RetrieveEOPSObligationsControllerSpec
 
     "return 404 NOT FOUND error" when {
       "hideEops feature switch is turned on" in new Test {
-        MockAppConfig.featureSwitches
+        MockAppConfig.featureSwitchConfig
           .returns(Configuration("hideEops.enabled" -> true))
           .anyNumberOfTimes()
 
@@ -127,7 +127,7 @@ class RetrieveEOPSObligationsControllerSpec
       "the parser validation fails" in new Test {
         willUseValidator(returning(NinoFormatError))
 
-        MockAppConfig.featureSwitches
+        MockAppConfig.featureSwitchConfig
           .returns(Configuration("hideEops.enabled" -> false))
           .anyNumberOfTimes()
 
@@ -141,7 +141,7 @@ class RetrieveEOPSObligationsControllerSpec
           .retrieve(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
-        MockAppConfig.featureSwitches
+        MockAppConfig.featureSwitchConfig
           .returns(Configuration("hideEops.enabled" -> false))
           .anyNumberOfTimes()
 
@@ -169,7 +169,7 @@ class RetrieveEOPSObligationsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino),
+          pathParams = Map("nino" -> validNino),
           queryParams = None,
           requestBody = requestBody,
           `X-CorrelationId` = correlationId,
@@ -185,7 +185,7 @@ class RetrieveEOPSObligationsControllerSpec
 
     protected def callController(): Future[Result] =
       controller.handleRequest(
-        nino = nino,
+        nino = validNino,
         typeOfBusiness = Some(typeOfBusiness.toString),
         businessId = Some(businessId),
         fromDate = Some(fromDate),

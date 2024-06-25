@@ -17,21 +17,21 @@
 package v1.endpoints
 
 import api.models.errors._
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
+import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino                  = "AA123456A"
-    val taxYear               = "2017-18"
+    val nino    = "AA123456A"
+    val taxYear = "2017-18"
+
     val responseBody: JsValue = Json.parse(s"""
          |{
          |  "periodStartDate": "2018-04-06",
@@ -41,7 +41,8 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  "receivedDate": "2020-01-25"
          |}
          |""".stripMargin)
-    val desResponse: JsValue  = Json.parse("""
+
+    val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -65,7 +66,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         |}
     """.stripMargin)
 
-    def setupStubs(): StubMapping
+    def setupStubs(): Unit = {}
 
     def desUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
 
@@ -75,6 +76,9 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     )
 
     def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
       setupStubs()
       buildRequest(uri)
         .withHttpHeaders(
@@ -92,6 +96,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |        "reason": "des message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the retrieve crystallisation obligations endpoint" should {
@@ -100,10 +105,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
       "any valid request is made" in new Test {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
+        override def setupStubs(): Unit = {
           DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
         }
 
@@ -155,10 +157,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             |}
     """.stripMargin)
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
+        override def setupStubs(): Unit = {
           DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
         }
 
@@ -177,12 +176,6 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
             override val nino: String    = requestNino
             override val taxYear: String = requestTaxYear
-
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-            }
 
             val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
             response.status shouldBe expectedStatus
@@ -203,10 +196,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
         def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"des returns an $desCode error and status $desStatus" in new Test {
 
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
+            override def setupStubs(): Unit = {
               DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
@@ -273,10 +263,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |    ]
               |}""".stripMargin)
 
-          override def setupStubs(): StubMapping = {
-            AuditStub.audit()
-            AuthStub.authorised()
-            MtdIdLookupStub.ninoFound(nino)
+          override def setupStubs(): Unit = {
             DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
@@ -317,10 +304,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
               |    ]
               |}""".stripMargin)
 
-          override def setupStubs(): StubMapping = {
-            AuditStub.audit()
-            AuthStub.authorised()
-            MtdIdLookupStub.ninoFound(nino)
+          override def setupStubs(): Unit = {
             DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
           }
 
@@ -356,10 +340,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                 |}
     """.stripMargin)
 
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
+            override def setupStubs(): Unit = {
               DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
             }
 
@@ -371,4 +352,5 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
       }
     }
   }
+
 }

@@ -43,7 +43,7 @@ class RetrieveCrystallisationObligationsControllerSpec
   private val maybeStatusParam = Option("Fulfilled")
   private val maybeStatus      = Option(MtdStatus.Fulfilled)
 
-  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
+  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(validNino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
 
   private val responseBodyModel: RetrieveCrystallisationObligationsResponse = RetrieveCrystallisationObligationsResponse(
     obligations = List(
@@ -124,7 +124,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino),
+          pathParams = Map("nino" -> validNino),
           queryParams = None,
           requestBody = requestBody,
           `X-CorrelationId` = correlationId,
@@ -132,7 +132,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         )
       )
 
-    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear), maybeStatusParam)(fakeGetRequest)
+    protected def callController(): Future[Result] = controller.handleRequest(validNino, Some(taxYear), maybeStatusParam)(fakeGetRequest)
 
   }
 

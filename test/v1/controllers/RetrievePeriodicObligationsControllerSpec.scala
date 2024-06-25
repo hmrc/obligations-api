@@ -51,7 +51,7 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val requestData =
     RetrievePeriodicObligationsRequest(
-      Nino(nino),
+      Nino(validNino),
       Some(MtdBusiness.`self-employment`),
       Some(BusinessId(businessId)),
       dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
@@ -150,7 +150,7 @@ class RetrievePeriodicObligationsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino),
+          pathParams = Map("nino" -> validNino),
           queryParams = None,
           requestBody = requestBody,
           `X-CorrelationId` = correlationId,
@@ -160,7 +160,7 @@ class RetrievePeriodicObligationsControllerSpec
 
     protected def callController(): Future[Result] =
       controller.handleRequest(
-        nino,
+        validNino,
         Some(typeOfBusiness),
         Some(businessId),
         Some(fromDate),

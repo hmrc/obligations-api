@@ -43,7 +43,7 @@ class RetrieveCrystallisationObligationsControllerSpec
 
   private val taxYear = "2017-18"
 
-  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), ObligationsTaxYear("2017-04-06", "2018-04-05"))
+  private val requestData = RetrieveCrystallisationObligationsRequest(Nino(validNino), ObligationsTaxYear("2017-04-06", "2018-04-05"))
 
   private val responseBodyModel: RetrieveCrystallisationObligationsResponse =
     RetrieveCrystallisationObligationsResponse("2018-04-06", "2019-04-05", "2020-01-31", MtdStatus.Fulfilled, Some("2020-01-25"))
@@ -111,7 +111,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino),
+          pathParams = Map("nino" -> validNino),
           queryParams = None,
           requestBody = requestBody,
           `X-CorrelationId` = correlationId,
@@ -119,7 +119,8 @@ class RetrieveCrystallisationObligationsControllerSpec
         )
       )
 
-    protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeGetRequest)
+    protected def callController(): Future[Result] = controller.handleRequest(validNino, Some(taxYear))(fakeGetRequest)
 
   }
+
 }
