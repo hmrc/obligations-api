@@ -16,10 +16,10 @@
 
 package api.controllers
 
-import api.models.errors._
+import api.models.errors.MtdError
 import api.services.{EnrolmentsAuthService, MockEnrolmentsAuthService, MockMtdIdLookupService, MtdIdLookupService}
 import play.api.libs.json.Json
-import play.api.mvc.{ Action, AnyContent }
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.auth.core.Enrolment
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.http.HeaderCarrier
@@ -29,35 +29,20 @@ import scala.concurrent.Future
 
 class AuthorisedControllerSpec extends ControllerBaseSpec {
 
-  val nino  = "AA123456A"
-  val mtdId = "X123567890"
+  private val nino = "AA123456A"
 
-  val predicate: Predicate = Enrolment("HMRC-MTD-IT")
+  private val mtdId     = "X123567890"
+  private val someError = MtdError("SOME_CODE", "A message", IM_A_TEAPOT)
+
+  private val predicate: Predicate = Enrolment("HMRC-MTD-IT")
     .withIdentifier("MTDITID", mtdId)
     .withDelegatedAuthRule("mtd-it-auth")
-
-  trait Test extends MockEnrolmentsAuthService with MockMtdIdLookupService {
-    lazy val target = new TestController()
-    val hc          = HeaderCarrier()
-
-    class TestController extends AuthorisedController(cc) {
-      override val authService: EnrolmentsAuthService = mockEnrolmentsAuthService
-      override val lookupService: MtdIdLookupService  = mockMtdIdLookupService
-
-      def action(nino: String): Action[AnyContent] = authorisedAction(nino).async {
-        Future.successful(Ok(Json.obj()))
-      }
-    }
-  }
 
   "calling an action" when {
 
     "the user is authorised" should {
       "return a 200" in new Test {
-
-        MockedMtdIdLookupService
-          .lookup(nino)
-          .returns(Future.successful(Right(mtdId)))
+        MockedMtdIdLookupService.lookup(nino) returns Future.successful(Right(mtdId))
 
         MockedEnrolmentsAuthService.authoriseUser()
 
@@ -66,101 +51,44 @@ class AuthorisedControllerSpec extends ControllerBaseSpec {
       }
     }
 
-    "auth returns an unexpected error" should {
-      "return a 500" in new Test {
+    "the EnrolmentsAuthService returns an error" should {
+      "return that error (with its status code)" in new Test {
+        MockedMtdIdLookupService.lookup(nino) returns Future.successful(Right(mtdId))
 
-        MockedMtdIdLookupService
-          .lookup(nino)
-          .returns(Future.successful(Right(mtdId)))
+        MockedEnrolmentsAuthService.authorised(predicate) returns Future.successful(Left(someError))
 
-        MockedEnrolmentsAuthService
-          .authorised(predicate)
-          .returns(Future.successful(Left(InternalError)))
-
-        private val result = target.action(nino)(fakeGetRequest)
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        val result: Future[Result] = target.action(nino)(fakeGetRequest)
+        status(result) shouldBe someError.httpStatus
+        contentAsJson(result) shouldBe Json.toJson(someError)
       }
     }
 
-    "the nino is invalid" should {
-      "return a 400" in new Test {
+    "the MtdIdLookupService returns an error" should {
+      "return that error (with its status code)" in new Test {
+        MockedMtdIdLookupService.lookup(nino) returns Future.successful(Left(someError))
 
-        MockedMtdIdLookupService
-          .lookup(nino)
-          .returns(Future.successful(Left(NinoFormatError)))
-
-        private val result = target.action(nino)(fakeGetRequest)
-        status(result) shouldBe BAD_REQUEST
+        val result: Future[Result] = target.action(nino)(fakeGetRequest)
+        status(result) shouldBe someError.httpStatus
+        contentAsJson(result) shouldBe Json.toJson(someError)
       }
     }
+  }
 
-    "the nino is valid but invalid bearer token" should {
-      "return a 401" in new Test {
+  trait Test extends MockEnrolmentsAuthService with MockMtdIdLookupService {
 
-        MockedMtdIdLookupService
-          .lookup(nino)
-          .returns(Future.successful(Left(InvalidBearerTokenError)))
+    val hc: HeaderCarrier = HeaderCarrier()
 
-        private val result = target.action(nino)(fakeGetRequest)
-        status(result) shouldBe UNAUTHORIZED
+    class TestController extends AuthorisedController(cc) {
+      override val authService: EnrolmentsAuthService = mockEnrolmentsAuthService
+      override val lookupService: MtdIdLookupService  = mockMtdIdLookupService
+
+      def action(nino: String): Action[AnyContent] = authorisedAction(nino).async {
+        Future.successful(Ok(Json.obj()))
       }
+
     }
 
+    lazy val target = new TestController()
   }
 
-  "authorisation checks fail when retrieving the MDT ID" should {
-    "return a 403" in new Test {
-
-      MockedMtdIdLookupService
-        .lookup(nino)
-        .returns(Future.successful(Left(ClientNotAuthorisedError)))
-
-      private val result = target.action(nino)(fakeGetRequest)
-      status(result) shouldBe FORBIDDEN
-    }
-  }
-
-  "the an error occurs retrieving the MDT ID" should {
-    "return a 500" in new Test {
-
-      MockedMtdIdLookupService
-        .lookup(nino)
-        .returns(Future.successful(Left(InternalError)))
-
-      private val result = target.action(nino)(fakeGetRequest)
-      status(result) shouldBe INTERNAL_SERVER_ERROR
-    }
-  }
-
-  "the MTD user is not authenticated" should {
-    "return a 401" in new Test {
-
-      MockedMtdIdLookupService
-        .lookup(nino)
-        .returns(Future.successful(Right(mtdId)))
-
-      MockedEnrolmentsAuthService
-        .authorised(predicate)
-        .returns(Future.successful(Left(ClientNotAuthorisedError)))
-
-      private val result = target.action(nino)(fakeGetRequest)
-      status(result) shouldBe FORBIDDEN
-    }
-  }
-
-  "the MTD user is not authorised" should {
-    "return a 403" in new Test {
-
-      MockedMtdIdLookupService
-        .lookup(nino)
-        .returns(Future.successful(Right(mtdId)))
-
-      MockedEnrolmentsAuthService
-        .authorised(predicate)
-        .returns(Future.successful(Left(ClientNotAuthorisedError)))
-
-      private val result = target.action(nino)(fakeGetRequest)
-      status(result) shouldBe FORBIDDEN
-    }
-  }
 }

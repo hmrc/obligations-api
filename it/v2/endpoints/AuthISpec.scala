@@ -82,7 +82,7 @@ class AuthISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          MtdIdLookupStub.internalServerError(nino)
+          MtdIdLookupStub.error(nino, Status.INTERNAL_SERVER_ERROR)
         }
 
         val response: WSResponse = await(request().get())
@@ -91,6 +91,22 @@ class AuthISpec extends IntegrationBaseSpec {
     }
 
     "an MTD ID is successfully retrieve from the NINO and the user is authorised" should {
+
+      "MTD ID lookup fails with a 403" should {
+
+        "return 403" in new Test {
+          override val nino: String = "AA123456A"
+
+          override def setupStubs(): StubMapping = {
+            AuditStub.audit()
+            MtdIdLookupStub.error(nino, Status.FORBIDDEN)
+          }
+
+          val response: WSResponse = await(request().get())
+          response.status shouldBe Status.FORBIDDEN
+        }
+
+      }
 
       "return 200" in new Test {
         override def setupStubs(): StubMapping = {
