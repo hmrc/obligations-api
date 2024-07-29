@@ -47,7 +47,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
       }
 
       def testDefinitionWithConfidence(confidenceLevelConfig: ConfidenceLevelConfig): Unit = new Test {
-        Seq(Version1, Version2).foreach { version =>
+        Seq(Version1, Version2, Version3).foreach { version =>
           MockAppConfig.apiStatus(version) returns "ALPHA"
           MockAppConfig.endpointsEnabled(version) returns true
           MockAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
