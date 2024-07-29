@@ -20,7 +20,7 @@ import api.mocks.MockHttpClient
 import cats.implicits.catsSyntaxValidatedId
 import config.ConfidenceLevelConfig
 import config.Deprecation.NotDeprecated
-import definition.APIStatus.{ALPHA, BETA, DEPRECATED}
+import definition.APIStatus.{ALPHA, BETA}
 import mocks.MockAppConfig
 import routing.{Version1, Version2, Version3}
 import support.UnitSpec
