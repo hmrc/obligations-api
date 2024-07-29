@@ -20,9 +20,9 @@ import api.mocks.MockHttpClient
 import cats.implicits.catsSyntaxValidatedId
 import config.ConfidenceLevelConfig
 import config.Deprecation.NotDeprecated
-import definition.APIStatus.{ALPHA, BETA}
+import definition.APIStatus.{ALPHA, BETA, DEPRECATED}
 import mocks.MockAppConfig
-import routing.{Version1, Version2}
+import routing.{Version1, Version2, Version3}
 import support.UnitSpec
 import uk.gov.hmrc.auth.core.ConfidenceLevel
 
@@ -82,12 +82,17 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = Version1,
-                  status = ALPHA,
+                  status = DEPRECATED,
                   endpointsEnabled = true
                 ),
                 APIVersion(
                   version = Version2,
                   status = ALPHA,
+                  endpointsEnabled = true
+                ),
+                APIVersion(
+                  version = Version3,
+                  status = BETA,
                   endpointsEnabled = true
                 )
               ),
@@ -119,12 +124,12 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "buildAPIStatus" when {
     "the 'apiStatus' parameter is present and valid" should {
       "return the correct status" in new Test {
-        MockAppConfig.apiStatus(Version1) returns "BETA"
+        MockAppConfig.apiStatus(Version3) returns "BETA"
         MockAppConfig
-          .deprecationFor(Version1)
+          .deprecationFor(Version3)
           .returns(NotDeprecated.valid)
           .anyNumberOfTimes()
-        apiDefinitionFactory.buildAPIStatus(version = Version1) shouldBe BETA
+        apiDefinitionFactory.buildAPIStatus(version = Version3) shouldBe BETA
       }
     }
 
@@ -140,7 +145,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     }
 
     "the 'deprecatedOn' parameter is missing for a deprecated version" should {
-      Seq(Version1, Version2).foreach { version =>
+      Seq(Version1, Version2, Version3).foreach { version =>
         s"throw exception for $version" in new Test {
           MockAppConfig.apiStatus(version) returns "DEPRECATED"
           MockAppConfig

@@ -34,8 +34,12 @@ class VersionsSpec extends UnitSpec {
         Versions.getFromRequest(FakeRequest().withHeaders((ACCEPT, "application/vnd.hmrc.2.0+json"))) shouldBe Right(Version2)
       }
 
+      "return the specified V3 version" in {
+        Versions.getFromRequest(FakeRequest().withHeaders((ACCEPT, "application/vnd.hmrc.3.0+json"))) shouldBe Right(Version3)
+      }
+
       "return an error if the version is unsupported" in {
-        Versions.getFromRequest(FakeRequest().withHeaders((ACCEPT, "application/vnd.hmrc.3.0+json"))) shouldBe Left(VersionNotFound)
+        Versions.getFromRequest(FakeRequest().withHeaders((ACCEPT, "application/vnd.hmrc.4.0+json"))) shouldBe Left(VersionNotFound)
       }
 
       "return an error if the Accept header value is invalid" in {
@@ -52,9 +56,13 @@ class VersionsSpec extends UnitSpec {
         JsString("2.0").as[Version] shouldBe Version2
       }
 
-      "return Version2 when given unrecognised version" in {
+      "return Version3 when given 3.0" in {
+        JsString("3.0").as[Version] shouldBe Version3
+      }
+
+      "return Version3 when given unrecognised version" in {
         assertThrows[JsResultException] {
-          JsString("3.0").as[Version]
+          JsString("4.0").as[Version]
         }
       }
     }
