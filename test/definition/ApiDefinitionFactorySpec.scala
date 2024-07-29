@@ -82,7 +82,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = Version1,
-                  status = DEPRECATED,
+                  status = ALPHA,
                   endpointsEnabled = true
                 ),
                 APIVersion(
@@ -92,7 +92,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
                 ),
                 APIVersion(
                   version = Version3,
-                  status = BETA,
+                  status = ALPHA,
                   endpointsEnabled = true
                 )
               ),
