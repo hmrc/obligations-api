@@ -131,6 +131,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
         "use it" in new Test {
           MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
           MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
+          MockAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path/")) shouldBe Some(handler)
         }
@@ -140,6 +141,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
         "try without the trailing slash" in new Test {
           MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
           MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
+          MockAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path")) shouldBe Some(handler)
         }
