@@ -25,7 +25,7 @@ import v1.models.request.retrieveCrystallisationObligations.RetrieveCrystallisat
 import v1.models.response.retrieveCrystallisationObligations.RetrieveCrystallisationObligationsResponse
 import v1.services.RetrieveCrystallisationObligationsService
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MockRetrieveCrystallisationObligationsService extends MockFactory {
 
@@ -34,11 +34,12 @@ trait MockRetrieveCrystallisationObligationsService extends MockFactory {
   object MockRetrieveCrystallisationObligationsService {
 
     def retrieve(requestData: RetrieveCrystallisationObligationsRequest)
-      : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
+        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
       (mockRetrieveCrystallisationObligationsService
         .retrieve(_: RetrieveCrystallisationObligationsRequest)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
+
   }
 
 }

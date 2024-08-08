@@ -32,9 +32,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class RetrieveObligationsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def retrieveObligations(nino: Nino, dateRange: Option[DateRange], status: Option[MtdStatus])(implicit
-                                                                                               hc: HeaderCarrier,
-                                                                                               ec: ExecutionContext,
-                                                                                               correlationId: String): Future[DownstreamOutcome[DownstreamObligations]] = {
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[DownstreamObligations]] = {
 
     val queryParams =
       dateRange.toSeq.flatMap(range => Seq("from" -> range.startDateAsIso, "to" -> range.endDateAsIso)) ++

@@ -36,7 +36,8 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
     val fromDate       = "2019-01-01"
     val toDate         = "2019-06-06"
     val status         = "Open"
-    val responseBody   = Json.parse("""{
+
+    val responseBody = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -78,6 +79,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyOneObjectMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -135,6 +137,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsOneDetail = Json.parse("""{
         |  "obligations": [
         |     {
@@ -209,6 +212,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -359,11 +363,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -381,11 +386,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -403,11 +409,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -425,11 +432,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -521,11 +529,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -559,11 +568,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -599,11 +609,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> "uk-property",
-                                         "businessId"     -> businessId,
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> "uk-property",
+                "businessId"     -> businessId,
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -621,11 +632,12 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                         "businessId"     -> "XAIS12345678903",
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> typeOfBusiness,
+                "businessId"     -> "XAIS12345678903",
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -634,4 +646,5 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

@@ -26,13 +26,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                  val lookupService: MtdIdLookupService,
-                                                  validatorFactory: RetrieveEOPSObligationsValidatorFactory,
-                                                  service: RetrieveEOPSObligationsService,
-                                                  auditService: AuditService,
-                                                  cc: ControllerComponents,
-                                                  idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+class RetrieveEOPSObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                   val lookupService: MtdIdLookupService,
+                                                   validatorFactory: RetrieveEOPSObligationsValidatorFactory,
+                                                   service: RetrieveEOPSObligationsService,
+                                                   auditService: AuditService,
+                                                   cc: ControllerComponents,
+                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
@@ -64,4 +64,5 @@ class RetrieveEOPSObligationsController @Inject()(val authService: EnrolmentsAut
 
       requestHandler.handleRequest()
     }
+
 }

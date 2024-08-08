@@ -58,4 +58,5 @@ trait DownstreamResponseMappingSupport {
         ErrorWrapper(correlationId, error, errors)
     }
   }
+
 }

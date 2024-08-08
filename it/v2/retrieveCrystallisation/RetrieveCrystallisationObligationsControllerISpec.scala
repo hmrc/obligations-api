@@ -29,9 +29,10 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
   private trait Test {
 
-    val nino                                     = "AA123456A"
-    val taxYear                                  = "2017-18"
-    val singleObligationResponseBody: JsValue    = Json.parse(s"""
+    val nino    = "AA123456A"
+    val taxYear = "2017-18"
+
+    val singleObligationResponseBody: JsValue = Json.parse(s"""
          |{
          |  "obligations": [
          |    {
@@ -44,6 +45,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  ]
          |}
          |""".stripMargin)
+
     val multipleObligationsResponseBody: JsValue = Json.parse(s"""
                                                                  |{
                                                                  |  "obligations": [
@@ -64,7 +66,8 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                                                                  |  ]
                                                                  |}
                                                                  |""".stripMargin)
-    val desResponse: JsValue                     = Json.parse("""
+
+    val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -119,6 +122,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |        "reason": "des message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the retrieve crystallisation obligations endpoint" should {
@@ -377,4 +381,5 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
       }
     }
   }
+
 }

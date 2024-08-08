@@ -23,9 +23,12 @@ import utils.Logging
 import v2.models.response.domain.BusinessObligation
 import v2.models.response.downstream.{DownstreamObligationDetail, DownstreamObligations}
 
-trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging{
-  protected def toMtdBusinessObligations(downstreamObligations: DownstreamObligations, typeOfBusiness: Option[MtdBusiness], businessId: Option[BusinessId])(
-    detailsPredicate: DownstreamObligationDetail => Boolean): Seq[BusinessObligation] = {
+trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging {
+
+  protected def toMtdBusinessObligations(downstreamObligations: DownstreamObligations,
+                                         typeOfBusiness: Option[MtdBusiness],
+                                         businessId: Option[BusinessId])(
+      detailsPredicate: DownstreamObligationDetail => Boolean): Seq[BusinessObligation] = {
 
     def matchesBusiness(obligation: BusinessObligation): Boolean =
       typeOfBusiness.forall(_ == obligation.typeOfBusiness) && businessId.forall(_.value == obligation.businessId)
@@ -35,4 +38,5 @@ trait BaseService extends RequestContextImplicits with DownstreamResponseMapping
       mtdOb <- BusinessObligation.fromDownstream(dsOb) if matchesBusiness(mtdOb) && mtdOb.obligationDetails.nonEmpty
     } yield mtdOb
   }
+
 }

@@ -33,11 +33,12 @@ trait MockRetrieveCrystallisationObligationsService extends MockFactory {
   object MockRetrieveCrystallisationObligationsService {
 
     def retrieve(requestData: RetrieveCrystallisationObligationsRequest)
-      : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
+        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[RetrieveCrystallisationObligationsResponse]]]] = {
       (mockRetrieveCrystallisationObligationsService
         .retrieve(_: RetrieveCrystallisationObligationsRequest)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
+
   }
 
 }

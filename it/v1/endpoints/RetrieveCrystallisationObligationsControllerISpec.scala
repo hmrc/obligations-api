@@ -20,18 +20,19 @@ import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
+import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino                  = "AA123456A"
-    val taxYear               = "2017-18"
+    val nino    = "AA123456A"
+    val taxYear = "2017-18"
+
     val responseBody: JsValue = Json.parse(s"""
          |{
          |  "periodStartDate": "2018-04-06",
@@ -41,7 +42,8 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  "receivedDate": "2020-01-25"
          |}
          |""".stripMargin)
-    val desResponse: JsValue  = Json.parse("""
+
+    val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -92,6 +94,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |        "reason": "des message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the retrieve crystallisation obligations endpoint" should {
@@ -371,4 +374,5 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
       }
     }
   }
+
 }

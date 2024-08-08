@@ -31,4 +31,5 @@ object MtdIdLookupHttpParser extends HttpParser {
       case status => Left(MtdIdLookupConnector.Error(status))
     }
   }
+
 }

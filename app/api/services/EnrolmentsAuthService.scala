@@ -17,10 +17,10 @@
 package api.services
 
 import api.models.auth.UserDetails
-import api.models.errors.{ ClientOrAgentNotAuthorisedError, InternalError }
+import api.models.errors.{ClientOrAgentNotAuthorisedError, InternalError}
 import api.models.outcomes.AuthOutcome
 import config.AppConfig
-import uk.gov.hmrc.auth.core.AffinityGroup.{ Agent, Individual, Organisation }
+import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
@@ -29,11 +29,11 @@ import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EnrolmentsAuthService @Inject()(val connector: AuthConnector, val appConfig: AppConfig) extends Logging {
+class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConfig: AppConfig) extends Logging {
 
   private val authFunction: AuthorisedFunctions = new AuthorisedFunctions {
     override def authConnector: AuthConnector = connector
@@ -88,4 +88,5 @@ class EnrolmentsAuthService @Inject()(val connector: AuthConnector, val appConfi
       .getEnrolment("HMRC-AS-AGENT")
       .flatMap(_.getIdentifier("AgentReferenceNumber"))
       .map(_.value)
+
 }

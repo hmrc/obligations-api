@@ -122,4 +122,5 @@ class RetrieveCrystallisationObligationsControllerSpec
     protected def callController(): Future[Result] = controller.handleRequest(nino, Some(taxYear))(fakeGetRequest)
 
   }
+
 }

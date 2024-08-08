@@ -16,12 +16,12 @@
 
 package api.connectors.httpparsers
 
-import api.models.errors.{ BVRError, DownstreamError, DownstreamErrorCode, DownstreamErrors, InternalError, OutboundError }
+import api.models.errors.{BVRError, DownstreamError, DownstreamErrorCode, DownstreamErrors, InternalError, OutboundError}
 import play.api.Logger
 import play.api.libs.json._
 import uk.gov.hmrc.http.HttpResponse
 
-import scala.util.{ Success, Try }
+import scala.util.{Success, Try}
 
 trait HttpParser {
   private val logger: Logger = Logger(this.getClass)
@@ -48,6 +48,7 @@ trait HttpParser {
   }
 
   private val multipleErrorReads: Reads[List[DownstreamErrorCode]] = (__ \ "failures").read[List[DownstreamErrorCode]]
+
   private val bvrErrorReads: Reads[Seq[DownstreamErrorCode]] = {
     implicit val errorIdReads: Reads[DownstreamErrorCode] = (__ \ "id").read[String].map(DownstreamErrorCode(_))
     (__ \ "bvrfailureResponseElement" \ "validationRuleFailures").read[Seq[DownstreamErrorCode]]

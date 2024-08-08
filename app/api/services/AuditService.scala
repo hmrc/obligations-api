@@ -18,19 +18,19 @@ package api.services
 
 import api.models.audit.AuditEvent
 import play.api.Configuration
-import play.api.libs.json.{ Json, Writes }
+import play.api.libs.json.{Json, Writes}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.AuditExtensions
-import uk.gov.hmrc.play.audit.http.connector.{ AuditConnector, AuditResult }
+import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.play.bootstrap.config.AppName
 import utils.Logging
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuditService @Inject()(auditConnector: AuditConnector, appNameConfiguration: Configuration) extends Logging {
+class AuditService @Inject() (auditConnector: AuditConnector, appNameConfiguration: Configuration) extends Logging {
 
   def auditEvent[T](event: AuditEvent[T])(implicit hc: HeaderCarrier, ec: ExecutionContext, writer: Writes[T]): Future[AuditResult] = {
 
@@ -48,4 +48,5 @@ class AuditService @Inject()(auditConnector: AuditConnector, appNameConfiguratio
         s" --- detail :: ${dataEvent.detail}")
     auditConnector.sendExtendedEvent(dataEvent)
   }
+
 }

@@ -17,25 +17,26 @@
 package api.services
 
 import api.models.auth.UserDetails
-import api.models.errors.{ ClientOrAgentNotAuthorisedError, InternalError }
+import api.models.errors.{ClientOrAgentNotAuthorisedError, InternalError}
 import config.ConfidenceLevelConfig
 import mocks.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import uk.gov.hmrc.auth.core._
-import uk.gov.hmrc.auth.core.authorise.{ AlternatePredicate, CompositePredicate, EmptyPredicate, Predicate }
+import uk.gov.hmrc.auth.core.authorise.{AlternatePredicate, CompositePredicate, EmptyPredicate, Predicate}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
-import uk.gov.hmrc.auth.core.retrieve.{ Retrieval, ~ }
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
 
   private val extraPredicatesAnd =
     CompositePredicate(
       _,
-      AlternatePredicate(AlternatePredicate(CompositePredicate(AffinityGroup.Individual, ConfidenceLevel.L200), AffinityGroup.Organisation),
-                         AffinityGroup.Agent)
+      AlternatePredicate(
+        AlternatePredicate(CompositePredicate(AffinityGroup.Individual, ConfidenceLevel.L200), AffinityGroup.Organisation),
+        AffinityGroup.Agent)
     )
 
   trait Test {
@@ -62,6 +63,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
       }
 
     }
+
   }
 
   "calling .buildPredicate" when {
@@ -260,4 +262,5 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
     }
 
   }
+
 }

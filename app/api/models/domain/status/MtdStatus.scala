@@ -35,4 +35,5 @@ object MtdStatus {
   case object Open extends MtdStatus {
     override def toDes: DesStatus = DesStatus.O
   }
+
 }

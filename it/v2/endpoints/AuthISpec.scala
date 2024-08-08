@@ -19,21 +19,22 @@ package v2.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v2.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
+import v2.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 import java.time.Year
 
 class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val nino: String         = "AA123456A"
-    val taxYearEnd: Int      = Year.now.getValue
-    val taxYearStart: Int    = Year.now.getValue - 1
-    val taxYear: String      = s"$taxYearStart-${taxYearEnd.toString.drop(2)}"
+    val nino: String      = "AA123456A"
+    val taxYearEnd: Int   = Year.now.getValue
+    val taxYearStart: Int = Year.now.getValue - 1
+    val taxYear: String   = s"$taxYearStart-${taxYearEnd.toString.drop(2)}"
+
     val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
@@ -153,4 +154,5 @@ class AuthISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

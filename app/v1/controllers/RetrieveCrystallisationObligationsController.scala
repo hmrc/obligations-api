@@ -28,13 +28,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RetrieveCrystallisationObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                             val lookupService: MtdIdLookupService,
-                                                             validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
-                                                             service: RetrieveCrystallisationObligationsService,
-                                                             auditService: AuditService,
-                                                             cc: ControllerComponents,
-                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+class RetrieveCrystallisationObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                              val lookupService: MtdIdLookupService,
+                                                              validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
+                                                              service: RetrieveCrystallisationObligationsService,
+                                                              auditService: AuditService,
+                                                              cc: ControllerComponents,
+                                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 

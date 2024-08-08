@@ -16,7 +16,7 @@
 
 package api.controllers
 
-import api.models.audit.{ AuditEvent, AuditResponse, GenericAuditDetail }
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.auth.UserDetails
 import api.models.errors.ErrorWrapper
 import api.services.AuditService
@@ -55,8 +55,8 @@ case class AuditHandler(auditService: AuditService,
     extends RequestContextImplicits {
 
   def performAudit(userDetails: UserDetails, httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
-                                                                                                               ctx: RequestContext,
-                                                                                                               ec: ExecutionContext): Unit = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Unit = {
     val auditEvent = {
       val auditResponse = AuditResponse(httpStatus, response.map(responseBodyMap).leftMap(ew => ew.auditErrors))
 

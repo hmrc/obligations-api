@@ -30,7 +30,7 @@ import java.time.Clock
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class RetrieveEOPSObligationsValidatorFactory @Inject()(implicit clock: Clock)  {
+class RetrieveEOPSObligationsValidatorFactory @Inject() (implicit clock: Clock) {
   private val resolveTypeOfBusiness = ResolveMtdBusiness.resolver.resolveOptionally
   private val resolveBusinessId     = ResolveBusinessId.resolver.resolveOptionally
   private val resolveStatus         = ResolveMtdStatus.resolver.resolveOptionally

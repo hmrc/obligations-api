@@ -21,10 +21,11 @@ import play.api.libs.json.Json
 import support.UnitSpec
 
 class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
+
   "writes" should {
     "write to JSON" when {
       "passed a model with status Fulfilled" in {
-        val json  = Json.parse("""
+        val json = Json.parse("""
             |{
             |    "status": "Fulfilled",
             |    "periodStartDate": "2018-04-06",
@@ -38,7 +39,7 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with status Open" in {
-        val json  = Json.parse("""
+        val json = Json.parse("""
             |{
             |    "status": "Open",
             |    "periodStartDate": "2018-04-06",
@@ -52,7 +53,7 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
         Json.toJson(model) shouldBe json
       }
       "passed a model with no receivedDate" in {
-        val json  = Json.parse("""
+        val json = Json.parse("""
             |{
             |    "status": "Open",
             |    "periodStartDate": "2018-04-06",
@@ -66,4 +67,5 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec {
       }
     }
   }
+
 }

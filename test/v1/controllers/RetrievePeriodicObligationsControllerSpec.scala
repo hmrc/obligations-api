@@ -40,7 +40,7 @@ class RetrievePeriodicObligationsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockRetrievePeriodicObligationsService
-      with MockRetrievePeriodicObligationsValidatorFactory
+    with MockRetrievePeriodicObligationsValidatorFactory
     with MockAuditService {
 
   private val typeOfBusiness = "self-employment"
@@ -60,17 +60,18 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val response = RetrievePeriodObligationsResponse(
     Seq(
-      BusinessObligation(MtdBusiness.`self-employment`,
-                 businessId,
-                 Seq(
-                   ObligationDetail(
-                     fromDate,
-                     toDate,
-                     "2019-04-30",
-                     Some("2019-04-25"),
-                     MtdStatus.Open
-                   )
-                 ))
+      BusinessObligation(
+        MtdBusiness.`self-employment`,
+        businessId,
+        Seq(
+          ObligationDetail(
+            fromDate,
+            toDate,
+            "2019-04-30",
+            Some("2019-04-25"),
+            MtdStatus.Open
+          )
+        ))
     )
   )
 
@@ -167,5 +168,7 @@ class RetrievePeriodicObligationsControllerSpec
         Some(toDate),
         Some(status)
       )(fakeRequest)
+
   }
+
 }

@@ -30,13 +30,14 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino                  = "AA123456A"
-    val typeOfBusiness        = "self-employment"
-    val businessId            = "XAIS12345678901"
-    val fromDate              = "2018-04-06"
-    val toDate                = "2019-04-05"
-    val status                = "Open"
-    val desResponse: JsValue  = Json.parse("""
+    val nino           = "AA123456A"
+    val typeOfBusiness = "self-employment"
+    val businessId     = "XAIS12345678901"
+    val fromDate       = "2018-04-06"
+    val toDate         = "2019-04-05"
+    val status         = "Open"
+
+    val desResponse: JsValue = Json.parse("""
         |{
         |    "obligations": [
         |        {
@@ -96,6 +97,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         |        }
         |    ]
         |}""".stripMargin)
+
     val responseBody: JsValue = Json.parse(s"""
                                               |{
                                               |  "obligations": [
@@ -149,6 +151,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
          |        "reason": "des message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the retrieve EOPS obligations endpoint" should {
@@ -499,10 +502,10 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
               request()
                 .withQueryStringParameters(
                   requestTypeOfBusiness.map("typeOfBusiness" -> _).getOrElse(("", "")),
-                  requestBusinessId.map("businessId"         -> _).getOrElse(("", "")),
-                  requestFromDate.map("fromDate"             -> _).getOrElse(("", "")),
-                  requestToDate.map("toDate"                 -> _).getOrElse(("", "")),
-                  requestStatus.map("status"                 -> _).getOrElse(("", ""))
+                  requestBusinessId.map("businessId" -> _).getOrElse(("", "")),
+                  requestFromDate.map("fromDate" -> _).getOrElse(("", "")),
+                  requestToDate.map("toDate" -> _).getOrElse(("", "")),
+                  requestStatus.map("status" -> _).getOrElse(("", ""))
                 )
                 .get())
             response.status shouldBe expectedStatus
@@ -511,15 +514,17 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
         }
 
         val input = List(
-          ("BEANS",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           NinoFormatError),
-          ("AA123456A",
+          (
+            "BEANS",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            NinoFormatError),
+          (
+            "AA123456A",
             Some("do-not-use"),
             Some("XAIS12345678901"),
             Some("2018-04-06"),
@@ -527,65 +532,72 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
             Some("Open"),
             BAD_REQUEST,
             TypeOfBusinessFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("beans"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           BusinessIdFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("bad-date"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           FromDateFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2019-04-05"),
-           Some("bad-date"),
-           Some("Open"),
-           BAD_REQUEST,
-           ToDateFormatError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2018-04-06"),
-           Some("2019-04-05"),
-           Some("Somewhat-Open"),
-           BAD_REQUEST,
-           StatusFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("beans"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            BusinessIdFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("bad-date"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            FromDateFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2019-04-05"),
+            Some("bad-date"),
+            Some("Open"),
+            BAD_REQUEST,
+            ToDateFormatError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2018-04-06"),
+            Some("2019-04-05"),
+            Some("Somewhat-Open"),
+            BAD_REQUEST,
+            StatusFormatError),
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), Some("2019-04-05"), None, Some("Open"), BAD_REQUEST, MissingToDateError),
           ("AA123456A", Some("self-employment"), Some("XAIS12345678901"), None, Some("2019-04-05"), Some("Open"), BAD_REQUEST, MissingFromDateError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2020-04-05"),
-           Some("2019-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           ToDateBeforeFromDateError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2020-04-05"),
+            Some("2019-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            ToDateBeforeFromDateError),
           ("AA123456A", None, Some("XAIS12345678901"), Some("2020-04-05"), Some("2019-04-05"), Some("Open"), BAD_REQUEST, MissingTypeOfBusinessError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2019-04-05"),
-           Some("2021-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           RuleDateRangeInvalidError),
-          ("AA123456A",
-           Some("self-employment"),
-           Some("XAIS12345678901"),
-           Some("2016-04-05"),
-           Some("2017-04-05"),
-           Some("Open"),
-           BAD_REQUEST,
-           RuleFromDateNotSupportedError)
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2019-04-05"),
+            Some("2021-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            RuleDateRangeInvalidError),
+          (
+            "AA123456A",
+            Some("self-employment"),
+            Some("XAIS12345678901"),
+            Some("2016-04-05"),
+            Some("2017-04-05"),
+            Some("Open"),
+            BAD_REQUEST,
+            RuleFromDateNotSupportedError)
         )
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
@@ -795,4 +807,5 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

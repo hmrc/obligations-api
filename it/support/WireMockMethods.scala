@@ -33,15 +33,16 @@ trait WireMockMethods {
   }
 
   class Mapping(method: HTTPMethod, uri: String, queryParams: Map[String, String], headers: Map[String, String], body: Option[String]) {
+
     private val mapping = {
       val uriMapping = method.wireMockMapping(urlPathMatching(uri))
 
-      val uriMappingWithQueryParams = queryParams.foldLeft(uriMapping) {
-        case (m, (key, value)) => m.withQueryParam(key, matching(value))
+      val uriMappingWithQueryParams = queryParams.foldLeft(uriMapping) { case (m, (key, value)) =>
+        m.withQueryParam(key, matching(value))
       }
 
-      val uriMappingWithHeaders = headers.foldLeft(uriMappingWithQueryParams) {
-        case (m, (key, value)) => m.withHeader(key, equalTo(value))
+      val uriMappingWithHeaders = headers.foldLeft(uriMappingWithQueryParams) { case (m, (key, value)) =>
+        m.withHeader(key, equalTo(value))
       }
 
       body match {
@@ -66,8 +67,8 @@ trait WireMockMethods {
     private def thenReturnInternal(status: Int, headers: Map[String, String], body: Option[String]): StubMapping = {
       val response = {
         val statusResponse = aResponse().withStatus(status)
-        val responseWithHeaders = headers.foldLeft(statusResponse) {
-          case (res, (key, value)) => res.withHeader(key, value)
+        val responseWithHeaders = headers.foldLeft(statusResponse) { case (res, (key, value)) =>
+          res.withHeader(key, value)
         }
         body match {
           case Some(extractedBody) => responseWithHeaders.withBody(extractedBody)
@@ -77,6 +78,7 @@ trait WireMockMethods {
 
       stubFor(mapping.willReturn(response))
     }
+
   }
 
   case object POST extends HTTPMethod {

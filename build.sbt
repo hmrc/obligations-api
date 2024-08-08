@@ -18,6 +18,7 @@ import sbt._
 import uk.gov.hmrc.DefaultBuildSettings.{ addTestReportOption, defaultSettings }
 import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
+import org.scalafmt.sbt.ScalafmtPlugin
 
 lazy val ItTest = config("it") extend Test
 lazy val microservice = Project(appName, file("."))
@@ -28,6 +29,7 @@ lazy val microservice = Project(appName, file("."))
     retrieveManaged := true,
     update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(warnScalaVersionEviction = false),
     scalaVersion := "2.13.12",
+    scalafmtOnCompile               := true,
     scalacOptions ++= Seq("-language:higherKinds", "-Xlint:-byname-implicit", "-Xfatal-warnings", "-Wconf:src=routes/.*:silent", "-feature")
   )
   .settings(

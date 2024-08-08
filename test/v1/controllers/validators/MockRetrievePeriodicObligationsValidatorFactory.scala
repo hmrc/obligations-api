@@ -26,8 +26,17 @@ trait MockRetrievePeriodicObligationsValidatorFactory extends MockValidatorFacto
     mock[RetrievePeriodicObligationsValidatorFactory]
 
   def validator(): CallHandler[Validator[RetrievePeriodicObligationsRequest]] =
-    (mockRetrievePeriodicObligationsValidatorFactory
-      .validator(_: String, _: Option[String], _: Option[String], _: Option[String], _: Option[String], _: Option[String]))
+    (
+      mockRetrievePeriodicObligationsValidatorFactory
+        .validator(
+          _: String,
+          _: Option[String],
+          _: Option[String],
+          _: Option[String],
+          _: Option[String],
+          _: Option[String]
+        )
+      )
       .expects(*, *, *, *, *, *)
 
 }

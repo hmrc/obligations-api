@@ -40,4 +40,5 @@ object ResolveNino {
 
   private val invalidPrefixes =
     List("BG", "GB", "NK", "KN", "TN", "NT", "ZZ")
+
 }

@@ -38,6 +38,7 @@ trait MockRetrieveEOPSObligationsService extends MockFactory {
         .retrieve(_: RetrieveEOPSObligationsRequest)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
+
   }
 
 }

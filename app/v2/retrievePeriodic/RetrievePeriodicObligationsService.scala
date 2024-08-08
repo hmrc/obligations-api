@@ -34,7 +34,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrievePeriodicObligationsService @Inject()(connector: RetrieveObligationsConnector) extends BaseService {
+class RetrievePeriodicObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(
@@ -66,8 +66,8 @@ class RetrievePeriodicObligationsService @Inject()(connector: RetrieveObligation
   }
 
   private def extractMtdResponse(responseWrapper: ResponseWrapper[DownstreamObligations],
-                                   typeOfBusiness: Option[MtdBusiness],
-                                   businessId: Option[BusinessId]) =
+                                 typeOfBusiness: Option[MtdBusiness],
+                                 businessId: Option[BusinessId]) =
     toMtdBusinessObligations(responseWrapper.responseData, typeOfBusiness, businessId)(_.periodKey != PeriodKey.EOPS) match {
       case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
       case obs => Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(obs)))

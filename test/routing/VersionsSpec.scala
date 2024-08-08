@@ -17,7 +17,7 @@
 package routing
 
 import play.api.http.HeaderNames.ACCEPT
-import play.api.libs.json.{ JsResultException, JsString }
+import play.api.libs.json.{JsResultException, JsString}
 import play.api.test.FakeRequest
 import routing.Version._
 import support.UnitSpec
@@ -67,4 +67,5 @@ class VersionsSpec extends UnitSpec {
       }
     }
   }
+
 }

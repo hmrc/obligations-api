@@ -18,11 +18,12 @@ package v1.models.request
 
 import java.time.LocalDate
 
-/**
-  * Represents a tax year for DES
+/** Represents a tax year for DES
   *
-  * @param from the from date string (where YYXX-ZZ is translated to 20XX-04-06)
-  * @param to the to date string (where YYXX-ZZ is translated to 20ZZ-04-05)
+  * @param from
+  *   the from date string (where YYXX-ZZ is translated to 20XX-04-06)
+  * @param to
+  *   the to date string (where YYXX-ZZ is translated to 20ZZ-04-05)
   */
 case class ObligationsTaxYear(from: String, to: String)
 
@@ -30,8 +31,8 @@ trait ObligationsTaxYearHelpers {
 
   val date: LocalDate = LocalDate.now()
 
-  /**
-    * @param taxYear tax year in MTD format (e.g. 2017-18)
+  /** @param taxYear
+    *   tax year in MTD format (e.g. 2017-18)
     */
   case class RawTaxYear(taxYear: Option[String]) {
     private val patternRegex = "20([1-9][0-9])-([1-9][0-9])".r
@@ -41,24 +42,25 @@ trait ObligationsTaxYearHelpers {
       case _                      => throw new IllegalArgumentException("Tax year must conform to format: 20([1-9][0-9])-([1-9][0-9])")
     }
 
-    /**
-      * @return ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
+    /** @return
+      *   ObligationsTaxYear model, where the from and to date turn YYXX-ZZ to 20XX-04-06 and 20ZZ-04-05
       */
     val toObligationsTaxYear: ObligationsTaxYear = ObligationsTaxYear(s"20$fromYear-04-06", s"20$toYear-04-05")
   }
 
-  /**
-    * @param year (e.g. 2020)
+  /** @param year
+    *   (e.g. 2020)
     *
-    * @return tax year in MTD format (e.g. 2020 -> 2019-20)
+    * @return
+    *   tax year in MTD format (e.g. 2020 -> 2019-20)
     */
   private def returnYearInMtdFormat(year: Int): String = {
     (year - 1).toString + "-" + year.toString.drop(2)
   }
 
-  /**
-    * @return the most recent complete tax year. If the date is before or on 5th April,
-    *         the year is not considered complete and the previous tax year will be returned
+  /** @return
+    *   the most recent complete tax year. If the date is before or on 5th April, the year is not considered complete and the previous tax year will
+    *   be returned
     */
   def getMostRecentTaxYear: String = {
     val year                = date.getYear
@@ -67,4 +69,5 @@ trait ObligationsTaxYearHelpers {
     if (date.isAfter(fiscalYearStartDate)) returnYearInMtdFormat(year)
     else returnYearInMtdFormat(year - 1)
   }
+
 }
