@@ -32,7 +32,7 @@ trait BaseDownstreamConnector {
   val logger: Logger                = Logger(this.getClass)
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
 
-  implicit protected lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
+  implicit protected lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitchConfig)
 
   def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,

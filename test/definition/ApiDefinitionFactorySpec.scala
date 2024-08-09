@@ -21,7 +21,7 @@ import cats.implicits.catsSyntaxValidatedId
 import config.ConfidenceLevelConfig
 import config.Deprecation.NotDeprecated
 import definition.APIStatus.{ALPHA, BETA}
-import mocks.MockAppConfig
+import config.MockAppConfig
 import routing.{Version1, Version2, Version3}
 import support.UnitSpec
 import uk.gov.hmrc.auth.core.ConfidenceLevel
@@ -32,7 +32,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
   class Test extends MockHttpClient with MockAppConfig {
     val apiDefinitionFactory = new ApiDefinitionFactory(mockAppConfig)
-    MockAppConfig.apiGatewayContext returns "other/deductions"
+    MockedAppConfig.apiGatewayContext returns "other/deductions"
   }
 
   "definition" when {
@@ -48,11 +48,11 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
       def testDefinitionWithConfidence(confidenceLevelConfig: ConfidenceLevelConfig): Unit = new Test {
         Seq(Version1, Version2, Version3).foreach { version =>
-          MockAppConfig.apiStatus(version) returns "ALPHA"
-          MockAppConfig.endpointsEnabled(version) returns true
-          MockAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
+          MockedAppConfig.apiStatus(version) returns "ALPHA"
+          MockedAppConfig.endpointsEnabled(version) returns true
+          MockedAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
         }
-        MockAppConfig.confidenceLevelCheckEnabled.returns(confidenceLevelConfig).anyNumberOfTimes()
+        MockedAppConfig.confidenceLevelCheckEnabled.returns(confidenceLevelConfig).anyNumberOfTimes()
 
         val readScope: String                = "read:self-assessment"
         val writeScope: String               = "write:self-assessment"
@@ -111,7 +111,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     ).foreach { case (definitionEnabled, configCL, expectedDefinitionCL) =>
       s"confidence-level-check.definition.enabled is $definitionEnabled and confidence-level = $configCL" should {
         s"return confidence level $expectedDefinitionCL" in new Test {
-          MockAppConfig.confidenceLevelCheckEnabled returns ConfidenceLevelConfig(
+          MockedAppConfig.confidenceLevelCheckEnabled returns ConfidenceLevelConfig(
             confidenceLevel = configCL,
             definitionEnabled = definitionEnabled,
             authValidationEnabled = true)
@@ -124,8 +124,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "buildAPIStatus" when {
     "the 'apiStatus' parameter is present and valid" should {
       "return the correct status" in new Test {
-        MockAppConfig.apiStatus(Version3) returns "BETA"
-        MockAppConfig
+        MockedAppConfig.apiStatus(Version3) returns "BETA"
+        MockedAppConfig
           .deprecationFor(Version3)
           .returns(NotDeprecated.valid)
           .anyNumberOfTimes()
@@ -135,8 +135,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
     "the 'apiStatus' parameter is present and invalid" should {
       "default to alpha" in new Test {
-        MockAppConfig.apiStatus(Version1) returns "ALPHO"
-        MockAppConfig
+        MockedAppConfig.apiStatus(Version1) returns "ALPHO"
+        MockedAppConfig
           .deprecationFor(Version1)
           .returns(NotDeprecated.valid)
           .anyNumberOfTimes()
@@ -147,8 +147,8 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     "the 'deprecatedOn' parameter is missing for a deprecated version" should {
       Seq(Version1, Version2, Version3).foreach { version =>
         s"throw exception for $version" in new Test {
-          MockAppConfig.apiStatus(version) returns "DEPRECATED"
-          MockAppConfig
+          MockedAppConfig.apiStatus(version) returns "DEPRECATED"
+          MockedAppConfig
             .deprecationFor(version)
             .returns(s"deprecatedOn date is required for a deprecated version $version".invalid)
             .anyNumberOfTimes()

@@ -38,8 +38,10 @@ class RetrieveCrystallisationObligationsController @Inject() (val authService: E
     extends AuthorisedController(cc)
     with Logging {
 
+  override val endpointName: String = "retrieve-crystallisation-obligations"
+
   implicit val endpointLogContext: EndpointLogContext =
-    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "retrieveCrystallisationObligations")
+    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = endpointName)
 
   def handleRequest(nino: String, taxYear: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>

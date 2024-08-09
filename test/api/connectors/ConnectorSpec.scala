@@ -17,7 +17,7 @@
 package api.connectors
 
 import api.mocks.MockHttpClient
-import mocks.MockAppConfig
+import config.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import support.UnitSpec
@@ -85,10 +85,10 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     protected lazy val requiredHeaders: Seq[(String, String)] = requiredDesHeaders
 
-    MockAppConfig.desBaseUrl returns this.baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockedAppConfig.desBaseUrl returns this.baseUrl
+    MockedAppConfig.desToken returns "des-token"
+    MockedAppConfig.desEnvironment returns "des-environment"
+    MockedAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
 }

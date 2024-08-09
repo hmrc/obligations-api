@@ -36,6 +36,8 @@ class RetrievePeriodicObligationsController @Inject() (val authService: Enrolmen
     extends AuthorisedController(cc)
     with Logging {
 
+  override val endpointName: String = "retrieve-periodic-obligations"
+
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrievePeriodicObligationsController", endpointName = "handleRequest")
 

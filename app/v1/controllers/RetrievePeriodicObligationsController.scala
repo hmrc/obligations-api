@@ -41,6 +41,8 @@ class RetrievePeriodicObligationsController @Inject() (val authService: Enrolmen
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrievePeriodicObligationsController", endpointName = "handleRequest")
 
+  override val endpointName: String = "retrieve-periodic-obligations"
+
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],
                     businessId: Option[String],

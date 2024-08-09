@@ -36,6 +36,8 @@ class RetrieveEOPSObligationsController @Inject() (val authService: EnrolmentsAu
     extends AuthorisedController(cc)
     with Logging {
 
+  override val endpointName: String = "retrieve-eops-obligations"
+
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
 

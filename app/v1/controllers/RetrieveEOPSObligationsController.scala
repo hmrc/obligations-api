@@ -41,6 +41,8 @@ class RetrieveEOPSObligationsController @Inject() (val authService: EnrolmentsAu
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
 
+  override val endpointName: String = "retrieve-eops-obligations"
+
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],
                     businessId: Option[String],
