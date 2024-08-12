@@ -17,6 +17,9 @@
 package v1.endpoints
 
 import api.models.errors._
+import api.services.{AuditStub, DownstreamStub}
+import api.services.AuthStub
+import api.services.MtdIdLookupStub
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
@@ -24,7 +27,6 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -356,9 +358,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(
@@ -379,9 +381,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseOneObjectMultipleDetails)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseOneObjectMultipleDetails)
         }
 
         val response: WSResponse = await(
@@ -402,9 +404,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsOneDetail)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsOneDetail)
         }
 
         val response: WSResponse = await(
@@ -425,9 +427,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsMultipleDetails)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsMultipleDetails)
         }
 
         val response: WSResponse = await(
@@ -454,9 +456,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -472,9 +474,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -490,9 +492,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -523,7 +525,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
             }
 
@@ -561,9 +563,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(
@@ -602,9 +604,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -625,9 +627,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(

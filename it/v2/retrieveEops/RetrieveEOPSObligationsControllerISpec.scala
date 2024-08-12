@@ -24,7 +24,10 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v2.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import api.services.AuditStub
+import api.services.AuthStub
+import api.services.DownstreamStub
+import api.services.MtdIdLookupStub
 
 class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -162,9 +165,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desResponse)
         }
 
         val response: WSResponse = await(request().get())
@@ -177,9 +180,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(
@@ -317,9 +320,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(
@@ -457,9 +460,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(
@@ -492,7 +495,7 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
           s"validation fails with ${expectedBody.code} error" in new Test {
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(requestNino)
             }
 
@@ -608,9 +611,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(
@@ -710,9 +713,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desResponse)
           }
 
           val response: WSResponse = await(request().get())
@@ -784,9 +787,9 @@ class RetrieveEOPSObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desResponse)
           }
 
           override val businessId = "XAIS12345678903"
