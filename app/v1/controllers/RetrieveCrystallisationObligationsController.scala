@@ -28,18 +28,20 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RetrieveCrystallisationObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                             val lookupService: MtdIdLookupService,
-                                                             validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
-                                                             service: RetrieveCrystallisationObligationsService,
-                                                             auditService: AuditService,
-                                                             cc: ControllerComponents,
-                                                             idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+class RetrieveCrystallisationObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                              val lookupService: MtdIdLookupService,
+                                                              validatorFactory: RetrieveCrystallisationObligationsValidatorFactory,
+                                                              service: RetrieveCrystallisationObligationsService,
+                                                              auditService: AuditService,
+                                                              cc: ControllerComponents,
+                                                              idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
+  override val endpointName: String = "retrieve-crystallisation-obligations"
+
   implicit val endpointLogContext: EndpointLogContext =
-    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "retrieveCrystallisationObligations")
+    EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = endpointName)
 
   def handleRequest(nino: String, taxYear: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>

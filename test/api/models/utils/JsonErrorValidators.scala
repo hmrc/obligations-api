@@ -39,6 +39,7 @@ trait JsonErrorValidators {
       case JsError(jsErrors) => jsErrors.map(item => (item._1, item._2.toList)).toList
       case JsSuccess(_, _)   => fail("A JSON error was expected")
     }
+
   }
 
   private def jsPathFrom(str: String) =

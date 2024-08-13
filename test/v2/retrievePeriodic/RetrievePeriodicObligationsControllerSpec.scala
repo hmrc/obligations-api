@@ -24,6 +24,8 @@ import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors.{ErrorWrapper, NinoFormatError, RuleTaxYearNotSupportedError}
 import api.models.outcomes.ResponseWrapper
 import api.services.MockAuditService
+import config.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v2.models.response.domain.{BusinessObligation, ObligationDetail}
@@ -38,8 +40,9 @@ class RetrievePeriodicObligationsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockRetrievePeriodicObligationsService
-      with MockRetrievePeriodicObligationsValidatorFactory
-    with MockAuditService {
+    with MockRetrievePeriodicObligationsValidatorFactory
+    with MockAuditService
+    with MockAppConfig {
 
   private val typeOfBusiness = "self-employment"
   private val businessId     = "XAIS123456789012"
@@ -58,17 +61,18 @@ class RetrievePeriodicObligationsControllerSpec
 
   private val response = RetrievePeriodObligationsResponse(
     Seq(
-      BusinessObligation(MtdBusiness.`self-employment`,
-                 businessId,
-                 Seq(
-                   ObligationDetail(
-                     fromDate,
-                     toDate,
-                     "2019-04-30",
-                     Some("2019-04-25"),
-                     MtdStatus.Open
-                   )
-                 ))
+      BusinessObligation(
+        MtdBusiness.`self-employment`,
+        businessId,
+        Seq(
+          ObligationDetail(
+            fromDate,
+            toDate,
+            "2019-04-30",
+            Some("2019-04-25"),
+            MtdStatus.Open
+          )
+        ))
     )
   )
 
@@ -129,7 +133,7 @@ class RetrievePeriodicObligationsControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new RetrievePeriodicObligationsController(
       authService = mockEnrolmentsAuthService,
@@ -140,6 +144,12 @@ class RetrievePeriodicObligationsControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
+
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
@@ -165,5 +175,7 @@ class RetrievePeriodicObligationsControllerSpec
         Some(toDate),
         Some(status)
       )(fakeRequest)
+
   }
+
 }

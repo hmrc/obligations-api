@@ -19,9 +19,9 @@ package api.models.errors
 import play.api.http.Status._
 
 // Format Errors
-object NinoFormatError           extends MtdError("FORMAT_NINO", "The provided NINO is invalid", BAD_REQUEST)
-object TaxYearFormatError        extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid", BAD_REQUEST)
-object BusinessIdFormatError     extends MtdError("FORMAT_BUSINESS_ID", "The provided businessId is invalid", BAD_REQUEST)
+object NinoFormatError       extends MtdError("FORMAT_NINO", "The provided NINO is invalid", BAD_REQUEST)
+object TaxYearFormatError    extends MtdError("FORMAT_TAX_YEAR", "The provided tax year is invalid", BAD_REQUEST)
+object BusinessIdFormatError extends MtdError("FORMAT_BUSINESS_ID", "The provided businessId is invalid", BAD_REQUEST)
 
 object TransactionIdFormatError extends MtdError(code = "FORMAT_TRANSACTION_ID", message = "The transaction ID format is invalid", BAD_REQUEST)
 
@@ -48,6 +48,7 @@ object TypeOfBusinessFormatError extends MtdError("FORMAT_TYPE_OF_BUSINESS", "Th
 // Parameter errors
 object MissingTypeOfBusinessError
     extends MtdError("MISSING_TYPE_OF_BUSINESS", "The type of business query parameter must be provided when a businessId is supplied", BAD_REQUEST)
+
 object MissingFromDateError      extends MtdError("MISSING_FROM_DATE", "The From date parameter is missing", BAD_REQUEST)
 object MissingToDateError        extends MtdError("MISSING_TO_DATE", "The To date parameter is missing", BAD_REQUEST)
 object ToDateBeforeFromDateError extends MtdError("RANGE_TO_DATE_BEFORE_FROM_DATE", "The To date must be after the From date", BAD_REQUEST)
@@ -96,10 +97,10 @@ object InvalidBodyTypeError
     extends MtdError(code = "INVALID_BODY_TYPE", message = "Expecting text/json or application/json body", UNSUPPORTED_MEDIA_TYPE)
 
 object InvalidTaxYearParameterError
-  extends MtdError(code = "INVALID_TAX_YEAR_PARAMETER", message = "A tax year before 2023-24 was supplied", BAD_REQUEST)
+    extends MtdError(code = "INVALID_TAX_YEAR_PARAMETER", message = "A tax year before 2023-24 was supplied", BAD_REQUEST)
 
 object RuleEndBeforeStartDateError
-  extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The supplied accounting period end date is before the start date", BAD_REQUEST)
+    extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The supplied accounting period end date is before the start date", BAD_REQUEST)
 
 object RuleCountryCodeError extends MtdError("RULE_COUNTRY_CODE", "The country code is not a valid ISO 3166-1 alpha-3 country code", BAD_REQUEST)
 

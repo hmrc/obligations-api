@@ -26,7 +26,9 @@ import v1.support.DownstreamResponseMappingSupport
 
 trait BaseService extends RequestContextImplicits with DownstreamResponseMappingSupport with Logging {
 
-  protected def toMtdBusinessObligations(downstreamObligations: DownstreamObligations, typeOfBusiness: Option[MtdBusiness], businessId: Option[BusinessId])(
+  protected def toMtdBusinessObligations(downstreamObligations: DownstreamObligations,
+                                         typeOfBusiness: Option[MtdBusiness],
+                                         businessId: Option[BusinessId])(
       detailsPredicate: DownstreamObligationDetail => Boolean): Seq[BusinessObligation] = {
 
     def matchesBusiness(obligation: BusinessObligation): Boolean =

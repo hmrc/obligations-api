@@ -50,16 +50,18 @@ trait AppConfig {
   // API Config
   def apiGatewayContext: String
   def apiStatus(version: Version): String
-  def featureSwitches: Configuration
+  def featureSwitchConfig: Configuration
   def endpointsEnabled(version: Version): Boolean
   def confidenceLevelConfig: ConfidenceLevelConfig
   def deprecationFor(version: Version): Validated[String, Deprecation]
 
   def apiDocumentationUrl: String
+  def safeEndpointsEnabled(version: String): Boolean
+  def endpointAllowsSupportingAgents(endpointName: String): Boolean
 }
 
 @Singleton
-class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
+class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Configuration) extends AppConfig {
 
   val appName: String = config.getString("appName")
 
@@ -78,7 +80,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
 
   def apiStatus(version: Version): String = config.getString(s"api.${version.name}.status")
 
-  def featureSwitches: Configuration = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
+  def featureSwitchConfig: Configuration = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
 
   def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.${version.name}.endpoints.enabled")
 
@@ -127,6 +129,21 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
       s"sunsetDate must be later than deprecatedOn date for a deprecated version $version".invalid
     }
   }
+
+  /** Like endpointsEnabled, but will return false if version doesn't exist.
+    */
+  def safeEndpointsEnabled(version: String): Boolean =
+    configuration
+      .getOptional[Boolean](s"api.$version.endpoints.enabled")
+      .getOrElse(false)
+
+  override def endpointAllowsSupportingAgents(endpointName: String): Boolean =
+    supportingAgentEndpoints.getOrElse(endpointName, false)
+
+  private val supportingAgentEndpoints: Map[String, Boolean] =
+    configuration
+      .getOptional[Map[String, Boolean]]("api.supporting-agent-endpoints")
+      .getOrElse(Map.empty)
 
 }
 

@@ -23,15 +23,19 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v2.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import api.services.AuditStub
+import api.services.AuthStub
+import api.services.DownstreamStub
+import api.services.MtdIdLookupStub
 
 class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino                                     = "AA123456A"
-    val taxYear                                  = "2017-18"
-    val singleObligationResponseBody: JsValue    = Json.parse(s"""
+    val nino    = "AA123456A"
+    val taxYear = "2017-18"
+
+    val singleObligationResponseBody: JsValue = Json.parse(s"""
          |{
          |  "obligations": [
          |    {
@@ -44,6 +48,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |  ]
          |}
          |""".stripMargin)
+
     val multipleObligationsResponseBody: JsValue = Json.parse(s"""
                                                                  |{
                                                                  |  "obligations": [
@@ -64,7 +69,8 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
                                                                  |  ]
                                                                  |}
                                                                  |""".stripMargin)
-    val desResponse: JsValue                     = Json.parse("""
+
+    val desResponse: JsValue = Json.parse("""
         | {
         |    "obligations": [
         |        {
@@ -97,7 +103,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
 
     def request(): WSRequest = {
       AuditStub.audit()
-      AuthStub.authorised()
+      AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
       MtdIdLookupStub.ninoFound(nino)
       setupStubs()
 
@@ -119,6 +125,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
          |        "reason": "des message"
          |      }
     """.stripMargin
+
   }
 
   "Calling the retrieve crystallisation obligations endpoint" should {
@@ -128,7 +135,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
       "any valid request is made" in new Test {
 
         override def setupStubs(): Unit = {
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -180,7 +187,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     """.stripMargin)
 
         override def setupStubs(): Unit = {
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -231,7 +238,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             |}""".stripMargin)
 
         override def setupStubs(): Unit = {
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -273,7 +280,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
             |}""".stripMargin)
 
         override def setupStubs(): Unit = {
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -313,7 +320,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
           s"des returns an $desCode error and status $desStatus" in new Test {
 
             override def setupStubs(): Unit = {
-              DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -366,7 +373,7 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
     """.stripMargin)
 
             override def setupStubs(): Unit = {
-              DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+              DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
             }
 
             val response: WSResponse = await(request().withQueryStringParameters("taxYear" -> taxYear).get())
@@ -377,4 +384,5 @@ class RetrieveCrystallisationObligationsControllerISpec extends IntegrationBaseS
       }
     }
   }
+
 }

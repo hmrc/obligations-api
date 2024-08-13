@@ -17,7 +17,7 @@
 package utils.enums
 
 import cats.Show
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.Inspectors
 import play.api.libs.json._
 import support.UnitSpec
@@ -141,4 +141,5 @@ class EnumsSpec extends UnitSpec with Inspectors {
         """.stripMargin)
     }
   }
+
 }

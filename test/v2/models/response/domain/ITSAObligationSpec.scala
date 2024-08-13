@@ -27,10 +27,7 @@ class ITSAObligationSpec extends UnitSpec with DownstreamObligationsFixture with
       ITSAObligation.fromDownstream(
         downstreamObligation(
           Some(
-            downstreamIdentification(
-              incomeSourceType = Some(DesBusiness.ITSA),
-              referenceNumber = "ignoredRefNo",
-              referenceType = "ignoredRefType")),
+            downstreamIdentification(incomeSourceType = Some(DesBusiness.ITSA), referenceNumber = "ignoredRefNo", referenceType = "ignoredRefType")),
           Seq(downstreamObligationDetail())
         )) shouldBe
         Some(ITSAObligation(Seq(obligationDetail())))

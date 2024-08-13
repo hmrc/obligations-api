@@ -35,10 +35,10 @@ import scala.concurrent.Future
 
 class RetrievePeriodicObligationsServiceSpec extends ServiceSpec with DownstreamObligationsFixture with ObligationsFixture {
 
-  private val nino           = "AA123456A"
-  private val fromDate       = "2018-04-06"
-  private val toDate         = "2019-04-05"
-  private val status         = MtdStatus.Open
+  private val nino     = "AA123456A"
+  private val fromDate = "2018-04-06"
+  private val toDate   = "2019-04-05"
+  private val status   = MtdStatus.Open
 
   private def request(nino: Nino,
                       typeOfBusiness: Option[MtdBusiness] = None,
@@ -155,7 +155,8 @@ class RetrievePeriodicObligationsServiceSpec extends ServiceSpec with Downstream
             .retrieveObligations(requestData.nino, None, None) returns
             Future.successful(Right(ResponseWrapper(correlationId, downstreamResult)))
 
-          private val result = RetrievePeriodObligationsResponse(Seq(obligation(businessId = "businessId1", obligationDetails = Seq(obligationDetail()))))
+          private val result =
+            RetrievePeriodObligationsResponse(Seq(obligation(businessId = "businessId1", obligationDetails = Seq(obligationDetail()))))
 
           await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
         }

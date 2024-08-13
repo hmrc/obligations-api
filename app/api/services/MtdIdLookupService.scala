@@ -22,15 +22,15 @@ import api.models.errors.{InvalidBearerTokenError, NinoFormatError, _}
 import play.api.http.Status._
 import uk.gov.hmrc.http.HeaderCarrier
 
-import javax.inject.{ Inject, Singleton }
-import scala.concurrent.{ ExecutionContext, Future }
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 object MtdIdLookupService {
   type Outcome = Either[MtdError, String]
 }
 
 @Singleton
-class MtdIdLookupService @Inject()(val connector: MtdIdLookupConnector) {
+class MtdIdLookupService @Inject() (val connector: MtdIdLookupConnector) {
 
   def lookup(nino: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[MtdIdLookupService.Outcome] = {
     if (!ResolveNino.isValid(nino)) {
@@ -40,11 +40,12 @@ class MtdIdLookupService @Inject()(val connector: MtdIdLookupConnector) {
         case Right(mtdId) => Right(mtdId)
         case Left(MtdIdLookupConnector.Error(statusCode)) =>
           statusCode match {
-            case FORBIDDEN => Left(ClientOrAgentNotAuthorisedError)
+            case FORBIDDEN    => Left(ClientOrAgentNotAuthorisedError)
             case UNAUTHORIZED => Left(InvalidBearerTokenError)
-            case _ => Left(InternalError)
+            case _            => Left(InternalError)
           }
       }
     }
   }
+
 }

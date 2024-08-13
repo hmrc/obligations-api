@@ -17,14 +17,16 @@
 package v1.endpoints
 
 import api.models.errors._
+import api.services.{AuditStub, DownstreamStub}
+import api.services.AuthStub
+import api.services.MtdIdLookupStub
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{ JsValue, Json }
-import play.api.libs.ws.{ WSRequest, WSResponse }
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{ AuditStub, AuthStub, DesStub, MtdIdLookupStub }
 
 class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
@@ -36,7 +38,8 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
     val fromDate       = "2019-01-01"
     val toDate         = "2019-06-06"
     val status         = "Open"
-    val responseBody   = Json.parse("""{
+
+    val responseBody = Json.parse("""{
         |  "obligations": [
         |     {
         |       "typeOfBusiness": "self-employment",
@@ -78,6 +81,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyOneObjectMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -135,6 +139,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsOneDetail = Json.parse("""{
         |  "obligations": [
         |     {
@@ -209,6 +214,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         |}
         |""".stripMargin
     )
+
     val responseBodyMultipleObjectsMultipleDetails = Json.parse("""{
         |  "obligations": [
         |     {
@@ -352,18 +358,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
         }
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -374,18 +381,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseOneObjectMultipleDetails)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseOneObjectMultipleDetails)
         }
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -396,18 +404,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsOneDetail)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsOneDetail)
         }
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -418,18 +427,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
-          AuthStub.authorised()
+          AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsMultipleDetails)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponseMultipleObjectsMultipleDetails)
         }
 
         val response: WSResponse = await(
           request()
-            .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                       "businessId"     -> businessId,
-                                       "fromDate"       -> fromDate,
-                                       "toDate"         -> toDate,
-                                       "status"         -> status)
+            .withQueryStringParameters(
+              "typeOfBusiness" -> typeOfBusiness,
+              "businessId"     -> businessId,
+              "fromDate"       -> fromDate,
+              "toDate"         -> toDate,
+              "status"         -> status)
             .get())
 
         response.status shouldBe OK
@@ -446,9 +456,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -464,9 +474,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -482,9 +492,9 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
@@ -515,17 +525,18 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
             }
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -552,18 +563,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
-              AuthStub.authorised()
+              AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(
               request()
-                .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                           "businessId"     -> businessId,
-                                           "fromDate"       -> fromDate,
-                                           "toDate"         -> toDate,
-                                           "status"         -> status)
+                .withQueryStringParameters(
+                  "typeOfBusiness" -> typeOfBusiness,
+                  "businessId"     -> businessId,
+                  "fromDate"       -> fromDate,
+                  "toDate"         -> toDate,
+                  "status"         -> status)
                 .get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -592,18 +604,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> "uk-property",
-                                         "businessId"     -> businessId,
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> "uk-property",
+                "businessId"     -> businessId,
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -614,18 +627,19 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
 
           override def setupStubs(): StubMapping = {
             AuditStub.audit()
-            AuthStub.authorised()
+            AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
             MtdIdLookupStub.ninoFound(nino)
-            DesStub.onSuccess(DesStub.GET, desUri, queryParams, OK, desResponse)
+            DownstreamStub.onSuccess(DownstreamStub.GET, desUri, queryParams, OK, desResponse)
           }
 
           val response: WSResponse = await(
             request()
-              .withQueryStringParameters("typeOfBusiness" -> typeOfBusiness,
-                                         "businessId"     -> "XAIS12345678903",
-                                         "fromDate"       -> fromDate,
-                                         "toDate"         -> toDate,
-                                         "status"         -> status)
+              .withQueryStringParameters(
+                "typeOfBusiness" -> typeOfBusiness,
+                "businessId"     -> "XAIS12345678903",
+                "fromDate"       -> fromDate,
+                "toDate"         -> toDate,
+                "status"         -> status)
               .get())
 
           response.status shouldBe NOT_FOUND
@@ -634,4 +648,5 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
       }
     }
   }
+
 }

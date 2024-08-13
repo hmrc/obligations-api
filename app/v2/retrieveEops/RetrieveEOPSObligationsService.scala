@@ -34,7 +34,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveEOPSObligationsService @Inject()(connector: RetrieveObligationsConnector) extends BaseService {
+class RetrieveEOPSObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
   private val downstreamErrorMap: Map[String, MtdError] =
     Map(

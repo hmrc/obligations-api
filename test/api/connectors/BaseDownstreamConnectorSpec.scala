@@ -20,8 +20,8 @@ import api.connectors.DownstreamUri._
 import api.mocks.MockHttpClient
 import api.models.outcomes.ResponseWrapper
 import config.AppConfig
-import mocks.MockAppConfig
-import uk.gov.hmrc.http.{ HttpClient, HttpReads }
+import config.MockAppConfig
+import uk.gov.hmrc.http.{HttpClient, HttpReads}
 
 import scala.concurrent.Future
 
@@ -51,15 +51,17 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     "get" must {
       "get with the required headers and return the result" in new Test with DesTest {
         MockedHttpClient
-          .get(absoluteUrl,
-               config = dummyDesHeaderCarrierConfig,
-               parameters = qps,
-               requiredHeaders = requiredDesHeaders,
-               excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
+          .get(
+            absoluteUrl,
+            config = dummyDesHeaderCarrierConfig,
+            parameters = qps,
+            requiredHeaders = requiredDesHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue"))
           .returns(Future.successful(outcome))
 
         await(connector.get(DesUri[Result](url), queryParams = qps)) shouldBe outcome
       }
     }
   }
+
 }

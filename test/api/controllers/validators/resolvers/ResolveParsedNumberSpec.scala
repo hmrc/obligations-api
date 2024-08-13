@@ -79,7 +79,7 @@ class ResolveParsedNumberSpec extends UnitSpec with ScalaCheckDrivenPropertyChec
       }
 
       "allow 99999999999.99" in {
-        val value  = BigDecimal(99999999999.99)
+        val value = BigDecimal(99999999999.99)
         resolve(value, path) shouldBe Valid(value)
       }
 
@@ -95,7 +95,7 @@ class ResolveParsedNumberSpec extends UnitSpec with ScalaCheckDrivenPropertyChec
         val error = ValueFormatError.copy(paths = Some(Seq(path)), message = "The value must be between -99999999999.99 and 99999999999.99")
 
         "allow -99999999999.99" in {
-          val value  = BigDecimal(-99999999999.99)
+          val value = BigDecimal(-99999999999.99)
           resolve(value, path) shouldBe Valid(value)
         }
 
@@ -104,7 +104,7 @@ class ResolveParsedNumberSpec extends UnitSpec with ScalaCheckDrivenPropertyChec
         }
 
         "allow 99999999999.99" in {
-          val value  = BigDecimal(99999999999.99)
+          val value = BigDecimal(99999999999.99)
           resolve(value, path) shouldBe Valid(value)
         }
 

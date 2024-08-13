@@ -33,7 +33,7 @@ import javax.inject._
 import scala.concurrent._
 
 @Singleton
-class ErrorHandler @Inject()(
+class ErrorHandler @Inject() (
     config: Configuration,
     auditConnector: AuditConnector,
     httpAuditEvent: HttpAuditEvent
@@ -105,4 +105,5 @@ class ErrorHandler @Inject()(
 
     Future.successful(Status(status)(Json.toJson(errorCode)))
   }
+
 }

@@ -63,8 +63,7 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec with Oblig
             mtdObligationModel(receivedDate = None)
           ))
 
-        Json.toJson(model) shouldBe Json.parse(
-          s"""
+        Json.toJson(model) shouldBe Json.parse(s"""
              |{
              |    "obligations": [
              |        ${mtdObligationJson("Fulfilled")},

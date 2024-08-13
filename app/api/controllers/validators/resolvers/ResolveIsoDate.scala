@@ -27,7 +27,7 @@ import java.time.format.DateTimeParseException
   */
 case class ResolveIsoDate(error: MtdError) extends ResolverSupport {
 
- val resolver: Resolver[String, LocalDate] = value =>
+  val resolver: Resolver[String, LocalDate] = value =>
     try Valid(LocalDate.parse(value))
     catch {
       case _: DateTimeParseException => Invalid(List(error))

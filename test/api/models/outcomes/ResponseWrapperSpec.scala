@@ -19,10 +19,12 @@ package api.models.outcomes
 import support.UnitSpec
 
 class ResponseWrapperSpec extends UnitSpec {
+
   "map" should {
     "map on responseData" in {
       val responseWrapper = ResponseWrapper("my id", "walrus")
       responseWrapper.map(_.toUpperCase) shouldBe ResponseWrapper("my id", "WALRUS")
     }
   }
+
 }

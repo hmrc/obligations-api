@@ -36,6 +36,8 @@ class RetrieveCrystallisationObligationsController @Inject() (val authService: E
     extends AuthorisedController(cc)
     with Logging {
 
+  override val endpointName: String = "retrieve-crystallisation-obligations"
+
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrieveCrystallisationObligationsController", endpointName = "retrieveCrystallisationObligations")
 

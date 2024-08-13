@@ -23,6 +23,8 @@ import api.models.domain.{Nino, TaxYearRange}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.MockAuditService
+import config.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v2.models.response.domain.ObligationDetail
@@ -37,7 +39,8 @@ class RetrieveCrystallisationObligationsControllerSpec
     with ControllerTestRunner
     with MockRetrieveCrystallisationObligationsService
     with MockRetrieveCrystallisationObligationsValidatorFactory
-    with MockAuditService {
+    with MockAuditService
+    with MockAppConfig {
 
   private val taxYear          = "2017-18"
   private val maybeStatusParam = Option("Fulfilled")
@@ -105,7 +108,7 @@ class RetrieveCrystallisationObligationsControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller: RetrieveCrystallisationObligationsController = new RetrieveCrystallisationObligationsController(
       authService = mockEnrolmentsAuthService,
@@ -116,6 +119,12 @@ class RetrieveCrystallisationObligationsControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
+
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(

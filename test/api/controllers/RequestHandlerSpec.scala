@@ -28,7 +28,7 @@ import cats.data.Validated.{Invalid, Valid}
 import cats.implicits.catsSyntaxValidatedId
 import config.{AppConfig, Deprecation}
 import config.Deprecation.{Deprecated, NotDeprecated}
-import mocks.MockAppConfig
+import config.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsString, Json, OWrites}
@@ -174,7 +174,7 @@ class RequestHandlerSpec
               )
             )
 
-            MockAppConfig.apiDocumentationUrl().returns("http://someUrl").anyNumberOfTimes()
+            MockedAppConfig.apiDocumentationUrl().returns("http://someUrl").anyNumberOfTimes()
 
             val result = requestHandler.handleRequest()
 
@@ -201,7 +201,7 @@ class RequestHandlerSpec
                 None
               )
             )
-            MockAppConfig.apiDocumentationUrl().returns("http://someUrl").anyNumberOfTimes()
+            MockedAppConfig.apiDocumentationUrl().returns("http://someUrl").anyNumberOfTimes()
 
             val result = requestHandler.handleRequest()
 
@@ -367,7 +367,7 @@ class RequestHandlerSpec
   }
 
   def mockDeprecation(deprecationStatus: Deprecation): CallHandler[Validated[String, Deprecation]] =
-    MockAppConfig
+    MockedAppConfig
       .deprecationFor(Version(userRequest))
       .returns(deprecationStatus.valid)
       .anyNumberOfTimes()

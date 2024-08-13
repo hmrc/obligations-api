@@ -22,17 +22,16 @@ import config.AppConfig
 
 import javax.inject.Inject
 
-class HateoasFactory @Inject()(appConfig: AppConfig) {
+class HateoasFactory @Inject() (appConfig: AppConfig) {
 
   def wrap[Payload, Data <: HateoasData](payload: Payload, data: Data)(implicit
-                                                                       linksFactory: HateoasLinksFactory[Payload, Data]): HateoasWrapper[Payload] = {
+      linksFactory: HateoasLinksFactory[Payload, Data]): HateoasWrapper[Payload] = {
     val links = linksFactory.links(appConfig, data)
 
     HateoasWrapper(payload, links)
   }
 
-  def wrapList[Payload[_]: Functor, Item, Data](payload: Payload[Item], data: Data)(
-      implicit
+  def wrapList[Payload[_]: Functor, Item, Data](payload: Payload[Item], data: Data)(implicit
       linksFactory: HateoasListLinksFactory[Payload, Item, Data]): HateoasWrapper[Payload[HateoasWrapper[Item]]] = {
 
     val hateoasList = payload.map(item => HateoasWrapper(item, linksFactory.itemLinks(appConfig, data, item)))

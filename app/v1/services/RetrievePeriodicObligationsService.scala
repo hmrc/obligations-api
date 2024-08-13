@@ -65,8 +65,8 @@ class RetrievePeriodicObligationsService @Inject() (connector: RetrieveObligatio
   }
 
   private def extractMtdResponse(responseWrapper: ResponseWrapper[DownstreamObligations],
-                                   typeOfBusiness: Option[MtdBusiness],
-                                   businessId: Option[BusinessId]) =
+                                 typeOfBusiness: Option[MtdBusiness],
+                                 businessId: Option[BusinessId]) =
     toMtdBusinessObligations(responseWrapper.responseData, typeOfBusiness, businessId)(_.periodKey != PeriodKey.EOPS) match {
       case Nil => Left(ErrorWrapper(responseWrapper.correlationId, NoObligationsFoundError))
       case obs => Right(ResponseWrapper(responseWrapper.correlationId, RetrievePeriodObligationsResponse(obs)))

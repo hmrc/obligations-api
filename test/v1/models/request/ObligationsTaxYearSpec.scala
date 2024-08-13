@@ -78,4 +78,5 @@ class ObligationsTaxYearSpec extends UnitSpec {
       }
     }
   }
+
 }

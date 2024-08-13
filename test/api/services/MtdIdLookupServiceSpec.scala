@@ -44,7 +44,7 @@ class MtdIdLookupServiceSpec extends ServiceSpec {
 
     "an invalid NINO is passed in" should {
       "return NinoFormatError" in new Test {
-        val invalidNino = "INVALID_NINO"
+        val invalidNino     = "INVALID_NINO"
         val result: Outcome = await(target.lookup(invalidNino))
 
         result shouldBe Left(NinoFormatError)
@@ -78,4 +78,5 @@ class MtdIdLookupServiceSpec extends ServiceSpec {
       }
     }
   }
+
 }

@@ -158,7 +158,8 @@ class RetrieveEOPSObligationsServiceSpec extends ServiceSpec with DownstreamObli
             .retrieveObligations(requestData.nino, None, None) returns
             Future.successful(Right(ResponseWrapper(correlationId, downstreamResult)))
 
-          private val result = RetrieveEOPSObligationsResponse(Seq(obligation(businessId = "businessId1", obligationDetails = Seq(obligationDetail()))))
+          private val result =
+            RetrieveEOPSObligationsResponse(Seq(obligation(businessId = "businessId1", obligationDetails = Seq(obligationDetail()))))
 
           await(service.retrieve(requestData)) shouldBe Right(ResponseWrapper(correlationId, result))
         }

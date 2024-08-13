@@ -26,4 +26,5 @@ class DIModule extends AbstractModule {
     bind(classOf[AppConfig]).to(classOf[AppConfigImpl]).asEagerSingleton()
     bind(classOf[Clock]).toInstance(Clock.systemUTC)
   }
+
 }

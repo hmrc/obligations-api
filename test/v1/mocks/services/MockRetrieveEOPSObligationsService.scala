@@ -25,7 +25,7 @@ import v1.models.request.retrieveEOPSObligations.RetrieveEOPSObligationsRequest
 import v1.models.response.retrieveEOPSObligations.RetrieveEOPSObligationsResponse
 import v1.services.RetrieveEOPSObligationsService
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MockRetrieveEOPSObligationsService extends MockFactory {
 
@@ -39,6 +39,7 @@ trait MockRetrieveEOPSObligationsService extends MockFactory {
         .retrieve(_: RetrieveEOPSObligationsRequest)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
+
   }
 
 }

@@ -28,18 +28,20 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class RetrievePeriodicObligationsController @Inject()(val authService: EnrolmentsAuthService,
-                                                      val lookupService: MtdIdLookupService,
-                                                      validatorFactory: RetrievePeriodicObligationsValidatorFactory,
-                                                      service: RetrievePeriodicObligationsService,
-                                                      auditService: AuditService,
-                                                      cc: ControllerComponents,
-                                                      idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+class RetrievePeriodicObligationsController @Inject() (val authService: EnrolmentsAuthService,
+                                                       val lookupService: MtdIdLookupService,
+                                                       validatorFactory: RetrievePeriodicObligationsValidatorFactory,
+                                                       service: RetrievePeriodicObligationsService,
+                                                       auditService: AuditService,
+                                                       cc: ControllerComponents,
+                                                       idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(controllerName = "RetrievePeriodicObligationsController", endpointName = "handleRequest")
+
+  override val endpointName: String = "retrieve-periodic-obligations"
 
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],

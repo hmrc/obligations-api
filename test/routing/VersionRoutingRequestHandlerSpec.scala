@@ -17,7 +17,7 @@
 package routing
 
 import api.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
-import mocks.MockAppConfig
+import config.MockAppConfig
 import org.apache.pekko.actor.ActorSystem
 import org.scalatest.Inside
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
@@ -129,9 +129,9 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     "if the request ends with a trailing slash" when {
       "handler found" should {
         "use it" in new Test {
-          MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
-          MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
-          MockAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path/")) shouldBe Some(handler)
         }
@@ -139,9 +139,9 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
       "handler not found" should {
         "try without the trailing slash" in new Test {
-          MockAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
-          MockAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
-          MockAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version1).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version2).returns(true).anyNumberOfTimes()
+          MockedAppConfig.endpointsEnabled(Version3).returns(true).anyNumberOfTimes()
 
           requestHandler.routeRequest(buildRequest(s"$path")) shouldBe Some(handler)
         }
@@ -185,7 +185,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     "the version has a route for the resource" must {
       "return 404 Not Found" in new Test {
 
-        MockAppConfig.endpointsEnabled(Version2) returns false
+        MockedAppConfig.endpointsEnabled(Version2) returns false
 
         private val request = buildRequest("/v1")
 
