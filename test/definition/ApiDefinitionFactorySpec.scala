@@ -18,17 +18,13 @@ package definition
 
 import api.mocks.MockHttpClient
 import cats.implicits.catsSyntaxValidatedId
-import config.ConfidenceLevelConfig
 import config.Deprecation.NotDeprecated
-import definition.APIStatus.{ALPHA, BETA}
 import config.MockAppConfig
+import definition.APIStatus.{ALPHA, BETA}
 import routing.{Version1, Version2, Version3}
 import support.UnitSpec
-import uk.gov.hmrc.auth.core.ConfidenceLevel
 
 class ApiDefinitionFactorySpec extends UnitSpec {
-
-  private val confidenceLevel: ConfidenceLevel = ConfidenceLevel.L200
 
   class Test extends MockHttpClient with MockAppConfig {
     val apiDefinitionFactory = new ApiDefinitionFactory(mockAppConfig)
@@ -38,42 +34,22 @@ class ApiDefinitionFactorySpec extends UnitSpec {
   "definition" when {
     "called" should {
       "return a valid Definition case class when confidence level 200 checking is enforced" in {
-        testDefinitionWithConfidence(ConfidenceLevelConfig(confidenceLevel = confidenceLevel, definitionEnabled = true, authValidationEnabled = true))
+        testDefinition()
       }
 
       "return a valid Definition case class when confidence level checking 50 is enforced" in {
-        testDefinitionWithConfidence(
-          ConfidenceLevelConfig(confidenceLevel = confidenceLevel, definitionEnabled = false, authValidationEnabled = false))
+        testDefinition()
       }
 
-      def testDefinitionWithConfidence(confidenceLevelConfig: ConfidenceLevelConfig): Unit = new Test {
+      def testDefinition(): Unit = new Test {
         Seq(Version1, Version2, Version3).foreach { version =>
           MockedAppConfig.apiStatus(version) returns "ALPHA"
           MockedAppConfig.endpointsEnabled(version) returns true
           MockedAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
         }
-        MockedAppConfig.confidenceLevelCheckEnabled.returns(confidenceLevelConfig).anyNumberOfTimes()
-
-        val readScope: String                = "read:self-assessment"
-        val writeScope: String               = "write:self-assessment"
-        val confidenceLevel: ConfidenceLevel = if (confidenceLevelConfig.authValidationEnabled) ConfidenceLevel.L200 else ConfidenceLevel.L50
 
         apiDefinitionFactory.definition shouldBe
           Definition(
-            scopes = Seq(
-              Scope(
-                key = readScope,
-                name = "View your Self Assessment information",
-                description = "Allow read access to self assessment data",
-                confidenceLevel
-              ),
-              Scope(
-                key = writeScope,
-                name = "Change your Self Assessment information",
-                description = "Allow write access to self assessment data",
-                confidenceLevel
-              )
-            ),
             api = APIDefinition(
               name = "Obligations (MTD)",
               description = "An API for providing obligations data",
@@ -99,24 +75,6 @@ class ApiDefinitionFactorySpec extends UnitSpec {
               requiresTrust = None
             )
           )
-      }
-    }
-  }
-
-  "confidenceLevel" when {
-    Seq(
-      (true, ConfidenceLevel.L250, ConfidenceLevel.L250),
-      (true, ConfidenceLevel.L200, ConfidenceLevel.L200),
-      (false, ConfidenceLevel.L200, ConfidenceLevel.L50)
-    ).foreach { case (definitionEnabled, configCL, expectedDefinitionCL) =>
-      s"confidence-level-check.definition.enabled is $definitionEnabled and confidence-level = $configCL" should {
-        s"return confidence level $expectedDefinitionCL" in new Test {
-          MockedAppConfig.confidenceLevelCheckEnabled returns ConfidenceLevelConfig(
-            confidenceLevel = configCL,
-            definitionEnabled = definitionEnabled,
-            authValidationEnabled = true)
-          apiDefinitionFactory.confidenceLevel shouldBe expectedDefinitionCL
-        }
       }
     }
   }
