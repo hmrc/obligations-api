@@ -28,51 +28,34 @@ import scala.util.Try
 
 class DocumentationControllerISpec extends IntegrationBaseSpec {
 
-  private val config          = app.injector.instanceOf[AppConfig]
-  private val confidenceLevel = config.confidenceLevelConfig.confidenceLevel
-
   private val apiDefinitionJson = Json.parse(
     s"""
     |{
-    |   "scopes":[
-    |      {
-    |         "key":"read:self-assessment",
-    |         "name":"View your Self Assessment information",
-    |         "description":"Allow read access to self assessment data",
-    |         "confidenceLevel": $confidenceLevel
-    |      },
-    |      {
-    |         "key":"write:self-assessment",
-    |         "name":"Change your Self Assessment information",
-    |         "description":"Allow write access to self assessment data",
-    |         "confidenceLevel": $confidenceLevel
-    |      }
-    |   ],
-    |   "api":{
-    |      "name":"Obligations (MTD)",
-    |      "description":"An API for providing obligations data",
-    |      "context":"obligations/details",
-    |      "categories":[
-    |         "INCOME_TAX_MTD"
-    |      ],
-    |      "versions":[
-    |         {
-    |            "version":"1.0",
-    |            "status":"DEPRECATED",
-    |            "endpointsEnabled":true
-    |         },
-    |         {
-    |            "version":"2.0",
-    |            "status":"ALPHA",
-    |            "endpointsEnabled":true
-    |         },
-    |         {
-    |            "version":"3.0",
-    |            "status":"BETA",
-    |            "endpointsEnabled":true
-    |         }
-    |      ]
-    |   }
+    |  "api":{
+    |     "name":"Obligations (MTD)",
+    |     "description":"An API for providing obligations data",
+    |     "context":"obligations/details",
+    |     "categories":[
+    |        "INCOME_TAX_MTD"
+    |     ],
+    |     "versions":[
+    |        {
+    |           "version":"1.0",
+    |           "status":"DEPRECATED",
+    |           "endpointsEnabled":true
+    |        },
+    |        {
+    |           "version":"2.0",
+    |           "status":"ALPHA",
+    |           "endpointsEnabled":true
+    |        },
+    |        {
+    |           "version":"3.0",
+    |           "status":"BETA",
+    |           "endpointsEnabled":true
+    |        }
+    |     ]
+    |  }
     |}
     """.stripMargin
   )
