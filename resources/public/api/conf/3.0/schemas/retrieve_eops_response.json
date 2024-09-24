@@ -43,9 +43,9 @@
                   "example": "2018-04-06"
                 },
                 "status": {
-                  "description": "The status of the obligation, one of: \"Open\" or \"Fulfilled\".",
+                  "description": "The status of the obligation, one of: \"open\" or \"fulfilled\".",
                   "type": "string",
-                  "example": "Open"
+                  "example": "open"
                 },
                 "receivedDate": {
                   "description": "The date this obligation period was fulfilled in the format YYYY-MM-DD.",

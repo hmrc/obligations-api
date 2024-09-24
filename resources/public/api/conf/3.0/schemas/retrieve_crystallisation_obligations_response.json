@@ -26,11 +26,11 @@
             "example": "2020-01-31"
           },
           "status": {
-            "description": "The status of the obligation, one of: `Open` or `Fulfilled`.",
+            "description": "The status of the obligation, one of: `open` or `fulfilled`.",
             "type": "string",
             "enum": [
-              "Open",
-              "Fulfilled"
+              "open",
+              "fulfilled"
             ]
           },
           "receivedDate": {
