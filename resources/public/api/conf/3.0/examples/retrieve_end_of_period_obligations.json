@@ -9,13 +9,13 @@
           "periodEndDate": "2018-12-31",
           "dueDate": "2020-01-31",
           "receivedDate": "2019-05-13",
-          "status": "Fulfilled"
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2019-01-01",
           "periodEndDate": "2019-12-31",
           "dueDate": "2021-01-31",
-          "status": "Open"
+          "status": "open"
         }
       ]
     }

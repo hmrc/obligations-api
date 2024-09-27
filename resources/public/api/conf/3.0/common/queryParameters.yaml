@@ -57,8 +57,8 @@ components:
       description: |
         Status of the obligations to return.
         
-        Accepted values are ‘Open’ and ‘Fulfilled’. If no status is supplied, both open and fulfilled obligations are returned.
+        Accepted values are ‘open’ and ‘fulfilled’. If no status is supplied, both open and fulfilled obligations are returned.
       schema:
         type: string
-        example: Open
+        example: open
       required: false

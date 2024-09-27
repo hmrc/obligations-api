@@ -9,27 +9,27 @@
           "periodEndDate": "2019-07-05",
           "dueDate": "2019-08-05",
           "receivedDate": "2019-08-01",
-          "status": "Fulfilled"
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2019-07-06",
           "periodEndDate": "2019-10-05",
           "dueDate": "2019-11-05",
           "receivedDate": "2019-11-01",
-          "status": "Fulfilled"
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2019-10-06",
           "periodEndDate": "2020-01-05",
           "dueDate": "2020-02-05",
           "receivedDate": "2020-02-01",
-          "status": "Fulfilled"
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2020-01-06",
           "periodEndDate": "2020-04-05",
           "dueDate": "2020-05-05",
-          "status": "Open"
+          "status": "open"
         }
       ]
     }
