@@ -41,13 +41,12 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
   object DefaultHandler extends Handler
 
-  object V2Handler      extends Handler
-  object V3Handler      extends Handler
+  object V2Handler extends Handler
+  object V3Handler extends Handler
 
   private val defaultRouter = Router.from { case GET(p"") =>
     DefaultHandler
   }
-
 
   private val v2Router = Router.from { case GET(p"/v2") =>
     V2Handler
@@ -59,7 +58,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
   private val routingMap = new VersionRoutingMap {
     override val defaultRouter: Router     = test.defaultRouter
-    override val map: Map[Version, Router] = Map( Version2 -> v2Router, Version3 -> v3Router)
+    override val map: Map[Version, Router] = Map(Version2 -> v2Router, Version3 -> v3Router)
   }
 
   class Test(implicit acceptHeader: Option[String]) {
@@ -90,7 +89,6 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
     handleWithDefaultRoutes()
   }
-
 
   "Routing requests with v2" should {
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.2.0+json")
@@ -141,23 +139,21 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
       }
     }
   }
-  /**
-   * This scenario doesn't exist??
-   */
-//  "Routing requests to non default router with no version" should {
-//    implicit val acceptHeader: None.type = None
-//
-//    "return 406" in new Test {
-//
-//      val request: RequestHeader = buildRequest("/v1")
-//      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
-//        val result = a.apply(request)
-//
-//        status(result) shouldBe NOT_ACCEPTABLE
-//        contentAsJson(result) shouldBe Json.toJson(InvalidAcceptHeaderError)
-//      }
-//    }
-//  }
+
+  "Routing requests to non default router with no version" should {
+    implicit val acceptHeader: None.type = None
+
+    "return 406" in new Test {
+
+      val request: RequestHeader = buildRequest("/v1")
+      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+        val result = a(request)
+
+        status(result) shouldBe NOT_ACCEPTABLE
+        contentAsJson(result) shouldBe Json.toJson(InvalidAcceptHeaderError)
+      }
+    }
+  }
 
   "Routing requests with unsupported version" should {
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.5.0+json")
@@ -174,28 +170,27 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     }
   }
 
-  /**
-   * This scenario doesn't exist anymore
-   */
-  //  "Routing requests for supported version but not enabled" when {
-//    implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.2.0+json")
-//
-//    "the version has a route for the resource" must {
-//      "return 404 Not Found" in new Test {
-//
-//        MockedAppConfig.endpointsEnabled(Version2) returns false
-//
-//        private val request = buildRequest("/v1")
-//
-//        inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
-//          val result = a.apply(request)
-//
-//          status(result) shouldBe NOT_FOUND
-//          contentAsJson(result) shouldBe Json.toJson(UnsupportedVersionError)
-//
-//        }
-//      }
-//    }
-//  }
+  /** This scenario doesn't exist anymore
+    */
+  "Routing requests for supported version but not enabled" when {
+    implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.2.0+json")
+
+    "the version has a route for the resource" must {
+      "return 404 Not Found" in new Test {
+
+        MockedAppConfig.endpointsEnabled(Version2) returns false
+
+        private val request = buildRequest("/v2")
+
+        inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+          val result = a.apply(request)
+
+          status(result) shouldBe NOT_FOUND
+          contentAsJson(result) shouldBe Json.toJson(UnsupportedVersionError)
+
+        }
+      }
+    }
+  }
 
 }
