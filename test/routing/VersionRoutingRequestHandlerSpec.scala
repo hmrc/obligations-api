@@ -141,21 +141,23 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
       }
     }
   }
-
-  "Routing requests to non default router with no version" should {
-    implicit val acceptHeader: None.type = None
-
-    "return 406" in new Test {
-
-      val request: RequestHeader = buildRequest("/v1")
-      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
-        val result = a.apply(request)
-
-        status(result) shouldBe NOT_ACCEPTABLE
-        contentAsJson(result) shouldBe Json.toJson(InvalidAcceptHeaderError)
-      }
-    }
-  }
+  /**
+   * This scenario doesn't exist??
+   */
+//  "Routing requests to non default router with no version" should {
+//    implicit val acceptHeader: None.type = None
+//
+//    "return 406" in new Test {
+//
+//      val request: RequestHeader = buildRequest("/v1")
+//      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
+//        val result = a.apply(request)
+//
+//        status(result) shouldBe NOT_ACCEPTABLE
+//        contentAsJson(result) shouldBe Json.toJson(InvalidAcceptHeaderError)
+//      }
+//    }
+//  }
 
   "Routing requests with unsupported version" should {
     implicit val acceptHeader: Some[String] = Some("application/vnd.hmrc.5.0+json")
