@@ -35,7 +35,7 @@ object Version {
   object VersionReads extends Reads[Version] {
 
     /** @param version
-      *   expecting a JsString e.g. "1.0"
+      *   expecting a JsString e.g. "2.0"
       */
     override def reads(version: JsValue): JsResult[Version] =
       version
@@ -57,10 +57,6 @@ sealed trait Version {
   lazy val asJson: JsValue = Json.toJson(name)
 
   override def toString: String = name
-}
-
-case object Version1 extends Version {
-  val name = "1.0"
 }
 
 case object Version2 extends Version {
@@ -98,7 +94,6 @@ case object Version9 extends Version {
 object Versions {
 
   private val versionsByName: Map[String, Version] = Map(
-    Version1.name -> Version1,
     Version2.name -> Version2,
     Version3.name -> Version3,
     Version4.name -> Version4,
