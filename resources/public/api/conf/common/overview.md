@@ -1,9 +1,9 @@
-This API allows developers to:
+Use the Obligations API to retrieve information about different types of tax obligations for 
+a customer’s self-employment or property business, or income tax account.
 
-* retrieve obligations for a customer’s business income sources
-* retrieve the final declaration obligations for a customer’s Income Tax account
-* retrieve the End of Period Statement obligations for a customer’s business income sources
+This API is related to the following customer journeys:
 
-For information on how to connect to this
-API [see the Income Tax MTD end-to-end service guide](https://developer.service.hmrc.gov.uk/guides/income-tax-mtd-end-to-end-service-guide/)
-.
+* Submit quarterly updates
+* Submit annual updates
+
+For information on how to connect to this API [see the Income Tax MTD end-to-end service guide](https://developer.service.hmrc.gov.uk/guides/income-tax-mtd-end-to-end-service-guide/).
