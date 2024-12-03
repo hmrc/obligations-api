@@ -5,30 +5,29 @@
       "businessId": "XAIS12345678910",
       "obligationDetails": [
         {
-          "periodStartDate": "2019-04-06",
-          "periodEndDate": "2019-07-05",
-          "dueDate": "2019-08-05",
-          "receivedDate": "2019-08-01",
-          "status": "fulfilled"
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2025-07-05",
+          "dueDate": "2025-08-05",
+          "receivedDate": "2025-08-04",
+          "status": "open"
         },
         {
-          "periodStartDate": "2019-07-06",
-          "periodEndDate": "2019-10-05",
-          "dueDate": "2019-11-05",
-          "receivedDate": "2019-11-01",
-          "status": "fulfilled"
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2025-10-05",
+          "dueDate": "2025-11-05",
+          "receivedDate": "2025-11-04",
+          "status": "open"
         },
         {
-          "periodStartDate": "2019-10-06",
-          "periodEndDate": "2020-01-05",
-          "dueDate": "2020-02-05",
-          "receivedDate": "2020-02-01",
-          "status": "fulfilled"
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2026-01-05",
+          "dueDate": "2026-02-05",
+          "status": "open"
         },
         {
-          "periodStartDate": "2020-01-06",
-          "periodEndDate": "2020-04-05",
-          "dueDate": "2020-05-05",
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2026-04-05",
+          "dueDate": "2026-05-05",
           "status": "open"
         }
       ]
