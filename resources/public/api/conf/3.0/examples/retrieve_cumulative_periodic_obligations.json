@@ -8,21 +8,22 @@
           "periodStartDate": "2025-04-06",
           "periodEndDate": "2025-07-05",
           "dueDate": "2025-08-05",
-          "receivedDate": "2025-08-04",
-          "status": "open"
+          "receivedDate": "2025-08-01",
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2025-04-06",
           "periodEndDate": "2025-10-05",
           "dueDate": "2025-11-05",
-          "receivedDate": "2025-11-04",
-          "status": "open"
+          "receivedDate": "2025-11-01",
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2025-04-06",
           "periodEndDate": "2026-01-05",
           "dueDate": "2026-02-05",
-          "status": "open"
+          "receivedDate": "2026-02-01",
+          "status": "fulfilled"
         },
         {
           "periodStartDate": "2025-04-06",

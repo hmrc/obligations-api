@@ -15,7 +15,7 @@ get:
     | NOT_FOUND                             | Simulates a scenario where no data is found.                                           |
     | NO_OBLIGATIONS_FOUND                  | Simulates a scenario where no obligations are found.                                   |
     | DYNAMIC                               | The following response values will change to correspond to the values submitted in the request: <br/> • fromDate <br/> • toDate <br/> • status (open or fulfilled) <br/><br/>For a response with a self-employment business, use businessId: <br/> • XBIS12345678901 <br/>For a response with a UK property business, use businessId: <br/> • XPIS12345678901 <br/>For a response with a foreign property business, use businessId: <br/> • XFIS12345678901 |
-
+    | CUMULATIVE                            | Simulates a success response with cumulative quarterly updates.                        |
 
   parameters:
     - $ref: './common/pathParameters.yaml#/components/parameters/nino'
@@ -49,10 +49,12 @@ get:
           schema:
             $ref: './schemas/retrieve_periodic_obligations_response.json'
           examples:
-            example-1:
-              description: Example response
+            "Non-cumulative response for TY 2024-25 and before":
               value:
-                $ref: './examples/retrieve_periodic_obligations.json'
+                $ref: './examples/retrieve_non-cumulative_periodic_obligations.json'
+            "Cumulative response for TY 2025-26 and after":
+              value:
+                $ref: './examples/retrieve_cumulative_periodic_obligations.json'
 
     "400":
       description: Bad request
