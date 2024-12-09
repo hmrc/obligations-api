@@ -1,0 +1,37 @@
+{
+  "obligations": [
+    {
+      "typeOfBusiness": "self-employment",
+      "businessId": "XAIS12345678910",
+      "obligationDetails": [
+        {
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2025-07-05",
+          "dueDate": "2025-08-05",
+          "receivedDate": "2025-08-01",
+          "status": "fulfilled"
+        },
+        {
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2025-10-05",
+          "dueDate": "2025-11-05",
+          "receivedDate": "2025-11-01",
+          "status": "fulfilled"
+        },
+        {
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2026-01-05",
+          "dueDate": "2026-02-05",
+          "receivedDate": "2026-02-01",
+          "status": "fulfilled"
+        },
+        {
+          "periodStartDate": "2025-04-06",
+          "periodEndDate": "2026-04-05",
+          "dueDate": "2026-05-05",
+          "status": "open"
+        }
+      ]
+    }
+  ]
+}
