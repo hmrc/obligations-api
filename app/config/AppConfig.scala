@@ -52,12 +52,15 @@ trait AppConfig {
   def apiStatus(version: Version): String
   def featureSwitchConfig: Configuration
   def endpointsEnabled(version: Version): Boolean
+  def endpointsEnabled(version: String): Boolean
   def confidenceLevelConfig: ConfidenceLevelConfig
   def deprecationFor(version: Version): Validated[String, Deprecation]
 
   def apiDocumentationUrl: String
   def safeEndpointsEnabled(version: String): Boolean
   def endpointAllowsSupportingAgents(endpointName: String): Boolean
+  def apiVersionReleasedInProduction(version: String): Boolean
+  def endpointReleasedInProduction(version: String, name: String): Boolean
 }
 
 @Singleton
@@ -83,6 +86,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
   def featureSwitchConfig: Configuration = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
 
   def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.${version.name}.endpoints.enabled")
+  def endpointsEnabled(version: String): Boolean  = config.getBoolean(s"api.$version.endpoints.enabled")
 
   val apiDocumentationUrl: String =
     config.getConfString("api.documentation-url", defString = s"https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/$appName")
@@ -144,6 +148,16 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
     configuration
       .getOptional[Map[String, Boolean]]("api.supporting-agent-endpoints")
       .getOrElse(Map.empty)
+
+  def apiVersionReleasedInProduction(version: String): Boolean = config.getBoolean(s"api.$version.endpoints.api-released-in-production")
+
+  def endpointReleasedInProduction(version: String, name: String): Boolean = {
+    val versionReleasedInProd = apiVersionReleasedInProduction(version)
+    val path                  = s"api.$version.endpoints.released-in-production.$name"
+
+    val conf = configuration.underlying
+    if (versionReleasedInProd && conf.hasPath(path)) config.getBoolean(path) else versionReleasedInProd
+  }
 
 }
 
