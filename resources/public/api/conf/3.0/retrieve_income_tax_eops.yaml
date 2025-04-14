@@ -1,5 +1,5 @@
 get:
-  summary: Retrieve Income Tax (Self Assessment) End of Period Statement Obligations [test only]
+  summary: Retrieve Income Tax (Self Assessment) End of Period Statement Obligations
   description: |
     This endpoint enables you to retrieve the End of Period Statement obligations for a user's business income sources. The account identifier (National Insurance number) must be provided.
     
