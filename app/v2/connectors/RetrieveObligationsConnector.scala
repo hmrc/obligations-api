@@ -22,14 +22,15 @@ import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import config.AppConfig
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.HeaderCarrier
 import v2.models.response.downstream.DownstreamObligations
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RetrieveObligationsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class RetrieveObligationsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def retrieveObligations(nino: Nino, dateRange: Option[DateRange], status: Option[MtdStatus])(implicit
       hc: HeaderCarrier,

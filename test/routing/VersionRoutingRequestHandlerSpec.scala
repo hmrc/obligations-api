@@ -146,8 +146,8 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
     "return 404" in new Test {
       private val request = buildRequest("/v2")
 
-      inside(requestHandler.routeRequest(request)) { case Some(a: EssentialAction) =>
-        val result = a.apply(request)
+      inside(requestHandler.routeRequest(request)) { case Some(ea: EssentialAction) =>
+        val result = ea.apply(request)
 
         status(result) shouldBe NOT_FOUND
         contentAsJson(result) shouldBe Json.toJson(UnsupportedVersionError)

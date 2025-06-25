@@ -20,19 +20,21 @@ import api.connectors.ConnectorSpec
 import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import api.models.outcomes.ResponseWrapper
+import org.scalatest.TestSuite
+import uk.gov.hmrc.http.StringContextOps
 import v2.models.response.downstream.DownstreamObligations
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class RetrieveObligationsConnectorSpec extends ConnectorSpec {
+class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
 
   "RetrieveObligationsConnector" when {
     "all optional parameters are absent" should {
       "make the request with no query parameters " in new DesTest with Test {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA")
+        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA")
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, status = None)) shouldBe outcome
@@ -47,7 +49,7 @@ class RetrieveObligationsConnectorSpec extends ConnectorSpec {
 
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("from" -> from, "to" -> to))
+        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("from" -> from, "to" -> to))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), Some(dateRange), status = None)) shouldBe outcome
@@ -58,7 +60,7 @@ class RetrieveObligationsConnectorSpec extends ConnectorSpec {
       "make the request with the downstream-formatted status query parameter" in new DesTest with Test {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(s"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
+        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatus.Open))) shouldBe outcome
