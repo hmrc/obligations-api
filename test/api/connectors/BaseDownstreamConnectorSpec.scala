@@ -64,6 +64,22 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         await(connector.get(DesUri[Result](url), queryParams = qps)) shouldBe outcome
       }
     }
+
+    "post" must {
+      "post with the required headers and return the expected result" in new Test with DesTest {
+        MockedHttpClient
+          .post(
+            absoluteUrl,
+            config = dummyDesHeaderCarrierConfig,
+            body = body,
+            requiredHeaders = requiredDesHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          )
+          .returns(Future.successful(outcome))
+
+        await(connector.post(body, DesUri[Result](url))) shouldBe outcome
+      }
+    }
   }
 
 }
