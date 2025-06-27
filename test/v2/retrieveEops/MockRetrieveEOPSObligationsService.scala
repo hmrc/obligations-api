@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import v2.retrieveEops.model.request.RetrieveEOPSObligationsRequest
 import v2.retrieveEops.model.response.RetrieveEOPSObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockRetrieveEOPSObligationsService extends MockFactory {
+trait MockRetrieveEOPSObligationsService extends TestSuite with MockFactory {
 
   val mockService: RetrieveEOPSObligationsService = mock[RetrieveEOPSObligationsService]
 

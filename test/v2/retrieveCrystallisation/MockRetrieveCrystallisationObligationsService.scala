@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import v2.retrieveCrystallisation.model.request.RetrieveCrystallisationObligationsRequest
 import v2.retrieveCrystallisation.model.response.RetrieveCrystallisationObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockRetrieveCrystallisationObligationsService extends MockFactory {
+trait MockRetrieveCrystallisationObligationsService extends TestSuite with MockFactory {
 
   val mockRetrieveCrystallisationObligationsService: RetrieveCrystallisationObligationsService = mock[RetrieveCrystallisationObligationsService]
 

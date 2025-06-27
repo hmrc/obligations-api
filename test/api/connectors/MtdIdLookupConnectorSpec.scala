@@ -19,6 +19,7 @@ package api.connectors
 import api.mocks.MockHttpClient
 import api.connectors.MtdIdLookupConnector.Outcome
 import config.MockAppConfig
+import uk.gov.hmrc.http.StringContextOps
 
 import scala.concurrent.Future
 
@@ -41,7 +42,7 @@ class MtdIdLookupConnectorSpec extends ConnectorSpec {
     "return an MtdId" when {
       "the http client returns a mtd id" in new Test {
         MockedHttpClient
-          .get[MtdIdLookupConnector.Outcome](s"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyDesHeaderCarrierConfig)
+          .get[MtdIdLookupConnector.Outcome](url"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyDesHeaderCarrierConfig)
           .returns(Future.successful(Right(mtdId)))
 
         val result: Outcome = await(connector.getMtdId(nino))
@@ -55,7 +56,7 @@ class MtdIdLookupConnectorSpec extends ConnectorSpec {
         val statusCode: Int = IM_A_TEAPOT
 
         MockedHttpClient
-          .get[MtdIdLookupConnector.Outcome](s"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyDesHeaderCarrierConfig)
+          .get[MtdIdLookupConnector.Outcome](url"$baseUrl/mtd-identifier-lookup/nino/$nino", config = dummyDesHeaderCarrierConfig)
           .returns(Future.successful(Left(MtdIdLookupConnector.Error(statusCode))))
 
         val result: Outcome = await(connector.getMtdId(nino))

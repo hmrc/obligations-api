@@ -21,16 +21,18 @@ import api.mocks.MockHttpClient
 import api.models.outcomes.ResponseWrapper
 import config.AppConfig
 import config.MockAppConfig
-import uk.gov.hmrc.http.{HttpClient, HttpReads}
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpReads, StringContextOps}
 
 import scala.concurrent.Future
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
   // WLOG
-  val body                       = "body"
+  val body                       = Json.toJson("body")
   val outcome                    = Right(ResponseWrapper(correlationId, Result(2)))
   val url                        = "some/url?param=value"
-  val absoluteUrl                = s"$baseUrl/$url"
+  val absoluteUrl                = url"$baseUrl/some/url?param=value"
   val qps: Seq[(String, String)] = Seq("param1" -> "value1")
 
   // WLOG
@@ -41,7 +43,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   class Test extends MockHttpClient with MockAppConfig {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
-      val http: HttpClient     = mockHttpClient
+      val http: HttpClientV2   = mockHttpClient
       val appConfig: AppConfig = mockAppConfig
     }
 
@@ -60,6 +62,22 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           .returns(Future.successful(outcome))
 
         await(connector.get(DesUri[Result](url), queryParams = qps)) shouldBe outcome
+      }
+    }
+
+    "post" must {
+      "post with the required headers and return the expected result" in new Test with DesTest {
+        MockedHttpClient
+          .post(
+            absoluteUrl,
+            config = dummyDesHeaderCarrierConfig,
+            body = body,
+            requiredHeaders = requiredDesHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          )
+          .returns(Future.successful(outcome))
+
+        await(connector.post(body, DesUri[Result](url))) shouldBe outcome
       }
     }
   }

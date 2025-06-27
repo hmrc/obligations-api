@@ -19,6 +19,7 @@ package api.services
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import api.models.errors.MtdError
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,7 +28,7 @@ object MockMtdIdLookupService {
   type MtdIdServiceOutcome = Either[MtdError, String]
 }
 
-trait MockMtdIdLookupService extends MockFactory {
+trait MockMtdIdLookupService extends TestSuite with MockFactory {
 
   val mockMtdIdLookupService: MtdIdLookupService = mock[MtdIdLookupService]
 
