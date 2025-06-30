@@ -60,6 +60,7 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
       val response: WSResponse = await(buildRequest("/api/definition").get())
       response.status shouldBe Status.OK
       Json.parse(response.body) shouldBe apiDefinitionJson
+      noException should be thrownBy Json.parse(response.body)
     }
   }
 

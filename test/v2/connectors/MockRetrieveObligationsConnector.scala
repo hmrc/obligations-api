@@ -21,12 +21,13 @@ import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import uk.gov.hmrc.http.HeaderCarrier
 import v2.models.response.downstream.DownstreamObligations
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockRetrieveObligationsConnector extends MockFactory {
+trait MockRetrieveObligationsConnector extends TestSuite with MockFactory {
   val mockRetrieveObligationsConnector: RetrieveObligationsConnector = mock[RetrieveObligationsConnector]
 
   object MockRetrieveObligationsConnector {

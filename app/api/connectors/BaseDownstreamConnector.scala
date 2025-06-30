@@ -20,13 +20,15 @@ import api.connectors.DownstreamUri._
 import config.{AppConfig, FeatureSwitches}
 import play.api.Logger
 import play.api.http.{HeaderNames, MimeTypes}
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
+import utils.UrlUtils
 
 import scala.concurrent.{ExecutionContext, Future}
 
 trait BaseDownstreamConnector {
-  val http: HttpClient
+  val http: HttpClientV2
   val appConfig: AppConfig
 
   val logger: Logger                = Logger(this.getClass)
@@ -41,7 +43,7 @@ trait BaseDownstreamConnector {
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     def doPost(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      http.POST(getBackendUri(uri), body)
+      http.post(url"${getBackendUri(uri)}").withBody(Json.toJson(body)).execute[DownstreamOutcome[Resp]]
     }
 
     doPost(getBackendHeaders(uri, hc, correlationId, jsonContentTypeHeader))
@@ -84,8 +86,10 @@ trait BaseDownstreamConnector {
       httpReads: HttpReads[DownstreamOutcome[Resp]],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
-    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] =
-      http.GET(getBackendUri(uri), queryParams = queryParams)
+    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
+      val fullUrl = UrlUtils.appendQueryParams(getBackendUri(uri), queryParams)
+      http.get(url"$fullUrl").execute
+    }
 
     doGet(getBackendHeaders(uri, hc, correlationId))
   }

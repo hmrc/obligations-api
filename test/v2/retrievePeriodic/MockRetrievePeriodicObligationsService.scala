@@ -21,12 +21,13 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import v2.retrievePeriodic.model.request.RetrievePeriodicObligationsRequest
 import v2.retrievePeriodic.model.response.RetrievePeriodObligationsResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockRetrievePeriodicObligationsService extends MockFactory {
+trait MockRetrievePeriodicObligationsService extends TestSuite with MockFactory {
 
   val mockService: RetrievePeriodicObligationsService = mock[RetrievePeriodicObligationsService]
 
