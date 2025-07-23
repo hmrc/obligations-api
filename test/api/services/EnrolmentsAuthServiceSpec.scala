@@ -188,11 +188,6 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
           .returns(Future.successful(initialRetrievalsResult))
 
         MockedAuthConnector
-          .authorised(primaryAgentPredicate, EmptyRetrieval)
-          .once()
-          .returns(Future.failed(InsufficientEnrolments()))
-
-        MockedAuthConnector
           .authorised(supportingAgentPredicate, EmptyRetrieval)
           .once()
           .returns(Future.successful(EmptyRetrieval))
