@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,24 +62,18 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
           Future.successful(Right(UserDetails("", "Organisation", None)))
 
         case Some(Agent) ~ authorisedEnrolments =>
+          val agentPredicate = if (endpointAllowsSupportingAgents) {
+            EnrolmentsAuthService.supportingAgentAuthPredicate(mtdId)
+          } else {
+            EnrolmentsAuthService.mtdEnrolmentPredicate(mtdId)
+          }
           authFunction
-            .authorised(EnrolmentsAuthService.mtdEnrolmentPredicate(mtdId)) {
+            .authorised(agentPredicate) {
               Future.successful(agentDetails(authorisedEnrolments))
             }
             .recoverWith { case _: AuthorisationException =>
-              if (endpointAllowsSupportingAgents) {
-                authFunction
-                  .authorised(EnrolmentsAuthService.supportingAgentAuthPredicate(mtdId)) {
-                    Future.successful(agentDetails(authorisedEnrolments))
-                  }
-              } else {
-                Future.successful(Left(ClientOrAgentNotAuthorisedError))
-              }
-                .recoverWith { case _: AuthorisationException =>
-                  Future.successful(Left(ClientOrAgentNotAuthorisedError))
-                }
+              Future.successful(Left(ClientOrAgentNotAuthorisedError))
             }
-
         case _ =>
           logger.warn(s"[EnrolmentsAuthService][authorised] Invalid AffinityGroup.")
           Future.successful(Left(ClientOrAgentNotAuthorisedError))
