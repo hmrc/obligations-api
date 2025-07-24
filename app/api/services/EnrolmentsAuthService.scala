@@ -17,7 +17,7 @@
 package api.services
 
 import api.models.auth.UserDetails
-import api.models.errors.{ClientOrAgentNotAuthorisedError, InternalError, MtdError}
+import api.models.errors.{ClientOrAgentNotAuthorisedError, InternalError}
 import api.models.outcomes.AuthOutcome
 import api.services.EnrolmentsAuthService._
 import config.AppConfig
@@ -42,16 +42,15 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
   }
 
   private def initialPredicate(mtdId: String): Predicate =
-    if (authorisationEnabled)
+    if (authorisationEnabled) {
       authorisationEnabledPredicate(mtdId)
-    else
+    } else {
       authorisationDisabledPredicate(mtdId)
+    }
 
-  def authorised(
-      mtdId: String,
-      endpointAllowsSupportingAgents: Boolean = false
-  )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuthOutcome] = {
-
+  def authorised(mtdId: String, endpointAllowsSupportingAgents: Boolean = false)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext): Future[AuthOutcome] =
     authFunction
       .authorised(initialPredicate(mtdId))
       .retrieve(affinityGroup and authorisedEnrolments) {
@@ -62,24 +61,25 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
           Future.successful(Right(UserDetails("", "Organisation", None)))
 
         case Some(Agent) ~ authorisedEnrolments =>
-          authFunction
-            .authorised(mtdEnrolmentPredicate(mtdId)) {
-              Future.successful(agentDetails(authorisedEnrolments))
-            }
-            .recoverWith { case _: AuthorisationException =>
-              if (endpointAllowsSupportingAgents) {
-                authFunction
-                  .authorised(supportingAgentAuthPredicate(mtdId)) {
-                    Future.successful(agentDetails(authorisedEnrolments))
-                  }
-              } else {
-                Future.successful(Left(ClientOrAgentNotAuthorisedError))
-              }
-                .recoverWith { case _: AuthorisationException =>
-                  Future.successful(Left(ClientOrAgentNotAuthorisedError))
-                }
-            }
+          val (agentPredicate, agentType) = if (endpointAllowsSupportingAgents) {
+            (supportingAgentAuthPredicate(mtdId), "Supporting Agent")
+          } else {
+            (mtdEnrolmentPredicate(mtdId), "Agent")
+          }
 
+          authFunction
+            .authorised(agentPredicate) {
+              Future.successful {
+                (for {
+                  enrolment  <- authorisedEnrolments.getEnrolment("HMRC-AS-AGENT")
+                  identifier <- enrolment.getIdentifier("AgentReferenceNumber")
+                  arn = identifier.value
+                } yield UserDetails("", agentType, Some(arn))).toRight(left = {
+                  logger.warn(s"[EnrolmentsAuthService][authorised] No AgentReferenceNumber defined on agent enrolment.")
+                  InternalError
+                })
+              }
+            }
         case _ =>
           logger.warn(s"[EnrolmentsAuthService][authorised] Invalid AffinityGroup.")
           Future.successful(Left(ClientOrAgentNotAuthorisedError))
@@ -93,19 +93,6 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
           logger.warn(s"[EnrolmentsAuthService][authorised] An unexpected error occurred: $error")
           Future.successful(Left(InternalError))
       }
-  }
-
-  private def agentDetails(authorisedEnrolments: Enrolments): Either[MtdError, UserDetails] =
-    (
-      for {
-        enrolment  <- authorisedEnrolments.getEnrolment("HMRC-AS-AGENT")
-        identifier <- enrolment.getIdentifier("AgentReferenceNumber")
-        arn = identifier.value
-      } yield UserDetails("", "Agent", Some(arn))
-    ).toRight(left = {
-      logger.warn(s"[EnrolmentsAuthService][authorised] No AgentReferenceNumber defined on agent enrolment.")
-      InternalError
-    })
 
 }
 
