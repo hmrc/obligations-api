@@ -24,7 +24,7 @@ class ObligationsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAl
 
   override val callingApiVersion = "2.0"
 
-  override val supportingAgentsAllowedEndpoint = "retrieve-eops-obligations"
+  override val supportingAgentsAllowedEndpoint = "retrieve-crystallisation-obligations"
 
   override val mtdUrl = s"/$nino/crystallisation"
 

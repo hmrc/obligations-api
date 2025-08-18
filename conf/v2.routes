@@ -1,4 +1,2 @@
 GET         /:nino/crystallisation                v2.retrieveCrystallisation.RetrieveCrystallisationObligationsController.handleRequest(nino: String, taxYear: Option[String], status: Option[String])
 GET         /:nino/income-and-expenditure         v2.retrievePeriodic.RetrievePeriodicObligationsController.handleRequest(nino: String, typeOfBusiness: Option[String], businessId: Option[String], fromDate: Option[String], toDate: Option[String], status: Option[String])
-GET         /:nino/end-of-period-statement        v2.retrieveEops.RetrieveEOPSObligationsController.handleRequest(nino: String, typeOfBusiness: Option[String], businessId: Option[String], fromDate: Option[String], toDate: Option[String], status: Option[String])
-
