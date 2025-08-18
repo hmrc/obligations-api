@@ -17,54 +17,30 @@
 package v2.retrieveEops
 
 import api.controllers._
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.{IdGenerator, Logging}
+import utils.Logging
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RetrieveEOPSObligationsController @Inject() (val authService: EnrolmentsAuthService,
                                                    val lookupService: MtdIdLookupService,
-                                                   validatorFactory: RetrieveEOPSObligationsValidatorFactory,
-                                                   service: RetrieveEOPSObligationsService,
-                                                   auditService: AuditService,
-                                                   cc: ControllerComponents,
-                                                   idGenerator: IdGenerator)(implicit ec: ExecutionContext, appConfig: AppConfig)
+                                                   cc: ControllerComponents)(implicit ec: ExecutionContext, appConfig: AppConfig)
     extends AuthorisedController(cc)
     with Logging {
 
   override val endpointName: String = "retrieve-eops-obligations"
-
-  implicit val endpointLogContext: EndpointLogContext =
-    EndpointLogContext(controllerName = "RetrieveEOPSObligationsController", endpointName = "handleRequest")
 
   def handleRequest(nino: String,
                     typeOfBusiness: Option[String],
                     businessId: Option[String],
                     fromDate: Option[String],
                     toDate: Option[String],
-                    status: Option[String]): Action[AnyContent] =
-    authorisedAction(nino).async { implicit request =>
-      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
-
-      val validator = validatorFactory.validator(nino, typeOfBusiness, businessId, fromDate, toDate, status)
-
-      val requestHandler = RequestHandler
-        .withValidator(validator)
-        .withService(service.retrieve)
-        .withPlainJsonResult()
-        .withAuditing(AuditHandler(
-          auditService = auditService,
-          auditType = "retrieveEOPSObligations",
-          transactionName = "retrieve-eops-obligations",
-          pathParams = Map("nino" -> nino),
-          includeResponse = true
-        ))
-
-      requestHandler.handleRequest()
-    }
+                    status: Option[String]): Action[AnyContent] = Action.async {
+    Future(Gone)
+  }
 
 }
