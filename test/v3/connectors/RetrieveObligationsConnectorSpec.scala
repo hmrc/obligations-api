@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
       "make the request with the downstream-formatted status query parameter" in new DesTest with Test {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
+        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "F"))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatusV3.open))) shouldBe outcome
@@ -69,7 +69,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
   }
 
   trait Test {
-    _: ConnectorTest =>
+    self: ConnectorTest =>
 
     lazy val response: DownstreamObligations = DownstreamObligations(Nil)
 

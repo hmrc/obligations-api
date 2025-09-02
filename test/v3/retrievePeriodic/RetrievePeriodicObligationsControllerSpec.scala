@@ -135,7 +135,7 @@ class RetrievePeriodicObligationsControllerSpec
 
   trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
-    val controller = new RetrievePeriodicObligationsController(
+    val controller: RetrievePeriodicObligationsController = new RetrievePeriodicObligationsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockRetrievePeriodicObligationsValidatorFactory,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,17 @@ package api.models.domain.status
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait MtdStatus {
-  def toDes: DesStatus
+enum MtdStatus {
+  case Fulfilled, Open
+
+  def toDes: DesStatus = this match {
+    case Fulfilled => DesStatus.F
+    case Open      => DesStatus.O
+  }
+
 }
 
 object MtdStatus {
-  val parser: PartialFunction[String, MtdStatus] = Enums.parser[MtdStatus]
-
-  case object Fulfilled extends MtdStatus {
-    override def toDes: DesStatus = DesStatus.F
-  }
-
-  implicit val format: Format[MtdStatus] = Enums.format[MtdStatus]
-
-  case object Open extends MtdStatus {
-    override def toDes: DesStatus = DesStatus.O
-  }
-
+  val parser: PartialFunction[String, MtdStatus] = Enums.parser(values)
+  given Format[MtdStatus]                        = Enums.format(values)
 }

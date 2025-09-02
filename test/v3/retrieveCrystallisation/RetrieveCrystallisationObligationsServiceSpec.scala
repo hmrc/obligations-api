@@ -44,12 +44,12 @@ import scala.concurrent.Future
 
 class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with DownstreamObligationsFixture with ObligationsFixture {
 
-  private val nino              = "AA123456A"
-  private val taxYearRangeStart = "2018"
-  private val taxYearRangeEnd   = "2020"
-  private val status            = MtdStatusV3.open
-  private val taxYearRange      = TaxYearRange(TaxYear(taxYearRangeStart), TaxYear(taxYearRangeEnd))
-  private val dateRange         = DateRange(taxYearRange.from.startDate, taxYearRange.to.endDate)
+  private val nino                      = "AA123456A"
+  private val taxYearRangeStart: String = "2017-18"
+  private val taxYearRangeEnd: String   = "2019-20"
+  private val status                    = MtdStatusV3.open
+  private val taxYearRange              = TaxYearRange(TaxYear.fromMtd(taxYearRangeStart), TaxYear.fromMtd(taxYearRangeEnd))
+  private val dateRange                 = DateRange(taxYearRange.from.startDate, taxYearRange.to.endDate)
 
   def request(nino: Nino,
               obligationsTaxYear: TaxYearRange = taxYearRange,

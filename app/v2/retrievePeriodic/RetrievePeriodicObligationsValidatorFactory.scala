@@ -67,7 +67,7 @@ class RetrievePeriodicObligationsValidatorFactory @Inject() (implicit clock: Clo
   }
 
   private val validateRules = {
-    val validateMissingBusinessType = { request: RetrievePeriodicObligationsRequest =>
+    val validateMissingBusinessType = { (request: RetrievePeriodicObligationsRequest) =>
       import request._
 
       (businessId, typeOfBusiness) match {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@ package api.services
 import api.models.auth.UserDetails
 import api.models.errors.{ClientOrAgentNotAuthorisedError, InternalError, MtdError}
 import api.models.outcomes.AuthOutcome
-import api.services.EnrolmentsAuthService._
 import config.AppConfig
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
-import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.*
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
@@ -42,10 +41,11 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
   }
 
   private def initialPredicate(mtdId: String): Predicate =
-    if (authorisationEnabled)
-      authorisationEnabledPredicate(mtdId)
-    else
-      authorisationDisabledPredicate(mtdId)
+    if (authorisationEnabled) {
+      EnrolmentsAuthService.authorisationEnabledPredicate(mtdId)
+    } else {
+      EnrolmentsAuthService.authorisationDisabledPredicate(mtdId)
+    }
 
   def authorised(
       mtdId: String,
@@ -63,13 +63,13 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
 
         case Some(Agent) ~ authorisedEnrolments =>
           authFunction
-            .authorised(mtdEnrolmentPredicate(mtdId)) {
+            .authorised(EnrolmentsAuthService.mtdEnrolmentPredicate(mtdId)) {
               Future.successful(agentDetails(authorisedEnrolments))
             }
             .recoverWith { case _: AuthorisationException =>
               if (endpointAllowsSupportingAgents) {
                 authFunction
-                  .authorised(supportingAgentAuthPredicate(mtdId)) {
+                  .authorised(EnrolmentsAuthService.supportingAgentAuthPredicate(mtdId)) {
                     Future.successful(agentDetails(authorisedEnrolments))
                   }
               } else {
