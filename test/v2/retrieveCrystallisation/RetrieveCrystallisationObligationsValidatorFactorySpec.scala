@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package v2.retrieveCrystallisation
 
 import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYear, TaxYearRange}
-import api.models.errors._
+import api.models.errors.*
 import org.threeten.extra.MutableClock
 import support.UnitSpec
-import v2.retrieveCrystallisation.RetrieveCrystallisationObligationsValidatorFactory
 import v2.retrieveCrystallisation.model.request.RetrieveCrystallisationObligationsRequest
 
 import java.time.Instant
@@ -86,7 +85,7 @@ class RetrieveCrystallisationObligationsValidatorFactorySpec extends UnitSpec {
       (validNino, "2016-17", validStatus, RuleTaxYearNotSupportedError),
       (validNino, "2018-20", validStatus, RuleTaxYearRangeInvalidError),
       (validNino, validTaxYear, "notAStatus", StatusFormatError)
-    ).foreach(args => (test _).tupled(args))
+    ).foreach(args => test.tupled(args))
 
     "return multiple errors" when {
       "request supplied has multiple errors" in {

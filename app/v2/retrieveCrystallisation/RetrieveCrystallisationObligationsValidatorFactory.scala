@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@
 package v2.retrieveCrystallisation
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.ResolverSupport._
+import api.controllers.validators.resolvers.ResolverSupport.*
 import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
 import api.models.domain.{TaxYear, TaxYearRange}
 import api.models.errors.MtdError
 import cats.data.Validated
-import cats.implicits._
+import cats.implicits.*
 import v2.controllers.validators.resolvers.ResolveMtdStatus
 import v2.retrieveCrystallisation.model.request.RetrieveCrystallisationObligationsRequest
 
@@ -48,7 +48,7 @@ class RetrieveCrystallisationObligationsValidatorFactory @Inject() (implicit clo
           ResolveNino(nino),
           resolveTaxYear(taxYear),
           resolveStatus(status)
-        ).mapN(RetrieveCrystallisationObligationsRequest)
+        ).mapN(RetrieveCrystallisationObligationsRequest.apply)
       }
 
     }

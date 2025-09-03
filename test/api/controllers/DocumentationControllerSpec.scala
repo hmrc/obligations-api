@@ -18,10 +18,10 @@ package api.controllers
 
 import com.typesafe.config.ConfigFactory
 import config.rewriters.DocumentationRewriters.CheckAndRewrite
-import config.rewriters._
+import config.rewriters.*
 import config.{MockAppConfig, RealAppConfig}
 import controllers.{AssetsConfiguration, DefaultAssetsMetadata, RewriteableAssets}
-import definition._
+import definition.*
 import play.api.http.{DefaultFileMimeTypes, DefaultHttpErrorHandler, FileMimeTypesConfiguration, HttpConfiguration}
 import play.api.mvc.Result
 import play.api.{Configuration, Environment}

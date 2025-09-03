@@ -190,7 +190,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with Dow
           ("SERVER_ERROR", InternalError),
           ("SERVICE_UNAVAILABLE", InternalError)
         )
-        input.foreach(args => (serviceError _).tupled(args))
+        input.foreach(args => serviceError.tupled(args))
       }
     }
   }

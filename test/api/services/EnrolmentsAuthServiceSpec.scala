@@ -29,7 +29,7 @@ import config.{ConfidenceLevelConfig, MockAppConfig}
 import org.scalamock.handlers.CallHandler
 import uk.gov.hmrc.auth.core.AffinityGroup.{Agent, Individual, Organisation}
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.*
 import uk.gov.hmrc.auth.core.retrieve.{EmptyRetrieval, Retrieval, ~}
 import uk.gov.hmrc.auth.core.{AuthConnector, ConfidenceLevel, Enrolment, EnrolmentIdentifier, Enrolments, InsufficientEnrolments, MissingBearerToken}
 import uk.gov.hmrc.http.HeaderCarrier

@@ -60,7 +60,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
       "make the request with the downstream-formatted status query parameter" in new DesTest with Test {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "F"))
+        willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatusV3.open))) shouldBe outcome

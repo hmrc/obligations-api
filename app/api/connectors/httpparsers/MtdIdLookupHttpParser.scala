@@ -18,7 +18,7 @@ package api.connectors.httpparsers
 
 import api.connectors.MtdIdLookupConnector
 import play.api.http.Status.OK
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.http.{HttpReads, HttpResponse}
 
 object MtdIdLookupHttpParser extends HttpParser {

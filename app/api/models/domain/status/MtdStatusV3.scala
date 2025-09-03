@@ -23,8 +23,8 @@ enum MtdStatusV3 {
   case fulfilled, open
 
   def toDes: DesStatusV3 = this match {
-    case fulfilled => DesStatusV3.F
-    case open      => DesStatusV3.O
+    case MtdStatusV3.fulfilled => DesStatusV3.F
+    case MtdStatusV3.open      => DesStatusV3.O
   }
 
 }

@@ -29,7 +29,7 @@ import api.models.errors.{
 }
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
+import cats.implicits.*
 import org.scalamock.scalatest.MockFactory
 import play.api.http.Status.BAD_REQUEST
 import play.api.libs.json.{JsValue, Json, Reads}
@@ -68,11 +68,11 @@ class ValidatorSpec extends UnitSpec with MockFactory {
         ResolveNino(nino),
         ResolveTaxYear(taxYear),
         jsonResolver(jsonBody)
-      ).mapN(TestParsedRequest) andThen TestRulesValidator.validateBusinessRules
+      ).mapN(TestParsedRequest.apply) andThen TestRulesValidator.validateBusinessRules
 
     override def invalid(error: MtdError): Invalid[Seq[MtdError]] = super.invalid(error)
 
-    override def combine(results: Validated[Seq[MtdError], _]*): Validated[Seq[MtdError], Unit] = super.combine(results: _*)
+    override def combine(results: Validated[Seq[MtdError], ?]*): Validated[Seq[MtdError], Unit] = super.combine(results*)
 
   }
 

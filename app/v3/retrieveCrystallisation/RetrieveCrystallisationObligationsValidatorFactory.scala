@@ -17,12 +17,12 @@
 package v3.retrieveCrystallisation
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.ResolverSupport._
+import api.controllers.validators.resolvers.ResolverSupport.*
 import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
 import api.models.domain.{TaxYear, TaxYearRange}
 import api.models.errors.MtdError
 import cats.data.Validated
-import cats.implicits._
+import cats.implicits.*
 import v3.controllers.validators.resolvers.ResolveMtdStatus
 import v3.retrieveCrystallisation.model.request.RetrieveCrystallisationObligationsRequest
 
@@ -48,7 +48,7 @@ class RetrieveCrystallisationObligationsValidatorFactory @Inject() (implicit clo
           ResolveNino(nino),
           resolveTaxYear(taxYear),
           resolveStatus(status)
-        ).mapN(RetrieveCrystallisationObligationsRequest)
+        ).mapN(RetrieveCrystallisationObligationsRequest.apply)
       }
 
     }

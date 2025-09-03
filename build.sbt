@@ -19,9 +19,9 @@ import uk.gov.hmrc.DefaultBuildSettings
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import org.scalafmt.sbt.ScalafmtPlugin
 
-ThisBuild / scalaVersion := "3.3.6"
+ThisBuild / scalaVersion := "3.5.2"
 ThisBuild / majorVersion := 0
-ThisBuild / scalacOptions += "-nowarn"
+ThisBuild / scalacOptions ++= Seq("-Werror", "-Wconf:msg=Flag.*repeatedly:s")
 
 val appName = "obligations-api"
 

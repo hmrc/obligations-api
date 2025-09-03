@@ -19,11 +19,11 @@ package v2.retrievePeriodic
 import api.controllers.RequestContext
 import api.models.domain.business.MtdBusiness
 import api.models.domain.{BusinessId, PeriodKey}
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceOutcome
 import cats.data.EitherT
-import cats.implicits._
+import cats.implicits.*
 import v2.connectors.RetrieveObligationsConnector
 import v2.models.response.downstream.DownstreamObligations
 import v2.retrievePeriodic.model.request.RetrievePeriodicObligationsRequest
