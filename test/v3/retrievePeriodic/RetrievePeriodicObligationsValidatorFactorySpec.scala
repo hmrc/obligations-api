@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package v3.retrievePeriodic
 import api.models.domain.business.MtdBusiness
 import api.models.domain.status.MtdStatusV3
 import api.models.domain.{BusinessId, DateRange, Nino}
-import api.models.errors._
+import api.models.errors.*
 import org.scalatest.Inside
 import org.threeten.extra.MutableClock
 import support.UnitSpec
@@ -171,7 +171,7 @@ class RetrievePeriodicObligationsValidatorFactorySpec extends UnitSpec with Insi
       (validNino, validTypeOfBusiness, validBusinessId, "2020-01-01", "2020-01-01", validStatus, RuleDateRangeInvalidError),
       (validNino, validTypeOfBusiness, validBusinessId, "2018-12-12", "2020-04-05", validStatus, RuleDateRangeInvalidError),
       (validNino, validTypeOfBusiness, validBusinessId, validFromDate, validToDate, "notAStatus", StatusFormatError)
-    ).foreach(args => (test _).tupled(args))
+    ).foreach(test.tupled)
 
     "request supplied has multiple errors" must {
       "return multiple errors" in {

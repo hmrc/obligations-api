@@ -16,11 +16,11 @@
 
 package v3.retrievePeriodic
 
-import api.models.errors._
+import api.models.errors.*
 import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
@@ -232,7 +232,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "self-employment", "XAIS12345678901", "2017-01-01", "2018-01-01", "open", BAD_REQUEST, RuleFromDateNotSupportedError),
           ("AA123456A", "self-employment", "XAIS12345678901", "2019-01-01", "2020-06-06", "open", BAD_REQUEST, RuleDateRangeInvalidError)
         )
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "des service error" when {
@@ -274,7 +274,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
         )
-        input.foreach(args => (serviceErrorTest _).tupled(args))
+        input.foreach(serviceErrorTest.tupled)
       }
 
       "no obligation error" when {

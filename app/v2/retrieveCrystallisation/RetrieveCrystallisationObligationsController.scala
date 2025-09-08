@@ -16,7 +16,7 @@
 
 package v2.retrieveCrystallisation
 
-import api.controllers._
+import api.controllers.*
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}

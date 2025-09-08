@@ -18,7 +18,7 @@ package v3.controllers.validators.resolvers
 
 import api.controllers.validators.resolvers.ResolverSupport
 import api.models.domain.DateRange
-import api.models.errors._
+import api.models.errors.*
 
 import java.time.{Clock, LocalDate}
 import scala.math.Ordering.Implicits.infixOrderingOps

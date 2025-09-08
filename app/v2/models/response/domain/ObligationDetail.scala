@@ -32,7 +32,7 @@ object ObligationDetail {
   implicit val writes: OWrites[ObligationDetail] = Json.writes[ObligationDetail]
 
   def fromDownstream(downstreamObligationDetail: downstream.DownstreamObligationDetail): ObligationDetail = {
-    import downstreamObligationDetail._
+    import downstreamObligationDetail.*
     ObligationDetail(
       periodStartDate = inboundCorrespondenceFromDate,
       periodEndDate = inboundCorrespondenceToDate,

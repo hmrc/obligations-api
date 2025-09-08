@@ -45,10 +45,10 @@ import scala.concurrent.Future
 class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with DownstreamObligationsFixture with ObligationsFixture {
 
   private val nino              = "AA123456A"
-  private val taxYearRangeStart = "2018"
-  private val taxYearRangeEnd   = "2020"
+  private val taxYearRangeStart = "2017-18"
+  private val taxYearRangeEnd   = "2019-20"
   private val status            = MtdStatus.Open
-  private val taxYearRange      = TaxYearRange(TaxYear(taxYearRangeStart), TaxYear(taxYearRangeEnd))
+  private val taxYearRange      = TaxYearRange(TaxYear.fromMtd(taxYearRangeStart), TaxYear.fromMtd(taxYearRangeEnd))
   private val dateRange         = DateRange(taxYearRange.from.startDate, taxYearRange.to.endDate)
 
   def request(nino: Nino,
@@ -190,7 +190,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with Dow
           ("SERVER_ERROR", InternalError),
           ("SERVICE_UNAVAILABLE", InternalError)
         )
-        input.foreach(args => (serviceError _).tupled(args))
+        input.foreach(args => serviceError.tupled(args))
       }
     }
   }

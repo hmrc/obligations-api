@@ -17,7 +17,7 @@
 package v2.controllers.validators.resolvers
 
 import api.models.domain.DateRange
-import api.models.errors._
+import api.models.errors.*
 import cats.data.Validated.{Invalid, Valid}
 import org.scalatest.Inside
 import support.UnitSpec

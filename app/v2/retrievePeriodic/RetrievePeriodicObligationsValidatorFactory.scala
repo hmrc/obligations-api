@@ -17,12 +17,12 @@
 package v2.retrievePeriodic
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.ResolverSupport._
+import api.controllers.validators.resolvers.ResolverSupport.*
 import api.controllers.validators.resolvers.{ResolveBusinessId, ResolveNino}
 import api.models.domain.status.MtdStatus
-import api.models.errors._
+import api.models.errors.*
 import cats.data.Validated
-import cats.implicits._
+import cats.implicits.*
 import v2.controllers.validators.resolvers.{ObligationsDateRangeSupport, ResolveMtdBusiness, ResolveMtdStatus, ResolveOptionalDateRange}
 import v2.retrievePeriodic.model.request.RetrievePeriodicObligationsRequest
 
@@ -51,7 +51,7 @@ class RetrievePeriodicObligationsValidatorFactory @Inject() (implicit clock: Clo
           resolveBusinessId(businessId),
           resolveDateRange((fromDate, toDate)),
           resolveStatus(status)
-        ).mapN(RetrievePeriodicObligationsRequest)
+        ).mapN(RetrievePeriodicObligationsRequest.apply)
           .andThen(validateRules)
           .map(provideDefaultDateRange)
 
@@ -67,8 +67,8 @@ class RetrievePeriodicObligationsValidatorFactory @Inject() (implicit clock: Clo
   }
 
   private val validateRules = {
-    val validateMissingBusinessType = { request: RetrievePeriodicObligationsRequest =>
-      import request._
+    val validateMissingBusinessType = { (request: RetrievePeriodicObligationsRequest) =>
+      import request.*
 
       (businessId, typeOfBusiness) match {
         case (Some(_), None) => Some(List(MissingTypeOfBusinessError))

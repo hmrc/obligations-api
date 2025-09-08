@@ -16,7 +16,7 @@
 
 package api.connectors
 
-import api.connectors.DownstreamUri._
+import api.connectors.DownstreamUri.*
 import api.mocks.MockHttpClient
 import api.models.outcomes.ResponseWrapper
 import config.AppConfig

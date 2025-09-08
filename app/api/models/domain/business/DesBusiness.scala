@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,36 +19,14 @@ package api.models.domain.business
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-sealed trait DesBusiness {
-  def toMtd: Option[MtdBusiness]
+enum DesBusiness(val toMtd: Option[MtdBusiness]) {
+  case ITSB extends DesBusiness(Some(MtdBusiness.`self-employment`))
+  case ITSP extends DesBusiness(Some(MtdBusiness.`uk-property`))
+  case ITSF extends DesBusiness(Some(MtdBusiness.`foreign-property`))
+  case ITSA extends DesBusiness(None)
 }
 
 object DesBusiness {
-  val parser: PartialFunction[String, DesBusiness] = Enums.parser[DesBusiness]
-  implicit val format: Format[DesBusiness]         = Enums.format[DesBusiness]
-
-  case object ITSB extends DesBusiness {
-
-    override def toMtd: Option[MtdBusiness] = Some(
-      MtdBusiness.`self-employment`
-    )
-
-  }
-
-  case object ITSP extends DesBusiness {
-    override def toMtd: Option[MtdBusiness] = Some(MtdBusiness.`uk-property`)
-  }
-
-  case object ITSF extends DesBusiness {
-
-    override def toMtd: Option[MtdBusiness] = Some(
-      MtdBusiness.`foreign-property`
-    )
-
-  }
-
-  case object ITSA extends DesBusiness {
-    override def toMtd: Option[MtdBusiness] = None
-  }
-
+  val parser: PartialFunction[String, DesBusiness] = Enums.parser(values)
+  given Format[DesBusiness]                        = Enums.format(values)
 }

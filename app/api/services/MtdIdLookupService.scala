@@ -19,7 +19,7 @@ package api.services
 import api.connectors.MtdIdLookupConnector
 import api.controllers.validators.resolvers.ResolveNino
 import api.models.errors.{InvalidBearerTokenError, NinoFormatError, _}
-import play.api.http.Status._
+import play.api.http.Status.*
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.{Inject, Singleton}

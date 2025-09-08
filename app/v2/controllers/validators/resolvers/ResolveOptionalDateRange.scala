@@ -18,9 +18,9 @@ package v2.controllers.validators.resolvers
 
 import api.controllers.validators.resolvers.{ResolveIsoDate, ResolverSupport}
 import api.models.domain.DateRange
-import api.models.errors._
+import api.models.errors.*
 import cats.data.Validated.{Invalid, Valid}
-import cats.implicits._
+import cats.implicits.*
 
 /** Simple date range resolver for optional date ranges.
   *

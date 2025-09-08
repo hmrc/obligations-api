@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapPlayVersion = "9.13.0"
+  val bootstrapPlayVersion = "10.1.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30" % bootstrapPlayVersion,
     "org.typelevel"                %% "cats-core"                 % "2.13.0",
-    "com.chuusai"                  %% "shapeless"                 % "2.4.0-M1",
     "com.neovisionaries"            % "nv-i18n"                   % "1.29",
     "com.github.jknack"             % "handlebars"                % "4.3.1"
   )

@@ -59,7 +59,7 @@ abstract class ControllerBaseSpec
 }
 
 trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLookupService with MockIdGenerator with RealAppConfig {
-  _: ControllerBaseSpec =>
+  this: ControllerBaseSpec =>
 
   protected val nino: String  = validNino
   protected val correlationId = "X-123"
@@ -119,7 +119,7 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
   }
 
   trait AuditEventChecking[DETAIL] {
-    _: ControllerTest =>
+    this: ControllerTest =>
 
     protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[DETAIL]
 

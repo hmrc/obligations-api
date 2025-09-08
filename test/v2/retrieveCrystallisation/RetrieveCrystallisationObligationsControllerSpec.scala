@@ -20,7 +20,7 @@ import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYearRange}
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.MockAuditService
 import config.MockAppConfig

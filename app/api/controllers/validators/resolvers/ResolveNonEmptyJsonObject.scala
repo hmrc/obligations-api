@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import api.models.errors.{MtdError, RuleIncorrectOrEmptyBodyError}
 import cats.data.Validated
 import play.api.libs.json.{JsValue, OFormat, Reads}
 import utils.EmptinessChecker
-import utils.EmptyPathsResult._
+import utils.EmptyPathsResult.*
 
 class ResolveNonEmptyJsonObject[T: OFormat: EmptinessChecker]()(implicit val reads: Reads[T]) extends ResolverSupport {
 
@@ -34,7 +34,7 @@ class ResolveNonEmptyJsonObject[T: OFormat: EmptinessChecker]()(implicit val rea
     }
   }
 
-  val resolver: Resolver[JsValue, T] = jsonResolver thenValidate checkNonEmpty
+  val resolver: Resolver[JsValue, T] = jsonResolver.thenValidate(checkNonEmpty)
 
   def apply(data: JsValue): Validated[Seq[MtdError], T] = resolver(data)
 

@@ -17,7 +17,7 @@
 package v3.connectors
 
 import api.connectors.DownstreamUri.DesUri
-import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.httpparsers.StandardDownstreamHttpParser.*
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import api.models.domain.status.MtdStatusV3
 import api.models.domain.{DateRange, Nino}

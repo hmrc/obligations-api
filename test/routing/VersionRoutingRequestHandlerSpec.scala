@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@ import config.MockAppConfig
 import org.apache.pekko.actor.ActorSystem
 import org.scalatest.Inside
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.http.HeaderNames.ACCEPT
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.libs.json.Json
-import play.api.mvc._
+import play.api.mvc.*
 import play.api.routing.Router
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import support.UnitSpec
 
 class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockAppConfig with GuiceOneAppPerSuite {
@@ -37,7 +36,7 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
   val action: DefaultActionBuilder              = app.injector.instanceOf[DefaultActionBuilder]
 
   import play.api.mvc.Handler
-  import play.api.routing.sird._
+  import play.api.routing.sird.*
 
   object DefaultHandler extends Handler
 

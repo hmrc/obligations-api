@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import api.controllers.EndpointLogContext
 import api.models.domain.business.{DesBusiness, MtdBusiness}
 import api.models.domain.status.MtdStatusV3
 import api.models.domain.{BusinessId, DateRange, Nino}
-import api.models.errors._
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -48,7 +48,7 @@ class RetrievePeriodicObligationsServiceSpec extends ServiceSpec with Downstream
     RetrievePeriodicObligationsRequest(
       nino = nino,
       typeOfBusiness = typeOfBusiness,
-      businessId = businessId.map(BusinessId),
+      businessId = businessId.map(BusinessId.apply),
       dateRange = dateRange.map { case (from, to) => DateRange(LocalDate.parse(from), LocalDate.parse(to)) },
       status = status
     )
@@ -305,7 +305,7 @@ class RetrievePeriodicObligationsServiceSpec extends ServiceSpec with Downstream
           ("SERVER_ERROR", InternalError),
           ("SERVICE_UNAVAILABLE", InternalError)
         )
-        input.foreach(args => (serviceError _).tupled(args))
+        input.foreach(serviceError.tupled)
       }
     }
   }
