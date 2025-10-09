@@ -76,7 +76,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
       behave like disallowSupportingAgentForPrimaryOnlyEndpoint(authValidationEnabled, initialPredicate, primaryAgentPredicate)
 
       behave like disallowUsersWithoutEnrolments(authValidationEnabled, initialPredicate)
-      behave like disallowWhenNotLoggedIn(authValidationEnabled, initialPredicate)
+      behave like disallowWhenNoBearerToken(authValidationEnabled, initialPredicate)
     }
 
     def authorisedIndividual(authValidationEnabled: Boolean, initialPredicate: Predicate): Unit =
@@ -200,7 +200,7 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
         mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
 
         val result: AuthOutcome = await(enrolmentsAuthService.authorised(mtdId, endpointAllowsSupportingAgents = true))
-        result shouldBe Right(UserDetails("", "Agent", Some(arn)))
+        result shouldBe Right(UserDetails("", "Supporting Agent", Some(arn)))
       }
 
     def disallowSupportingAgentForPrimaryOnlyEndpoint(
@@ -237,8 +237,8 @@ class EnrolmentsAuthServiceSpec extends ServiceSpec with MockAppConfig {
         result shouldBe Left(ClientOrAgentNotAuthorisedError)
       }
 
-    def disallowWhenNotLoggedIn(authValidationEnabled: Boolean, initialPredicate: Predicate): Unit =
-      "disallow users that are not logged in" in new Test {
+    def disallowWhenNoBearerToken(authValidationEnabled: Boolean, initialPredicate: Predicate): Unit =
+      "disallow users with no bearer token" in new Test {
         mockConfidenceLevelCheckConfig(authValidationEnabled = authValidationEnabled)
 
         MockedAuthConnector

@@ -61,6 +61,7 @@ abstract class AuthSupportingAgentsAllowedISpec extends IntegrationBaseSpec {
   "Calling an endpoint that allows supporting agents" when {
     "the client is the primary agent" should {
       "return a success response" in new Test {
+
         def setupStubs(): StubMapping = {
           AuditStub.audit()
           MtdIdLookupStub.ninoFound(nino)
