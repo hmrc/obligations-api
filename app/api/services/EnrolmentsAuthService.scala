@@ -54,19 +54,19 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
       .authorised(initialPredicate(mtdId))
       .retrieve(affinityGroup and authorisedEnrolments) {
         case Some(Individual) ~ _ =>
-          Future.successful(Right(UserDetails("", "Individual", None)))
+          Future.successful(Right(UserDetails(mtdId, "Individual", None)))
         case Some(Organisation) ~ _ =>
-          Future.successful(Right(UserDetails("", "Organisation", None)))
+          Future.successful(Right(UserDetails(mtdId, "Organisation", None)))
         case Some(Agent) ~ authorisedEnrolments =>
           authFunction
             .authorised(EnrolmentsAuthService.mtdEnrolmentPredicate(mtdId)) {
-              Future.successful(agentDetails(authorisedEnrolments, "Agent"))
+              Future.successful(agentDetails(mtdId, authorisedEnrolments, "Agent"))
             }
             .recoverWith {
               case _: AuthorisationException if endpointAllowsSupportingAgents =>
                 authFunction
                   .authorised(EnrolmentsAuthService.supportingAgentAuthPredicate(mtdId)) {
-                    Future.successful(agentDetails(authorisedEnrolments, "Supporting Agent"))
+                    Future.successful(agentDetails(mtdId, authorisedEnrolments, "Supporting Agent"))
                   }
             }
         case _ =>
@@ -81,11 +81,11 @@ class EnrolmentsAuthService @Inject() (val connector: AuthConnector, val appConf
           Future.successful(Left(InternalError))
       }
 
-  private def agentDetails(enrolments: Enrolments, agentType: String): Either[MtdError, UserDetails] = {
+  private def agentDetails(mtdId: String, enrolments: Enrolments, agentType: String): Either[MtdError, UserDetails] = {
     (for {
       enrolment  <- enrolments.getEnrolment("HMRC-AS-AGENT")
       identifier <- enrolment.getIdentifier("AgentReferenceNumber")
-    } yield UserDetails("", agentType, Some(identifier.value)))
+    } yield UserDetails(mtdId, agentType, Some(identifier.value)))
       .toRight {
         logger.warn("[EnrolmentsAuthService][authorised] No AgentReferenceNumber defined on agent enrolment.")
         InternalError
