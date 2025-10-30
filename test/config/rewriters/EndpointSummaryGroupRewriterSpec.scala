@@ -46,15 +46,15 @@ class EndpointSummaryGroupRewriterSpec extends UnitSpec with MockAppConfig {
 
     "rewrite" should {
       "return the rewritten summaries when the 'maybeTestOnly' helper is present" in {
-        MockedAppConfig.endpointReleasedInProduction("2.0", "employment-expenses-create-and-amend") returns false
-        MockedAppConfig.endpointReleasedInProduction("2.0", "employment-expenses-retrieve") returns true
-        MockedAppConfig.endpointReleasedInProduction("2.0", "employment-expenses-delete") returns false
+        MockedAppConfig.endpointReleasedInProduction("3.0", "employment-expenses-create-and-amend") returns false
+        MockedAppConfig.endpointReleasedInProduction("3.0", "employment-expenses-retrieve") returns true
+        MockedAppConfig.endpointReleasedInProduction("3.0", "employment-expenses-delete") returns false
 
         val yaml =
           """
                   |put:
                   |  $ref: "./employment_expenses_create_and_amend.yaml"
-                  |  summary: Create and Amend Employment Expenses{{#maybeTestOnly "2.0 employment-expenses-create-and-amend"}}{{/maybeTestOnly}}
+                  |  summary: Create and Amend Employment Expenses{{#maybeTestOnly "3.0 employment-expenses-create-and-amend"}}{{/maybeTestOnly}}
                   |  security:
                   |    - User-Restricted:
                   |        - write:self-assessment
@@ -62,7 +62,7 @@ class EndpointSummaryGroupRewriterSpec extends UnitSpec with MockAppConfig {
                   |
                   |get:
                   |  $ref: "./employment_expenses_retrieve.yaml"
-                  |  summary: Retrieve Employment Expenses{{#maybeTestOnly "2.0 employment-expenses-retrieve"}}{{/maybeTestOnly}}
+                  |  summary: Retrieve Employment Expenses{{#maybeTestOnly "3.0 employment-expenses-retrieve"}}{{/maybeTestOnly}}
                   |  security:
                   |    - User-Restricted:
                   |        - read:self-assessment
@@ -71,7 +71,7 @@ class EndpointSummaryGroupRewriterSpec extends UnitSpec with MockAppConfig {
                   |
                   |delete:
                   |  $ref: "./employment_expenses_delete.yaml"
-                  |  summary: Delete Employment Expenses{{#maybeTestOnly "2.0 employment-expenses-delete"}}{{/maybeTestOnly}}
+                  |  summary: Delete Employment Expenses{{#maybeTestOnly "3.0 employment-expenses-delete"}}{{/maybeTestOnly}}
                   |  security:
                   |    - User-Restricted:
                   |        - write:self-assessment
