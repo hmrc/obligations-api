@@ -38,7 +38,7 @@ import scala.util.control.NoStackTrace
 
 class ErrorHandlerSpec extends UnitSpec with GuiceOneAppPerSuite {
 
-  def versionHeader: (String, String) = ACCEPT -> s"application/vnd.hmrc.2.0+json"
+  def versionHeader: (String, String) = ACCEPT -> s"application/vnd.hmrc.3.0+json"
 
   class Test() {
     val method = "some-method"

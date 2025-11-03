@@ -27,7 +27,7 @@ import support.IntegrationBaseSpec
 
 abstract class AuthSupportingAgentsAllowedISpec extends IntegrationBaseSpec {
 
-  /** The API's latest version, e.g. "2.0".
+  /** The API's latest version, e.g. "3.0".
     */
   protected val callingApiVersion: String
 

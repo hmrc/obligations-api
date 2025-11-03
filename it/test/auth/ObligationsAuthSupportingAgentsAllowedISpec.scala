@@ -22,7 +22,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 
 class ObligationsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAllowedISpec {
 
-  override val callingApiVersion = "2.0"
+  override val callingApiVersion = "3.0"
 
   override val supportingAgentsAllowedEndpoint = "retrieve-crystallisation-obligations"
 

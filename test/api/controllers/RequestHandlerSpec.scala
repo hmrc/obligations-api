@@ -83,7 +83,7 @@ class RequestHandlerSpec
   implicit val ctx: RequestContext = RequestContext.from(mockIdGenerator, endpointLogContext)
 
   implicit val userRequest: UserRequest[AnyContent] = {
-    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders(HeaderNames.ACCEPT -> "application/vnd.hmrc.2.0+json")
+    val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest().withHeaders(HeaderNames.ACCEPT -> "application/vnd.hmrc.3.0+json")
     UserRequest[AnyContent](userDetails, fakeRequest)
   }
 

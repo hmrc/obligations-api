@@ -22,7 +22,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 
 class ObligationsAuthMainAgentsOnlyISpec extends AuthMainAgentsOnlyISpec {
 
-  override val callingApiVersion = "2.0"
+  override val callingApiVersion = "3.0"
 
   override val supportingAgentsNotAllowedEndpoint = "retrieve-periodic-obligations"
 
