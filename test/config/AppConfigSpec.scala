@@ -399,14 +399,6 @@ class AppConfigSpec extends UnitSpec {
            |        environmentHeaders = ["Des-Accept", "Des-Gov-Test-Scenario", "Des-Content-Type"]
            |      }
            |
-           |      ifs {
-           |        enabled = true
-           |        host = 127.0.0.1
-           |        port = 7777
-           |        env = Prod
-           |        token = IFS-ABCD1234
-           |        environmentHeaders = ["IFS-Accept", "IFS-Gov-Test-Scenario", "IFS-Content-Type"]
-           |      }
            |    }
            |  }
            |""".stripMargin
