@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
   def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.${version.name}.endpoints.enabled")
   def endpointsEnabled(version: String): Boolean  = config.getBoolean(s"api.$version.endpoints.enabled")
 
-  val apiDocumentationUrl: String =
-    config.getConfString("api.documentation-url", defString = s"https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/$appName")
+  def apiDocumentationUrl: String =
+    configuration
+      .getOptional[String]("api.documentation-url")
+      .getOrElse(s"https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/$appName")
 
   private val DATE_FORMATTER = new DateTimeFormatterBuilder()
     .append(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -118,7 +120,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
       (deprecatedOn, sunsetDate, isSunsetEnabled) match {
         case (Some(dO), Some(sD), true) =>
           returnDeprecationMessage(version, dO, sD)
-        case (Some(dO), None, true) => Deprecated(dO, Some(dO.plusMonths(6).plusDays(1))).valid
+        case (Some(dO), None, true) => Deprecated(dO, Some(dO.plusMonths(6))).valid
         case (Some(dO), _, false)   => Deprecated(dO, None).valid
         case _                      => s"deprecatedOn date is required for a deprecated version $version".invalid
       }
