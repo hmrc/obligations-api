@@ -33,15 +33,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
 
   "definition" when {
     "called" should {
-      "return a valid Definition case class when confidence level 200 checking is enforced" in {
-        testDefinition()
-      }
-
-      "return a valid Definition case class when confidence level checking 50 is enforced" in {
-        testDefinition()
-      }
-
-      def testDefinition(): Unit = new Test {
+      "return a valid Definition case class" in new Test {
         Seq(Version3).foreach { version =>
           MockedAppConfig.apiStatus(version) returns "ALPHA"
           MockedAppConfig.endpointsEnabled(version) returns true
