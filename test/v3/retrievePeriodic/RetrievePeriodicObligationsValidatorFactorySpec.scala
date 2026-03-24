@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,15 @@ import api.models.domain.status.MtdStatusV3
 import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors.*
 import org.scalatest.Inside
-import org.threeten.extra.MutableClock
-import support.UnitSpec
+import support.{MutableClock, UnitSpec}
 import v3.retrievePeriodic.model.request.RetrievePeriodicObligationsRequest
 
-import java.time.{Instant, LocalDate}
+import java.time.{Instant, LocalDate, ZoneId}
 
 class RetrievePeriodicObligationsValidatorFactorySpec extends UnitSpec with Inside {
 
   private implicit val correlationId: String = "1234"
-  private implicit val clock: MutableClock   = MutableClock.epochUTC()
+  private implicit val clock: MutableClock   = MutableClock.of(Instant.EPOCH, ZoneId.of("UTC"))
 
   val validatorFactory = new RetrievePeriodicObligationsValidatorFactory
 
