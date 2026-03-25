@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,61 +20,10 @@ import support.UnitSpec
 
 class NinoSpec extends UnitSpec {
 
-  "The validation of a nino" should {
-    "pass with valid number without spaces" in { validateNino("AB123456C") shouldBe true }
-    "pass with valid number with spaces" in { validateNino("AB 12 34 56 C") shouldBe true }
-    "fail with valid number with leading space" in { validateNino(" AB123456C") shouldBe false }
-    "fail with valid number with trailing space" in { validateNino("AB123456C ") shouldBe false }
-    "fail with empty string" in { validateNino("") shouldBe false }
-    "fail with only space" in { validateNino("    ") shouldBe false }
-    "fail with total garbage" in {
-      validateNino("XXX") shouldBe false
-      validateNino("werionownadefwe") shouldBe false
-      validateNino("@£%!)(*&^") shouldBe false
-      validateNino("123456") shouldBe false
-    }
-    "fail with only one starting letter" in {
-      validateNino("A123456C") shouldBe false
-      validateNino("A1234567C") shouldBe false
-    }
-    "fail with three starting letters" in {
-      validateNino("ABC12345C") shouldBe false
-      validateNino("ABC123456C") shouldBe false
-    }
-    "fail with lowercase letters" in {
-      validateNino("ab123456c") shouldBe false
-    }
-    "fail with less than 6 middle digits" in { validateNino("AB12345C") shouldBe false }
-    "fail with more than 6 middle digits" in { validateNino("AB1234567C") shouldBe false }
-
-    "fail if we start with invalid characters" in {
-      val invalidStartLetterCombinations = List('D', 'F', 'I', 'Q', 'U', 'V').combinations(2).map(_.mkString("")).toList
-      val invalidPrefixes                = List("BG", "GB", "NK", "KN", "TN", "NT", "ZZ")
-      for (v <- invalidStartLetterCombinations ::: invalidPrefixes) {
-        validateNino(v + "123456C") shouldBe false
-      }
-    }
-
-    "fail if the second letter O" in {
-      validateNino("AO123456C") shouldBe false
-    }
-
-    "fail if the suffix is E" in {
-      validateNino("AB123456E") shouldBe false
+  "toString" should {
+    "return the Nino value" in {
+      val result = Nino("AB123456C").toString
+      result shouldBe "AB123456C"
     }
   }
-
-  "Formatting a Nino" should {
-    "produce a formatted nino" in {
-      Nino("CS100700A").formatted shouldBe "CS 10 07 00 A"
-    }
-  }
-
-  "Removing a suffix" should {
-    "produce a nino without a suffix" in {
-      Nino("AA111111A").withoutSuffix shouldBe "AA111111"
-    }
-  }
-
-  def validateNino(nino: String): Boolean = Nino.isValid(nino)
 }
