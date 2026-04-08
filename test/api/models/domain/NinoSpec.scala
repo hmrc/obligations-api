@@ -26,4 +26,5 @@ class NinoSpec extends UnitSpec {
       result shouldBe "AB123456C"
     }
   }
+
 }

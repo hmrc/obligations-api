@@ -17,7 +17,6 @@
 package api.controllers
 
 import api.controllers.validators.Validator
-import api.hateoas.*
 import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.auth.UserDetails
 import api.models.errors.{ErrorWrapper, MtdError, NinoFormatError}
@@ -47,12 +46,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class RequestHandlerSpec
     extends UnitSpec
     with MockAuditService
-    with MockHateoasFactory
     with MockIdGenerator
     with Status
     with HeaderNames
     with ResultExtractors
-    with ControllerSpecHateoasSupport
     with MockAppConfig {
 
   private val successResponseJson = Json.obj("result" -> "SUCCESS!")
@@ -68,11 +65,6 @@ class RequestHandlerSpec
 
   case object Input
   case object Output { implicit val writes: OWrites[Output.type] = _ => successResponseJson }
-  case object HData extends HateoasData
-
-  implicit object HLinksFactory extends HateoasLinksFactory[Output.type, HData.type] {
-    override def links(appConfig: AppConfig, data: HData.type): Seq[Link] = hateoaslinks
-  }
 
   MockIdGenerator.generateCorrelationId.returns(generatedCorrelationId).anyNumberOfTimes()
 
@@ -135,25 +127,6 @@ class RequestHandlerSpec
         contentAsString(result) shouldBe ""
         header("X-CorrelationId", result) shouldBe Some(serviceCorrelationId)
         status(result) shouldBe NO_CONTENT
-      }
-
-      "wrap the response with hateoas links if required§" in {
-        val requestHandler = RequestHandler
-          .withValidator(successValidatorForRequest)
-          .withService(mockService.service)
-          .withHateoasResult(mockHateoasFactory)(HData, successCode)
-
-        mockDeprecation(NotDeprecated)
-
-        service returns Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output)))
-
-        MockHateoasFactory.wrap(Output, HData) returns HateoasWrapper(Output, hateoaslinks)
-
-        val result = requestHandler.handleRequest()
-
-        contentAsJson(result) shouldBe successResponseJson ++ hateoaslinksJson
-        header("X-CorrelationId", result) shouldBe Some(serviceCorrelationId)
-        status(result) shouldBe successCode
       }
 
       "a request is made to a deprecated version" must {
