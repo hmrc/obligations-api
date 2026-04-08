@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,30 +21,15 @@ import play.api.Logger
 import play.api.libs.json.*
 import uk.gov.hmrc.http.HttpResponse
 
-import scala.util.{Success, Try}
+import scala.util.Try
 
 trait HttpParser {
   private val logger: Logger = Logger(this.getClass)
 
-  implicit class KnownJsonResponse(response: HttpResponse) {
+  implicit class JsonResponseHelper(response: HttpResponse) {
+    private lazy val jsonOpt: Option[JsValue] = Try(response.json).toOption
 
-    def validateJson[T](implicit reads: Reads[T]): Option[T] = {
-      Try(response.json) match {
-        case Success(json: JsValue) => parseResult(json)
-        case _ =>
-          logger.warn("[KnownJsonResponse][validateJson] No JSON was returned")
-          None
-      }
-    }
-
-    def parseResult[T](json: JsValue)(implicit reads: Reads[T]): Option[T] = json.validate[T] match {
-
-      case JsSuccess(value, _) => Some(value)
-      case JsError(error) =>
-        logger.warn(s"[KnownJsonResponse][validateJson] Unable to parse JSON: $error")
-        None
-    }
-
+    def validateJson[T](implicit reads: Reads[T]): Option[T] = jsonOpt.flatMap(_.asOpt)
   }
 
   private val multipleErrorReads: Reads[List[DownstreamErrorCode]] = (__ \ "failures").read[List[DownstreamErrorCode]]
@@ -57,9 +42,12 @@ trait HttpParser {
   def retrieveCorrelationId(response: HttpResponse): String = response.header("CorrelationId").getOrElse("")
 
   def parseErrors(response: HttpResponse): DownstreamError = {
-    val singleError         = response.validateJson[DownstreamErrorCode].map(err => DownstreamErrors(List(err)))
-    lazy val multipleErrors = response.validateJson(multipleErrorReads).map(errs => DownstreamErrors(errs))
-    lazy val bvrErrors      = response.validateJson(bvrErrorReads).map(errs => OutboundError(BVRError, Some(errs.map(_.toMtd(BVRError.httpStatus)))))
+    val wrappedResponse: JsonResponseHelper = new JsonResponseHelper(response)
+
+    val singleError         = wrappedResponse.validateJson[DownstreamErrorCode].map(err => DownstreamErrors(List(err)))
+    lazy val multipleErrors = wrappedResponse.validateJson(multipleErrorReads).map(errs => DownstreamErrors(errs))
+    lazy val bvrErrors =
+      wrappedResponse.validateJson(bvrErrorReads).map(errs => OutboundError(BVRError, Some(errs.map(_.toMtd(BVRError.httpStatus)))))
     lazy val unableToParseJsonError = {
       logger.warn(s"unable to parse errors from response: ${response.body}")
       OutboundError(InternalError)
