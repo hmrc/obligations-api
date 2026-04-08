@@ -1,5 +1,5 @@
 @*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -345,7 +345,6 @@ pre code {
       "type": "string",
       "example": "example"
     },
-    "links": { "$ref": "definitions.json#definitions/hateoasLinks"}
   },
   "required": [
     "typeOfLoss",
@@ -360,35 +359,11 @@ pre code {
                                                         <pre><code>{
   "aFieldUsedAcrossMultipleSchemas": "123456789012345",
   "aFieldDefinedInline": "foo",
-  "links": [
-    {
-      "href": "/sample/context/AA11111A",
-      "rel": "self",
-      "method": "GET"
-    },
-    {
-      "href": "/sample/context/AA111111A/foo/bar",
-      "rel": "another-resource",
-      "method": "GET"
-    }
-  ]
 }</code></pre>
                                                         <p><strong>example-2</strong>:<br>Sample example 2</p>
                                                         <pre><code>{
   "aFieldUsedAcrossMultipleSchemas": "123456789012346",
   "aFieldDefinedInline": "bar",
-  "links": [
-    {
-      "href": "/sample/context/AA11112A",
-      "rel": "self",
-      "method": "GET"
-    },
-    {
-      "href": "/sample/context/AA111112A/foo/bar",
-      "rel": "another-resource",
-      "method": "GET"
-    }
-  ]
 }</code></pre>
                                                     </div>
                                                 </div>
