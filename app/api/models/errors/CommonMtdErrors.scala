@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,8 @@ object RuleTaxYearNotSupportedError
 object RuleIncorrectOrEmptyBodyError
     extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
 
-object RuleTaxYearRangeExceededError
-    extends MtdError("RULE_TAX_YEAR_RANGE_EXCEEDED", "Tax year range exceeded. A tax year range of one year is required", BAD_REQUEST)
-
 object RuleTaxYearRangeInvalidError extends MtdError("RULE_TAX_YEAR_RANGE_INVALID", "A tax year range of one year is required", BAD_REQUEST)
 object RuleDateRangeInvalidError    extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid", BAD_REQUEST)
-
-object RuleTaxYearNotEndedError extends MtdError("RULE_TAX_YEAR_NOT_ENDED", "The specified tax year has not yet ended", BAD_REQUEST)
 
 object RuleInsolventTraderError
     extends MtdError("RULE_INSOLVENT_TRADER", "The remote endpoint has indicated that the Trader is insolvent", BAD_REQUEST)

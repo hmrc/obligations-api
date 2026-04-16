@@ -84,9 +84,7 @@ class RewriteableAssets @Inject() (errorHandler: HttpErrorHandler, meta: AssetsM
       }
 
       pendingResult.recoverWith { case NonFatal(e) =>
-        // $COVERAGE-OFF$
         recover(e)
-      // $COVERAGE-ON$
       }
     }
 
@@ -100,14 +98,12 @@ class RewriteableAssets @Inject() (errorHandler: HttpErrorHandler, meta: AssetsM
               s"Invalid URI encoding for rewriteable $filename at $path: " + e.getMessage
             )
 
-        // $COVERAGE-OFF$
         case _ =>
           // Add a bit more information to the exception for better error reporting later
           errorHandler.onServerError(
             request,
             new RuntimeException(s"Unexpected error while serving rewriteable $filename at $path: " + e.getMessage, e)
           )
-        // $COVERAGE-ON$
       }
     }
 
@@ -127,12 +123,10 @@ class RewriteableAssets @Inject() (errorHandler: HttpErrorHandler, meta: AssetsM
   }
 
   protected def asEncodedResult(response: Result, acceptEncoding: AcceptEncoding, assetInfo: AssetInfo): Result = {
-    // $COVERAGE-OFF$
     assetInfo
       .bestEncoding(acceptEncoding)
       .map(enc => response.withHeaders(VARY -> ACCEPT_ENCODING, CONTENT_ENCODING -> enc))
       .getOrElse(if (assetInfo.varyEncoding) response.withHeaders(VARY -> ACCEPT_ENCODING) else response)
-    // $COVERAGE-ON$
   }
 
 }

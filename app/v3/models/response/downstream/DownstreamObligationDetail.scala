@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package v3.models.response.downstream
 
 import api.models.domain.status.DesStatusV3
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 
 case class DownstreamObligationDetail(status: DesStatusV3,
                                       inboundCorrespondenceFromDate: String,

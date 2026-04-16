@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import config.{MockAppConfig, RealAppConfig}
 import controllers.{AssetsConfiguration, DefaultAssetsMetadata, RewriteableAssets}
 import definition.*
 import play.api.http.{DefaultFileMimeTypes, DefaultHttpErrorHandler, FileMimeTypesConfiguration, HttpConfiguration}
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.{Configuration, Environment}
 import routing.{Version, Versions}
@@ -163,6 +164,15 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
     }
   }
 
+  "definition()" should {
+    "return the API definition as JSON" in new Test {
+      val result: Future[Result] = controller.definition()(fakeGetRequest)
+
+      status(result) shouldBe OK
+      contentAsJson(result) shouldBe Json.toJson(apiFactory.definition)
+    }
+  }
+
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
 
@@ -175,7 +185,7 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
 
     MockedAppConfig.featureSwitchConfig returns Configuration("openApiFeatureTest.enabled" -> featureEnabled)
 
-    private val apiFactory = new ApiDefinitionFactory(mockAppConfig) {
+    protected val apiFactory: ApiDefinitionFactory = new ApiDefinitionFactory(mockAppConfig) {
 
       override lazy val definition: Definition = Definition(
         APIDefinition(

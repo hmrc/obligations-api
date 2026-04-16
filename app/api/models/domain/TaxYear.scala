@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ final case class TaxYear private (private val value: String) {
 
   /** The year that the tax year starts as a number, e.g. for "2023-24" this will be 2023.
     */
-  val startYear: Int = year - 1
+  private val startYear: Int = year - 1
 
   def startDate: LocalDate = TaxYear.startInYear(startYear)
 
@@ -60,10 +60,6 @@ final case class TaxYear private (private val value: String) {
     s"$yearOne-$yearTwo"
   }
 
-  /** Use this for downstream API endpoints that are known to be TYS.
-    */
-  def useTaxYearSpecificApi: Boolean = year >= 2024
-
   override def toString: String = s"TaxYear($value)"
 }
 
@@ -76,8 +72,7 @@ object TaxYear {
   private val taxYearMonthStart = 4
   private val taxYearDayStart   = 6
 
-  def starting(year: Int): TaxYear = TaxYear.ending(year + 1)
-  def ending(year: Int): TaxYear   = new TaxYear(year.toString)
+  def ending(year: Int): TaxYear = new TaxYear(year.toString)
 
   /** @param taxYear
     *   tax year in MTD format (e.g. 2017-18)

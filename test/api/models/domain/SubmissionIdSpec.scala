@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package v3.models.response.downstream
+package api.models.domain
 
-import api.models.domain.business.DesBusiness
-import play.api.libs.functional.syntax.*
-import play.api.libs.json.*
+import support.UnitSpec
 
-case class DownstreamIdentification(
-    incomeSourceType: Option[DesBusiness],
-    referenceNumber: String,
-    referenceType: String
-)
+class SubmissionIdSpec extends UnitSpec {
 
-object DownstreamIdentification {
-  implicit val reads: Reads[DownstreamIdentification] = Json.reads
+  "toString" should {
+    "return the SubmissionId value" in {
+      val submissionId = SubmissionId("some id")
+      submissionId.toString shouldBe "some id"
+    }
+  }
+
 }

@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-package v3.models.response.downstream
+package api.models.domain.status
 
-import api.models.domain.business.DesBusiness
-import play.api.libs.functional.syntax.*
-import play.api.libs.json.*
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
 
-case class DownstreamIdentification(
-    incomeSourceType: Option[DesBusiness],
-    referenceNumber: String,
-    referenceType: String
-)
+class DesStatusV3Spec extends UnitSpec with EnumJsonSpecSupport {
 
-object DownstreamIdentification {
-  implicit val reads: Reads[DownstreamIdentification] = Json.reads
+  testRoundTrip[DesStatusV3](
+    ("F", DesStatusV3.F),
+    ("O", DesStatusV3.O)
+  )
+
+  "toMtd" should {
+    Seq((DesStatusV3.F, MtdStatusV3.fulfilled), (DesStatusV3.O, MtdStatusV3.open)).foreach { case (desStatus, mtdStatus) =>
+      s"convert $desStatus to $mtdStatus" in {
+        desStatus.toMtd shouldBe mtdStatus
+      }
+    }
+  }
+
 }

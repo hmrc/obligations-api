@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,14 @@ class TimestampSpec extends UnitSpec {
                                                 |   "lastUpdated": "2023-01-20T01:20:30Z"
                                                 | }
                                                 | """.stripMargin)
+
+  "toString" should {
+    "return the timestamp string" in {
+      val ts = Timestamp("2026-01-01T00:00:00Z")
+
+      ts.toString shouldBe ts.value
+    }
+  }
 
   "Timestamp.apply()" should {
     "parse correctly and return a ts with milliseconds" when {

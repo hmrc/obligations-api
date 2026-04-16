@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,9 @@
 package api.controllers.validators.resolvers
 
 import api.models.domain.TaxYear
-import api.models.errors.{
-  InvalidTaxYearParameterError,
-  MtdError,
-  RuleTaxYearNotEndedError,
-  RuleTaxYearNotSupportedError,
-  RuleTaxYearRangeInvalidError,
-  TaxYearFormatError
-}
+import api.models.errors.{InvalidTaxYearParameterError, MtdError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, TaxYearFormatError}
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
-
-import java.time.Clock
-import scala.math.Ordering.Implicits.infixOrderingOps
 
 object ResolveTaxYear extends ResolverSupport {
 
@@ -47,27 +37,12 @@ object ResolveTaxYear extends ResolverSupport {
 
   def apply(value: String): Validated[Seq[MtdError], TaxYear] = resolver(value)
 
-  // Adaptor for existing callers:
-  def apply(minimumTaxYear: TaxYear, value: String): Validated[Seq[MtdError], TaxYear] = {
-    val resolver = ResolveTaxYearMinimum(minimumTaxYear)
-
-    resolver(value)
-  }
-
 }
 
 case class ResolveTaxYearMinimum(minimumTaxYear: TaxYear) extends ResolverSupport {
 
   val resolver: Resolver[String, TaxYear] =
     ResolveTaxYear.resolver.thenValidate(satisfiesMin(minimumTaxYear, RuleTaxYearNotSupportedError))
-
-  def apply(value: String): Validated[Seq[MtdError], TaxYear] = resolver(value)
-}
-
-case class ResolveIncompleteTaxYear(incompleteTaxYearError: MtdError = RuleTaxYearNotEndedError)(implicit clock: Clock) extends ResolverSupport {
-
-  val resolver: Resolver[String, TaxYear] =
-    ResolveTaxYear.resolver.thenValidate(satisfies(incompleteTaxYearError)(_ < TaxYear.currentTaxYear))
 
   def apply(value: String): Validated[Seq[MtdError], TaxYear] = resolver(value)
 }
