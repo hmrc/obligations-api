@@ -19,12 +19,15 @@ package api.controllers.validators.resolvers
 import api.models.errors.RuleIncorrectOrEmptyBodyError
 import api.models.utils.JsonErrorValidators
 import cats.data.Validated.{Invalid, Valid}
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, JsonValidationError, Reads}
 import support.UnitSpec
 
 class ResolveJsonObjectSpec extends UnitSpec with JsonErrorValidators {
 
   case class TestDataObject(fieldOne: String, fieldTwo: String)
+
+  implicit val nonEmptyStringReads: Reads[String] =
+    Reads.StringReads.filter(JsonValidationError("empty string"))(_.nonEmpty)
 
   implicit val testDataObjectReads: Reads[TestDataObject] = Json.reads[TestDataObject]
 

@@ -17,7 +17,6 @@
 package v3.models.response.downstream
 
 import api.models.domain.business.DesBusiness
-import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 
 case class DownstreamIdentification(

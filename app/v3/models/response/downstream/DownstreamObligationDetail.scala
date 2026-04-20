@@ -17,7 +17,6 @@
 package v3.models.response.downstream
 
 import api.models.domain.status.DesStatusV3
-import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 
 case class DownstreamObligationDetail(status: DesStatusV3,
