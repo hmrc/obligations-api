@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ object ObligationsDateRangeSupport extends ResolverSupport {
       satisfies(RuleDateRangeInvalidError)(range => range.endDate != range.startDate)
     )
 
-  def defaultDateRange(implicit clock: Clock = Clock.systemUTC): DateRange = {
+  def defaultDateRange(implicit clock: Clock): DateRange = {
     val now = LocalDate.now(clock)
     DateRange(now, now.plusDays(maxDateRange))
   }

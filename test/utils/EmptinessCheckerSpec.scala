@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,13 @@ class EmptinessCheckerSpec extends UnitSpec {
                  arr3: Option[List[Bar]] = None,
                  bar2: Option[Bar] = None)
 
+  case class AllTypes(s: Option[String] = None,
+                      i: Option[Int] = None,
+                      d: Option[Double] = None,
+                      bl: Option[Boolean] = None,
+                      bi: Option[BigInt] = None,
+                      bd: Option[BigDecimal] = None)
+
   object SomeEnum {
     case object E1 extends SomeEnum
 
@@ -43,6 +50,38 @@ class EmptinessCheckerSpec extends UnitSpec {
   }
 
   "EmptinessChecker" when {
+    "all non-empty data types" must {
+      "return no empty paths" in {
+        EmptinessChecker.findEmptyPaths(
+          AllTypes(
+            Some("string"),
+            Some(1),
+            Some(1.0),
+            Some(true),
+            Some(1),
+            Some(1.0)
+          )) shouldBe NoEmptyPaths
+      }
+    }
+
+    "an empty sequence of primitives" must {
+      "return an empty sequence" in {
+        val seq    = Seq.empty[String]
+        val result = EmptinessChecker.findEmptyPaths(seq)
+
+        result shouldBe EmptyPathsResult.EmptyPaths(List(""))
+      }
+    }
+
+    "a non-empty sequence of primitives" must {
+      "return no empty paths" in {
+        val seq    = Seq("s", "t", "r")
+        val result = EmptinessChecker.findEmptyPaths(seq)
+
+        result shouldBe EmptyPathsResult.NoEmptyPaths
+      }
+    }
+
     "empty object" must {
       "return root path as empty" in {
         EmptinessChecker.findEmptyPaths(Foo()) shouldBe CompletelyEmpty

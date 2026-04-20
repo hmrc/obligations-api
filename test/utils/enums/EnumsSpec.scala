@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,6 +137,16 @@ class EnumsSpec extends UnitSpec with Inspectors {
           |      Enums.format(NotEnum.values)
         """.stripMargin
       )
+    }
+  }
+
+  "Shows.toStringShow" must {
+    "be used when no custom Show instance is available" in {
+      import utils.enums.Shows.toStringShow
+
+      case class Dummy(x: Int)
+
+      summon[Show[Dummy]].show(Dummy(322)) shouldBe "Dummy(322)"
     }
   }
 
