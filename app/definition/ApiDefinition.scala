@@ -94,6 +94,7 @@ object APIDefinition {
       "context"     -> d.context,
       "categories"  -> d.categories,
       "versions"    -> d.versions
+      // requiresTrust is optional and should be omitted when None.
     ) ++ d.requiresTrust.fold(Json.obj())(v => Json.obj("requiresTrust" -> v))
   }
 
