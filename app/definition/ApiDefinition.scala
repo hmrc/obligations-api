@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package definition
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 import routing.Version
 import utils.enums.Enums
 
@@ -35,7 +36,24 @@ object APIStatus {
 case class APIVersion(version: Version, status: APIStatus, endpointsEnabled: Boolean)
 
 object APIVersion {
-  implicit val formatAPIVersion: OFormat[APIVersion] = Json.format[APIVersion]
+
+  implicit val readsAPIVersion: Reads[APIVersion] = (
+    (__ \ "version").read[Version] and
+      (__ \ "status").read[APIStatus] and
+      (__ \ "endpointsEnabled").read[Boolean]
+  )(APIVersion.apply)
+
+  implicit val writesAPIVersion: OWrites[APIVersion] = OWrites { v =>
+    Json.obj(
+      "version"          -> v.version,
+      "status"           -> v.status,
+      "endpointsEnabled" -> v.endpointsEnabled
+    )
+  }
+
+  implicit val formatAPIVersion: OFormat[APIVersion] =
+    OFormat(readsAPIVersion, writesAPIVersion)
+
 }
 
 case class APIDefinition(name: String,
@@ -59,11 +77,43 @@ case class APIDefinition(name: String,
 }
 
 object APIDefinition {
-  implicit val formatAPIDefinition: OFormat[APIDefinition] = Json.format[APIDefinition]
+
+  implicit val readsAPIDefinition: Reads[APIDefinition] = (
+    (__ \ "name").read[String] and
+      (__ \ "description").read[String] and
+      (__ \ "context").read[String] and
+      (__ \ "categories").read[Seq[String]] and
+      (__ \ "versions").read[Seq[APIVersion]] and
+      (__ \ "requiresTrust").readNullable[Boolean]
+  )(APIDefinition.apply)
+
+  implicit val writesAPIDefinition: OWrites[APIDefinition] = OWrites { d =>
+    Json.obj(
+      "name"        -> d.name,
+      "description" -> d.description,
+      "context"     -> d.context,
+      "categories"  -> d.categories,
+      "versions"    -> d.versions
+    ) ++ d.requiresTrust.fold(Json.obj())(v => Json.obj("requiresTrust" -> v))
+  }
+
+  implicit val formatAPIDefinition: OFormat[APIDefinition] =
+    OFormat(readsAPIDefinition, writesAPIDefinition)
+
 }
 
 case class Definition(api: APIDefinition)
 
 object Definition {
-  implicit val formatDefinition: OFormat[Definition] = Json.format[Definition]
+
+  implicit val readsDefinition: Reads[Definition] =
+    (__ \ "api").read[APIDefinition].map(Definition.apply)
+
+  implicit val writesDefinition: OWrites[Definition] = OWrites { d =>
+    Json.obj("api" -> d.api)
+  }
+
+  implicit val formatDefinition: OFormat[Definition] =
+    OFormat(readsDefinition, writesDefinition)
+
 }

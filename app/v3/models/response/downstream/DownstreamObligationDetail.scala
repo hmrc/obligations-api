@@ -17,6 +17,7 @@
 package v3.models.response.downstream
 
 import api.models.domain.status.DesStatusV3
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 
 case class DownstreamObligationDetail(status: DesStatusV3,
@@ -27,5 +28,31 @@ case class DownstreamObligationDetail(status: DesStatusV3,
                                       periodKey: String)
 
 object DownstreamObligationDetail {
-  implicit val reads: Reads[DownstreamObligationDetail] = Json.reads
+
+  implicit val reads: Reads[DownstreamObligationDetail] = (
+    (__ \ "status").read[DesStatusV3] and
+      (__ \ "inboundCorrespondenceFromDate").read[String] and
+      (__ \ "inboundCorrespondenceToDate").read[String] and
+      (__ \ "inboundCorrespondenceDateReceived").readNullable[String] and
+      (__ \ "inboundCorrespondenceDueDate").read[String] and
+      (__ \ "periodKey").read[String]
+  ).tupled.map {
+    case (
+          status,
+          fromDate,
+          toDate,
+          dateReceived,
+          dueDate,
+          periodKey
+        ) =>
+      DownstreamObligationDetail(
+        status,
+        fromDate,
+        toDate,
+        dateReceived,
+        dueDate,
+        periodKey
+      )
+  }
+
 }

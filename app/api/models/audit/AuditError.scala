@@ -16,10 +16,20 @@
 
 package api.models.audit
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.*
 
 case class AuditError(errorCode: String)
 
 object AuditError {
-  implicit val format: OFormat[AuditError] = Json.format[AuditError]
+
+  implicit val format: OFormat[AuditError] = new OFormat[AuditError] {
+
+    override def reads(json: JsValue): JsResult[AuditError] =
+      (json \ "errorCode").validate[String].map(AuditError.apply)
+
+    override def writes(o: AuditError): JsObject =
+      Json.obj("errorCode" -> o.errorCode)
+
+  }
+
 }

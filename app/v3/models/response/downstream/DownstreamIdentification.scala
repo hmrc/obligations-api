@@ -17,6 +17,7 @@
 package v3.models.response.downstream
 
 import api.models.domain.business.DesBusiness
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 
 case class DownstreamIdentification(
@@ -26,5 +27,13 @@ case class DownstreamIdentification(
 )
 
 object DownstreamIdentification {
-  implicit val reads: Reads[DownstreamIdentification] = Json.reads
+
+  implicit val reads: Reads[DownstreamIdentification] = (
+    (__ \ "incomeSourceType").readNullable[DesBusiness] and
+      (__ \ "referenceNumber").read[String] and
+      (__ \ "referenceType").read[String]
+  ).tupled.map { case (incomeSourceType, referenceNumber, referenceType) =>
+    DownstreamIdentification(incomeSourceType, referenceNumber, referenceType)
+  }
+
 }

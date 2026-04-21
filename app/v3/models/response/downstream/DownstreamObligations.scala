@@ -16,10 +16,13 @@
 
 package v3.models.response.downstream
 
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.*
 
 case class DownstreamObligations(obligations: Seq[DownstreamObligation])
 
 object DownstreamObligations {
-  implicit val reads: Reads[DownstreamObligations] = Json.reads
+
+  implicit val reads: Reads[DownstreamObligations] =
+    (__ \ "obligations").read[Seq[DownstreamObligation]].map(DownstreamObligations.apply)
+
 }

@@ -16,6 +16,7 @@
 
 package v3.models.response.downstream
 
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.*
 
 case class DownstreamObligation(identification: Option[DownstreamIdentification], obligationDetails: Seq[DownstreamObligationDetail]) {
@@ -26,5 +27,12 @@ case class DownstreamObligation(identification: Option[DownstreamIdentification]
 }
 
 object DownstreamObligation {
-  implicit val reads: Reads[DownstreamObligation] = Json.reads
+
+  implicit val reads: Reads[DownstreamObligation] = (
+    (__ \ "identification").readNullable[DownstreamIdentification] and
+      (__ \ "obligationDetails").read[Seq[DownstreamObligationDetail]]
+  ).tupled.map { case (identification, obligationDetails) =>
+    DownstreamObligation(identification, obligationDetails)
+  }
+
 }
