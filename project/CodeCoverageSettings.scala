@@ -30,6 +30,7 @@ object CodeCoverageSettings {
     "Reverse.*",
     "uk.gov.hmrc.BuildInfo",
     "app.*",
+    ".*\\$anon.*",
     "prod.*",
     ".*Routes.*",
     "config.*",

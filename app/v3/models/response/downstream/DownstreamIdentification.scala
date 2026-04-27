@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package v3.models.response.downstream
 
 import api.models.domain.business.DesBusiness
-import play.api.libs.functional.syntax.*
-import play.api.libs.json.*
+import play.api.libs.json.{Json, Reads}
 
 case class DownstreamIdentification(
     incomeSourceType: Option[DesBusiness],
@@ -27,13 +26,5 @@ case class DownstreamIdentification(
 )
 
 object DownstreamIdentification {
-
-  implicit val reads: Reads[DownstreamIdentification] = (
-    (__ \ "incomeSourceType").readNullable[DesBusiness] and
-      (__ \ "referenceNumber").read[String] and
-      (__ \ "referenceType").read[String]
-  ).tupled.map { case (incomeSourceType, referenceNumber, referenceType) =>
-    DownstreamIdentification(incomeSourceType, referenceNumber, referenceType)
-  }
-
+  implicit val reads: Reads[DownstreamIdentification] = Json.reads
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package v3.models.response.downstream
 
 import api.models.domain.status.DesStatusV3
-import play.api.libs.functional.syntax.*
-import play.api.libs.json.*
+import play.api.libs.json.{Json, Reads}
 
 case class DownstreamObligationDetail(status: DesStatusV3,
                                       inboundCorrespondenceFromDate: String,
@@ -28,31 +27,5 @@ case class DownstreamObligationDetail(status: DesStatusV3,
                                       periodKey: String)
 
 object DownstreamObligationDetail {
-
-  implicit val reads: Reads[DownstreamObligationDetail] = (
-    (__ \ "status").read[DesStatusV3] and
-      (__ \ "inboundCorrespondenceFromDate").read[String] and
-      (__ \ "inboundCorrespondenceToDate").read[String] and
-      (__ \ "inboundCorrespondenceDateReceived").readNullable[String] and
-      (__ \ "inboundCorrespondenceDueDate").read[String] and
-      (__ \ "periodKey").read[String]
-  ).tupled.map {
-    case (
-          status,
-          fromDate,
-          toDate,
-          dateReceived,
-          dueDate,
-          periodKey
-        ) =>
-      DownstreamObligationDetail(
-        status,
-        fromDate,
-        toDate,
-        dateReceived,
-        dueDate,
-        periodKey
-      )
-  }
-
+  implicit val reads: Reads[DownstreamObligationDetail] = Json.reads
 }

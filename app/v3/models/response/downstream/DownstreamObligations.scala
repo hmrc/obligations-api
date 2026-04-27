@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,10 @@
 
 package v3.models.response.downstream
 
-import play.api.libs.json.*
+import play.api.libs.json.{Json, Reads}
 
 case class DownstreamObligations(obligations: Seq[DownstreamObligation])
 
 object DownstreamObligations {
-
-  implicit val reads: Reads[DownstreamObligations] =
-    (__ \ "obligations").read[Seq[DownstreamObligation]].map(DownstreamObligations.apply)
-
+  implicit val reads: Reads[DownstreamObligations] = Json.reads
 }
