@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package definition
 
 import definition.APIStatus.ALPHA
+import play.api.libs.json.Json
 import routing.Version3
 import support.UnitSpec
 
@@ -24,8 +25,31 @@ class ApiDefinitionSpec extends UnitSpec {
 
   val apiVersion: APIVersion       = APIVersion(Version3, ALPHA, endpointsEnabled = false)
   val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false))
+  val definition: Definition       = Definition(apiDefinition)
+
+  "APIVersion" when {
+    "read/write from/to valid JSON" should {
+      "produce the expected object" in {
+        Json.toJson(apiVersion).as[APIVersion] shouldBe apiVersion
+      }
+    }
+  }
+
+  "Definition" when {
+    "read/write from/to valid JSON" should {
+      "produce the expected object" in {
+        Json.toJson(definition).as[Definition] shouldBe definition
+      }
+    }
+  }
 
   "APIDefinition" when {
+    "read/write from/to valid JSON" should {
+      "produce the expected object" in {
+        Json.toJson(apiDefinition).as[APIDefinition] shouldBe apiDefinition
+      }
+    }
+
     "the 'name' parameter is empty" should {
       "throw an 'IllegalArgumentException'" in {
         assertThrows[IllegalArgumentException](
