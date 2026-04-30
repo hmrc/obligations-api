@@ -27,13 +27,13 @@ class TaxYearSpec extends UnitSpec {
 
     val taxYear = TaxYear.fromMtd("2023-24")
 
-    "toString" should {
-      "return the expected string" in {
-        taxYear.toString shouldBe "TaxYear(2024)"
-      }
-    }
-
     "constructed from an MTD tax year" should {
+      "toString" should {
+        "return the expected string" in {
+          taxYear.toString shouldBe "TaxYear(2024)"
+        }
+      }
+
       "return the downstream tax value" in {
         taxYear.asDownstream shouldBe "2024"
       }

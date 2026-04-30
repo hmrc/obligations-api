@@ -38,8 +38,6 @@ object StartDateFormatError extends MtdError("FORMAT_START_DATE", "The provided 
 
 object EndDateFormatError extends MtdError("FORMAT_END_DATE", "The provided End date is invalid", BAD_REQUEST)
 
-object CalculationIdFormatError extends MtdError("FORMAT_CALCULATION_ID", "The provided calculation ID is invalid", BAD_REQUEST)
-
 object FromDateFormatError       extends MtdError("FORMAT_FROM_DATE", "The provided fromDate is invalid", BAD_REQUEST)
 object ToDateFormatError         extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid", BAD_REQUEST)
 object StatusFormatError         extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
