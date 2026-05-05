@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,19 @@ class EnumsSpec extends UnitSpec with Inspectors {
       forAll(values.toList) { (value: Enum) =>
         Json.toJson(Foo(value)) shouldBe json(value)
       }
+    }
+
+    "read using default Show" in {
+      val enumReads: Reads[Enum] = Enums.reads(values)
+
+      enumReads.reads(JsString("enum-one")) shouldBe JsSuccess(`enum-one`)
+      enumReads.reads(JsString("unknown")) shouldBe a[JsError]
+    }
+
+    "write using default Show" in {
+      val enumWrites: Writes[Enum] = Enums.writes[Enum]
+
+      enumWrites.writes(`enum-two`) shouldBe JsString("enum-two")
     }
 
     "allow roundtrip" in {

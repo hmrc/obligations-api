@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package routing
 
 import com.google.inject.ImplementedBy
-import config.{AppConfig, FeatureSwitches}
+import config.AppConfig
 import play.api.routing.Router
 
 import javax.inject.Inject
@@ -40,8 +40,6 @@ case class VersionRoutingMapImpl @Inject() (
     defaultRouter: Router,
     v3Router: v3.Routes
 ) extends VersionRoutingMap {
-
-  lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitchConfig)
 
   val map: Map[Version, Router] = Map(
     Version3 -> v3Router

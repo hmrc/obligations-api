@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package definition
 
 import definition.APIStatus.ALPHA
+import play.api.libs.json.Json
 import routing.Version3
 import support.UnitSpec
 
@@ -25,7 +26,81 @@ class ApiDefinitionSpec extends UnitSpec {
   val apiVersion: APIVersion       = APIVersion(Version3, ALPHA, endpointsEnabled = false)
   val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false))
 
+  private val apiVersionJson = Json.parse("""
+    {
+      "version": "3.0",
+      "status": "ALPHA",
+      "endpointsEnabled": false
+    }
+  """)
+
+  private val definitionJson = Json.parse("""
+    {
+      "api": {
+        "name": "b",
+        "description": "c",
+        "context": "d",
+        "categories": ["e"],
+        "versions": [
+          {
+            "version": "3.0",
+            "status": "ALPHA",
+            "endpointsEnabled": false
+          }
+        ],
+        "requiresTrust": false
+      }
+    }
+  """)
+
+  private val apiDefinitionJson = Json.parse("""
+    {
+      "name": "b",
+      "description": "c",
+      "context": "d",
+      "categories": ["e"],
+      "versions": [
+        {
+          "version": "3.0",
+          "status": "ALPHA",
+          "endpointsEnabled": false
+        }
+      ],
+      "requiresTrust": false
+    }
+  """)
+
+  "APIVersion" should {
+    "deserialise to model" in {
+      apiVersionJson.as[APIVersion] shouldBe apiVersion
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiVersion) shouldBe apiVersionJson
+    }
+  }
+
+  "Definition" should {
+    val definition = Definition(apiDefinition)
+
+    "deserialise to model" in {
+      definitionJson.as[Definition] shouldBe definition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(definition) shouldBe definitionJson
+    }
+  }
+
   "APIDefinition" when {
+    "deserialise to model" in {
+      apiDefinitionJson.as[APIDefinition] shouldBe apiDefinition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiDefinition) shouldBe apiDefinitionJson
+    }
+
     "the 'name' parameter is empty" should {
       "throw an 'IllegalArgumentException'" in {
         assertThrows[IllegalArgumentException](

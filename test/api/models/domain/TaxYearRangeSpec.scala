@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,13 @@ class TaxYearRangeSpec extends UnitSpec {
       implicit val clock: Clock = Clock.fixed(LocalDate.parse("2023-04-01").atStartOfDay(ZoneOffset.UTC).toInstant, ZoneOffset.UTC)
 
       TaxYearRange.todayMinus(years = 4) shouldBe TaxYearRange(TaxYear.fromMtd("2018-19"), TaxYear.fromMtd("2022-23"))
+    }
+
+    "use the default system clock when no implicit clock is provided" in {
+      val result = TaxYearRange.todayMinus(1)
+
+      result.to.year shouldBe TaxYear.currentTaxYear.year
+      result.from.year shouldBe (TaxYear.currentTaxYear.year - 1)
     }
   }
 

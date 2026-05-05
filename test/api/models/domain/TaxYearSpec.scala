@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,12 @@ class TaxYearSpec extends UnitSpec {
     val taxYear = TaxYear.fromMtd("2023-24")
 
     "constructed from an MTD tax year" should {
+      "toString" should {
+        "return the expected string" in {
+          taxYear.toString shouldBe "TaxYear(2024)"
+        }
+      }
+
       "return the downstream tax value" in {
         taxYear.asDownstream shouldBe "2024"
       }

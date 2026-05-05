@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,21 @@ class EmptinessCheckerSpec extends UnitSpec {
   }
 
   "EmptinessChecker" when {
+    "given primitives, Options, Seq and List with no emptiness" must {
+      "return NoEmptyPaths" in {
+        EmptinessChecker[String].findEmptyPaths("test") shouldBe NoEmptyPaths
+        EmptinessChecker[Int].findEmptyPaths(1) shouldBe NoEmptyPaths
+        EmptinessChecker[Double].findEmptyPaths(1.00) shouldBe NoEmptyPaths
+        EmptinessChecker[Boolean].findEmptyPaths(true) shouldBe NoEmptyPaths
+        EmptinessChecker[BigInt].findEmptyPaths(BigInt(1)) shouldBe NoEmptyPaths
+        EmptinessChecker[BigDecimal].findEmptyPaths(BigDecimal(1)) shouldBe NoEmptyPaths
+        EmptinessChecker[Option[String]].findEmptyPaths(Some("test")) shouldBe NoEmptyPaths
+        EmptinessChecker[Option[String]].findEmptyPaths(None) shouldBe NoEmptyPaths
+        EmptinessChecker[List[Int]].findEmptyPaths(List(1, 2)) shouldBe NoEmptyPaths
+        EmptinessChecker[Seq[String]].findEmptyPaths(Vector("test", "test")) shouldBe NoEmptyPaths
+      }
+    }
+
     "empty object" must {
       "return root path as empty" in {
         EmptinessChecker.findEmptyPaths(Foo()) shouldBe CompletelyEmpty

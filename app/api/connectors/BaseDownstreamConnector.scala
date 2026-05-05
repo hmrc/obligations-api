@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package api.connectors
 
 import api.connectors.DownstreamUri.*
-import config.{AppConfig, FeatureSwitches}
+import config.AppConfig
 import play.api.Logger
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.{Json, Writes}
@@ -34,8 +34,6 @@ trait BaseDownstreamConnector {
 
   val logger: Logger                = Logger(this.getClass)
   private val jsonContentTypeHeader = HeaderNames.CONTENT_TYPE -> MimeTypes.JSON
-
-  implicit protected lazy val featureSwitches: FeatureSwitches = FeatureSwitches(appConfig.featureSwitchConfig)
 
   def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
@@ -81,7 +79,7 @@ trait BaseDownstreamConnector {
       case DesUri(_) => appConfig.desDownstreamConfig
     }
 
-  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
+  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
       httpReads: HttpReads[DownstreamOutcome[Resp]],
