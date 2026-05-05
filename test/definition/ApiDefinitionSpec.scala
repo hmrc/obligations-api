@@ -25,29 +25,80 @@ class ApiDefinitionSpec extends UnitSpec {
 
   val apiVersion: APIVersion       = APIVersion(Version3, ALPHA, endpointsEnabled = false)
   val apiDefinition: APIDefinition = APIDefinition("b", "c", "d", Seq("e"), Seq(apiVersion), Some(false))
-  val definition: Definition       = Definition(apiDefinition)
 
-  "APIVersion" when {
-    "read/write from/to valid JSON" should {
-      "produce the expected object" in {
-        Json.toJson(apiVersion).as[APIVersion] shouldBe apiVersion
+  private val apiVersionJson = Json.parse("""
+    {
+      "version": "3.0",
+      "status": "ALPHA",
+      "endpointsEnabled": false
+    }
+  """)
+
+  private val definitionJson = Json.parse("""
+    {
+      "api": {
+        "name": "b",
+        "description": "c",
+        "context": "d",
+        "categories": ["e"],
+        "versions": [
+          {
+            "version": "3.0",
+            "status": "ALPHA",
+            "endpointsEnabled": false
+          }
+        ],
+        "requiresTrust": false
       }
+    }
+  """)
+
+  private val apiDefinitionJson = Json.parse("""
+    {
+      "name": "b",
+      "description": "c",
+      "context": "d",
+      "categories": ["e"],
+      "versions": [
+        {
+          "version": "3.0",
+          "status": "ALPHA",
+          "endpointsEnabled": false
+        }
+      ],
+      "requiresTrust": false
+    }
+  """)
+
+  "APIVersion" should {
+    "deserialise to model" in {
+      apiVersionJson.as[APIVersion] shouldBe apiVersion
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiVersion) shouldBe apiVersionJson
     }
   }
 
-  "Definition" when {
-    "read/write from/to valid JSON" should {
-      "produce the expected object" in {
-        Json.toJson(definition).as[Definition] shouldBe definition
-      }
+  "Definition" should {
+    val definition = Definition(apiDefinition)
+
+    "deserialise to model" in {
+      definitionJson.as[Definition] shouldBe definition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(definition) shouldBe definitionJson
     }
   }
 
   "APIDefinition" when {
-    "read/write from/to valid JSON" should {
-      "produce the expected object" in {
-        Json.toJson(apiDefinition).as[APIDefinition] shouldBe apiDefinition
-      }
+    "deserialise to model" in {
+      apiDefinitionJson.as[APIDefinition] shouldBe apiDefinition
+    }
+
+    "serialise to JSON" in {
+      Json.toJson(apiDefinition) shouldBe apiDefinitionJson
     }
 
     "the 'name' parameter is empty" should {

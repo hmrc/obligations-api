@@ -34,13 +34,6 @@ class EmptinessCheckerSpec extends UnitSpec {
                  arr3: Option[List[Bar]] = None,
                  bar2: Option[Bar] = None)
 
-  case class AllTypes(s: Option[String] = None,
-                      i: Option[Int] = None,
-                      d: Option[Double] = None,
-                      bl: Option[Boolean] = None,
-                      bi: Option[BigInt] = None,
-                      bd: Option[BigDecimal] = None)
-
   object SomeEnum {
     case object E1 extends SomeEnum
 
@@ -50,17 +43,18 @@ class EmptinessCheckerSpec extends UnitSpec {
   }
 
   "EmptinessChecker" when {
-    "all non-empty data types" must {
-      "return no empty paths" in {
-        EmptinessChecker.findEmptyPaths(
-          AllTypes(
-            Some("string"),
-            Some(1),
-            Some(1.0),
-            Some(true),
-            Some(1),
-            Some(1.0)
-          )) shouldBe NoEmptyPaths
+    "given primitives, Options, Seq and List with no emptiness" must {
+      "return NoEmptyPaths" in {
+        EmptinessChecker[String].findEmptyPaths("test") shouldBe NoEmptyPaths
+        EmptinessChecker[Int].findEmptyPaths(1) shouldBe NoEmptyPaths
+        EmptinessChecker[Double].findEmptyPaths(1.00) shouldBe NoEmptyPaths
+        EmptinessChecker[Boolean].findEmptyPaths(true) shouldBe NoEmptyPaths
+        EmptinessChecker[BigInt].findEmptyPaths(BigInt(1)) shouldBe NoEmptyPaths
+        EmptinessChecker[BigDecimal].findEmptyPaths(BigDecimal(1)) shouldBe NoEmptyPaths
+        EmptinessChecker[Option[String]].findEmptyPaths(Some("test")) shouldBe NoEmptyPaths
+        EmptinessChecker[Option[String]].findEmptyPaths(None) shouldBe NoEmptyPaths
+        EmptinessChecker[List[Int]].findEmptyPaths(List(1, 2)) shouldBe NoEmptyPaths
+        EmptinessChecker[Seq[String]].findEmptyPaths(Vector("test", "test")) shouldBe NoEmptyPaths
       }
     }
 

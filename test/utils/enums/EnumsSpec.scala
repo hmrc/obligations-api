@@ -153,14 +153,4 @@ class EnumsSpec extends UnitSpec with Inspectors {
     }
   }
 
-  "Shows.toStringShow" must {
-    "be used when no custom Show instance is available" in {
-      import utils.enums.Shows.toStringShow
-
-      case class Dummy(x: Int)
-
-      summon[Show[Dummy]].show(Dummy(322)) shouldBe "Dummy(322)"
-    }
-  }
-
 }

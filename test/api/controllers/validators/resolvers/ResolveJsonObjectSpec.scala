@@ -26,9 +26,6 @@ class ResolveJsonObjectSpec extends UnitSpec with JsonErrorValidators {
 
   case class TestDataObject(fieldOne: String, fieldTwo: String)
 
-  implicit val nonEmptyStringReads: Reads[String] =
-    Reads.StringReads.filter(JsonValidationError("empty string"))(_.nonEmpty)
-
   implicit val testDataObjectReads: Reads[TestDataObject] = Json.reads[TestDataObject]
 
   private val resolve = new ResolveJsonObject[TestDataObject]
@@ -59,7 +56,12 @@ class ResolveJsonObjectSpec extends UnitSpec with JsonErrorValidators {
       }
 
       "there is some other failure" in {
-        val json = Json.parse("""{ "fieldOne": "", "fieldTwo": "ok" }""")
+        implicit val nonEmptyStringReads: Reads[String] =
+          Reads.StringReads.filter(JsonValidationError("empty string"))(_.nonEmpty)
+        implicit val testDataObjectReads: Reads[TestDataObject] = Json.reads[TestDataObject]
+
+        val resolve = new ResolveJsonObject[TestDataObject]
+        val json    = Json.parse("""{ "fieldOne": "", "fieldTwo": "ok" }""")
 
         val result = resolve(json)
         result shouldBe Invalid(List(RuleIncorrectOrEmptyBodyError.withPath("/fieldOne")))
