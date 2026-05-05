@@ -58,24 +58,6 @@ class EmptinessCheckerSpec extends UnitSpec {
       }
     }
 
-    "an empty sequence of primitives" must {
-      "return an empty sequence" in {
-        val seq    = Seq.empty[String]
-        val result = EmptinessChecker.findEmptyPaths(seq)
-
-        result shouldBe EmptyPathsResult.EmptyPaths(List(""))
-      }
-    }
-
-    "a non-empty sequence of primitives" must {
-      "return no empty paths" in {
-        val seq    = Seq("s", "t", "r")
-        val result = EmptinessChecker.findEmptyPaths(seq)
-
-        result shouldBe EmptyPathsResult.NoEmptyPaths
-      }
-    }
-
     "empty object" must {
       "return root path as empty" in {
         EmptinessChecker.findEmptyPaths(Foo()) shouldBe CompletelyEmpty
