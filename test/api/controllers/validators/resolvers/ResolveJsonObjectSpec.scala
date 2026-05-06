@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package api.controllers.validators.resolvers
 import api.models.errors.RuleIncorrectOrEmptyBodyError
 import api.models.utils.JsonErrorValidators
 import cats.data.Validated.{Invalid, Valid}
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.{Json, JsonValidationError, Reads}
 import support.UnitSpec
 
 class ResolveJsonObjectSpec extends UnitSpec with JsonErrorValidators {
@@ -46,6 +46,32 @@ class ResolveJsonObjectSpec extends UnitSpec with JsonErrorValidators {
 
         val result = resolve(json)
         result shouldBe Invalid(List(RuleIncorrectOrEmptyBodyError.withPath("/fieldTwo")))
+      }
+
+      "a field has the wrong type" in {
+        val json = Json.parse("""{ "fieldOne": 123, "fieldTwo": "valid" }""")
+
+        val result = resolve(json)
+        result shouldBe Invalid(List(RuleIncorrectOrEmptyBodyError.withPath("/fieldOne")))
+      }
+
+      "there is some other failure" in {
+        implicit val nonEmptyStringReads: Reads[String] =
+          Reads.StringReads.filter(JsonValidationError("empty string"))(_.nonEmpty)
+        implicit val testDataObjectReads: Reads[TestDataObject] = Json.reads[TestDataObject]
+
+        val resolve = new ResolveJsonObject[TestDataObject]
+        val json    = Json.parse("""{ "fieldOne": "", "fieldTwo": "ok" }""")
+
+        val result = resolve(json)
+        result shouldBe Invalid(List(RuleIncorrectOrEmptyBodyError.withPath("/fieldOne")))
+      }
+
+      "the JSON is not an object" in {
+        val json = Json.parse("""["not", "an", "object"]""")
+
+        val result = resolve(json)
+        result shouldBe Invalid(List(RuleIncorrectOrEmptyBodyError))
       }
 
     }

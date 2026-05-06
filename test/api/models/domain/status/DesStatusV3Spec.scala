@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-package api.models.domain
+package api.models.domain.status
 
-case class SubmissionId(submissionId: String) {
-  override def toString: String = submissionId
+import support.UnitSpec
+import utils.enums.EnumJsonSpecSupport
+
+class DesStatusV3Spec extends UnitSpec with EnumJsonSpecSupport {
+
+  testRoundTrip[DesStatusV3](
+    ("F", DesStatusV3.F),
+    ("O", DesStatusV3.O)
+  )
+
+  "toMtd" should {
+    Seq((DesStatusV3.F, MtdStatusV3.fulfilled), (DesStatusV3.O, MtdStatusV3.open)).foreach { case (desStatus, mtdStatus) =>
+      s"convert $desStatus to $mtdStatus" in {
+        desStatus.toMtd shouldBe mtdStatus
+      }
+    }
+  }
+
 }

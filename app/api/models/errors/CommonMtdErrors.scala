@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,6 @@ object StartDateFormatError extends MtdError("FORMAT_START_DATE", "The provided 
 
 object EndDateFormatError extends MtdError("FORMAT_END_DATE", "The provided End date is invalid", BAD_REQUEST)
 
-object CalculationIdFormatError extends MtdError("FORMAT_CALCULATION_ID", "The provided calculation ID is invalid", BAD_REQUEST)
-
 object FromDateFormatError       extends MtdError("FORMAT_FROM_DATE", "The provided fromDate is invalid", BAD_REQUEST)
 object ToDateFormatError         extends MtdError("FORMAT_TO_DATE", "The provided toDate is invalid", BAD_REQUEST)
 object StatusFormatError         extends MtdError("FORMAT_STATUS", "The provided status is invalid", BAD_REQUEST)
@@ -61,13 +59,8 @@ object RuleTaxYearNotSupportedError
 object RuleIncorrectOrEmptyBodyError
     extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
 
-object RuleTaxYearRangeExceededError
-    extends MtdError("RULE_TAX_YEAR_RANGE_EXCEEDED", "Tax year range exceeded. A tax year range of one year is required", BAD_REQUEST)
-
 object RuleTaxYearRangeInvalidError extends MtdError("RULE_TAX_YEAR_RANGE_INVALID", "A tax year range of one year is required", BAD_REQUEST)
 object RuleDateRangeInvalidError    extends MtdError("RULE_DATE_RANGE_INVALID", "The specified date range is invalid", BAD_REQUEST)
-
-object RuleTaxYearNotEndedError extends MtdError("RULE_TAX_YEAR_NOT_ENDED", "The specified tax year has not yet ended", BAD_REQUEST)
 
 object RuleInsolventTraderError
     extends MtdError("RULE_INSOLVENT_TRADER", "The remote endpoint has indicated that the Trader is insolvent", BAD_REQUEST)

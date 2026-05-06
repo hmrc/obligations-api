@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,20 +33,11 @@ case class ResolveIsoDate(error: MtdError) extends ResolverSupport {
       case _: DateTimeParseException => Invalid(List(error))
     }
 
-  def apply(value: String): Validated[Seq[MtdError], LocalDate] =
-    resolver(value)
-
 }
 
 object ResolveIsoDate extends ResolverSupport {
 
   def apply(value: String, error: MtdError): Validated[Seq[MtdError], LocalDate] =
     ResolveIsoDate(error).resolver(value)
-
-  def apply(value: Option[String], error: MtdError): Validated[Seq[MtdError], Option[LocalDate]] = {
-    val resolver = ResolveIsoDate(error).resolver.resolveOptionally
-
-    resolver(value)
-  }
 
 }

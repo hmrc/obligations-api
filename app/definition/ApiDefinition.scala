@@ -24,8 +24,6 @@ enum APIStatus {
   case ALPHA, BETA, STABLE, DEPRECATED, RETIRED
 }
 
-case class PublishingException(message: String) extends Exception(message)
-
 object APIStatus {
   val parser: PartialFunction[String, APIStatus] = Enums.parser(values)
 

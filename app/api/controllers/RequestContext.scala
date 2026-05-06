@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,6 @@ case class RequestContext(hc: HeaderCarrier, correlationId: String, endpointLogC
 }
 
 object RequestContext {
-
-  implicit def fromParts(implicit hc: HeaderCarrier, correlationId: String, endpointLogContext: EndpointLogContext): RequestContext =
-    RequestContext(hc, correlationId, endpointLogContext)
 
   def from(idGenerator: IdGenerator, endpointLogContext: EndpointLogContext)(implicit hc: HeaderCarrier): RequestContext =
     RequestContext(hc, idGenerator.generateCorrelationId, endpointLogContext)

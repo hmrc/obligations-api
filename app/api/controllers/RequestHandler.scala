@@ -70,14 +70,8 @@ object RequestHandler {
     def handleRequest()(implicit ctx: RequestContext, request: UserRequest[?], ec: ExecutionContext, appConfig: AppConfig): Future[Result] =
       Delegate.handleRequest()
 
-    def withErrorHandling(errorHandling: ErrorHandling): RequestHandlerBuilder[Input, Output] =
-      copy(errorHandling = errorHandling)
-
     def withAuditing(auditHandler: AuditHandler): RequestHandlerBuilder[Input, Output] =
       copy(auditHandler = Some(auditHandler))
-
-    def withModelHandling(modelHandler: Output => Output): RequestHandlerBuilder[Input, Output] =
-      copy(modelHandler = Option(modelHandler))
 
     /** Shorthand for
       * {{{

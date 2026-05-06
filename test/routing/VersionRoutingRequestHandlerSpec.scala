@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package routing
 
-import api.models.errors.UnsupportedVersionError
+import api.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 import config.MockAppConfig
 import org.apache.pekko.actor.ActorSystem
 import org.scalatest.Inside
@@ -123,6 +123,21 @@ class VersionRoutingRequestHandlerSpec extends UnitSpec with Inside with MockApp
 
           requestHandler.routeRequest(buildRequest(s"$path")) shouldBe Some(handler)
         }
+      }
+    }
+  }
+
+  "Routing requests with invalid accept header" should {
+    implicit val acceptHeader: Some[String] = Some("application/lalalalala")
+
+    "return 406" in new Test {
+      private val request = buildRequest("/v3")
+
+      inside(requestHandler.routeRequest(request)) { case Some(ea: EssentialAction) =>
+        val result = ea.apply(request)
+
+        status(result) shouldBe NOT_ACCEPTABLE
+        contentAsJson(result) shouldBe Json.toJson(InvalidAcceptHeaderError)
       }
     }
   }

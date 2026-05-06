@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ import api.models.domain.TaxYear
 import api.models.errors.{InvalidTaxYearParameterError, MtdError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, TaxYearFormatError}
 import cats.data.Validated.{Invalid, Valid}
 import support.UnitSpec
-
-import java.time.{Clock, LocalDate, ZoneOffset}
 
 class ResolveTaxYearSpec extends UnitSpec with ResolverSupport {
 
@@ -86,33 +84,6 @@ class ResolveTaxYearSpec extends UnitSpec with ResolverSupport {
         ResolveTysTaxYear("2021-22") shouldBe Invalid(List(InvalidTaxYearParameterError))
       }
     }
-  }
-
-  "validateIncompleteTaxYear" should {
-    val error = MtdError("SOME_ERROR", "Message", 400)
-    def resolver(localDate: LocalDate): Resolver[String, TaxYear] = {
-      implicit val clock: Clock = Clock.fixed(localDate.atStartOfDay(ZoneOffset.UTC).toInstant, ZoneOffset.UTC)
-      ResolveIncompleteTaxYear(error).resolver
-    }
-
-    val taxYearString = "2020-21"
-    val taxYear       = TaxYear.fromMtd(taxYearString)
-
-    "accept when now is after the tax year ends" in {
-      val date = taxYear.endDate.plusDays(1)
-      resolver(date)(taxYearString) shouldBe Valid(taxYear)
-    }
-
-    "reject when now is on the day the tax year ends" in {
-      val date = taxYear.endDate
-      resolver(date)(taxYearString) shouldBe Invalid(List(error))
-    }
-
-    "reject when now is before the tax year starts" in {
-      val date = taxYear.startDate.minusDays(1)
-      resolver(date)(taxYearString) shouldBe Invalid(List(error))
-    }
-
   }
 
 }
