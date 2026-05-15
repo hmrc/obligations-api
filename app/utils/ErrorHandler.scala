@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,17 +85,18 @@ class ErrorHandler @Inject() (
     val NGINX_TIMEOUT                = 499
     val timeoutStatusCodes: Set[Int] = Set(NGINX_TIMEOUT, GATEWAY_TIMEOUT)
 
-    val (status, errorCode, eventType) = ex match {
-      case _: NotFoundException      => (NOT_FOUND, NotFoundError, "ResourceNotFound")
-      case _: AuthorisationException => (UNAUTHORIZED, ClientOrAgentNotAuthorisedError.withStatus401, "ClientError")
-      case _: JsValidationException  => (BAD_REQUEST, BadRequestError, "ServerValidationError")
-      case e: HttpException          => (e.responseCode, BadRequestError, "ServerValidationError")
-      case e: UpstreamErrorResponse if timeoutStatusCodes.contains(e.statusCode) => (GATEWAY_TIMEOUT, GatewayTimeoutError, "ServerTimeoutError")
+    val (errorCode, eventType) = ex match {
+      case _: NotFoundException                                                  => (NotFoundError, "ResourceNotFound")
+      case _: AuthorisationException                                             => (ClientOrAgentNotAuthorisedError.withStatus401, "ClientError")
+      case _: JsValidationException                                              => (BadRequestError, "ServerValidationError")
+      case _: GatewayTimeoutException                                            => (GatewayTimeoutError, "ServerTimeoutError")
+      case e: HttpException                                                      => (BadRequestError, "ServerValidationError")
+      case e: UpstreamErrorResponse if timeoutStatusCodes.contains(e.statusCode) => (GatewayTimeoutError, "ServerTimeoutError")
       case e: UpstreamErrorResponse if UpstreamErrorResponse.Upstream4xxResponse.unapply(e).isDefined =>
-        (e.reportAs, BadRequestError, "ServerValidationError")
+        (BadRequestError, "ServerValidationError")
       case e: UpstreamErrorResponse if UpstreamErrorResponse.Upstream5xxResponse.unapply(e).isDefined =>
-        (e.reportAs, InternalError, "ServerInternalError")
-      case _ => (INTERNAL_SERVER_ERROR, InternalError, "ServerInternalError")
+        (InternalError, "ServerInternalError")
+      case _ => (InternalError, "ServerInternalError")
     }
 
     auditConnector.sendEvent(
@@ -107,7 +108,7 @@ class ErrorHandler @Inject() (
       )
     )
 
-    Future.successful(Status(status)(Json.toJson(errorCode)))
+    Future.successful(Status(errorCode.httpStatus)(Json.toJson(errorCode)))
   }
 
 }
