@@ -20,6 +20,7 @@ import api.controllers.ControllerTestRunner.validNino
 import api.models.audit.{AuditError, AuditEvent, AuditResponse}
 import api.models.errors.MtdError
 import api.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import cats.implicits.catsSyntaxValidatedId
 import config.Deprecation.NotDeprecated
 import config.{MockAppConfig, RealAppConfig}
 import play.api.http.{HeaderNames, MimeTypes, Status}
@@ -31,7 +32,7 @@ import routing.{Version, Version9}
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.MockIdGenerator
-import cats.implicits.catsSyntaxValidatedId
+
 import scala.concurrent.Future
 
 abstract class ControllerBaseSpec

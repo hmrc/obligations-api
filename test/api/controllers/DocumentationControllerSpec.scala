@@ -17,8 +17,8 @@
 package api.controllers
 
 import com.typesafe.config.ConfigFactory
-import config.rewriters.DocumentationRewriters.CheckAndRewrite
 import config.rewriters.*
+import config.rewriters.DocumentationRewriters.CheckAndRewrite
 import config.{MockAppConfig, RealAppConfig}
 import controllers.{AssetsConfiguration, DefaultAssetsMetadata, RewriteableAssets}
 import definition.*

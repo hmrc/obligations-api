@@ -18,15 +18,7 @@ package api.controllers.validators
 
 import api.controllers.validators.resolvers.{ResolveJsonObject, ResolveNino, ResolveTaxYear}
 import api.models.domain.{Nino, TaxYear}
-import api.models.errors.{
-  BadRequestError,
-  EndDateFormatError,
-  ErrorWrapper,
-  MtdError,
-  NinoFormatError,
-  RuleIncorrectOrEmptyBodyError,
-  TaxYearFormatError
-}
+import api.models.errors.*
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.implicits.*

@@ -19,9 +19,8 @@ package api.connectors
 import api.connectors.DownstreamUri.*
 import api.mocks.MockHttpClient
 import api.models.outcomes.ResponseWrapper
-import config.AppConfig
-import config.MockAppConfig
-import play.api.libs.json.Json
+import config.{AppConfig, MockAppConfig}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpReads, StringContextOps}
 
@@ -29,11 +28,11 @@ import scala.concurrent.Future
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
   // WLOG
-  val body                       = Json.toJson("body")
-  val outcome                    = Right(ResponseWrapper(correlationId, Result(2)))
-  val url                        = "some/url?param=value"
-  val absoluteUrl                = url"$baseUrl/some/url?param=value"
-  val qps: Seq[(String, String)] = Seq("param1" -> "value1")
+  val body: JsValue                                    = Json.toJson("body")
+  val outcome: Right[Nothing, ResponseWrapper[Result]] = Right(ResponseWrapper(correlationId, Result(2)))
+  val url                                              = "some/url?param=value"
+  val absoluteUrl                                      = url"$baseUrl/some/url?param=value"
+  val qps: Seq[(String, String)]                       = Seq("param1" -> "value1")
 
   // WLOG
   case class Result(value: Int)

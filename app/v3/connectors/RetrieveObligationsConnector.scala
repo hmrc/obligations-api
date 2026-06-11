@@ -22,8 +22,8 @@ import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import api.models.domain.status.MtdStatusV3
 import api.models.domain.{DateRange, Nino}
 import config.AppConfig
-import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.client.HttpClientV2
 import v3.models.response.downstream.DownstreamObligations
 
 import javax.inject.{Inject, Singleton}
