@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,12 @@ import uk.gov.hmrc.play.audit.AuditExtensions
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector, AuditResult}
 import uk.gov.hmrc.play.audit.model.ExtendedDataEvent
 import uk.gov.hmrc.play.bootstrap.config.AppName
-import utils.Logging
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AuditService @Inject() (auditConnector: AuditConnector, appNameConfiguration: Configuration) extends Logging {
+class AuditService @Inject() (auditConnector: AuditConnector, appNameConfiguration: Configuration) {
 
   def auditEvent[T](event: AuditEvent[T])(implicit hc: HeaderCarrier, ec: ExecutionContext, writer: Writes[T]): Future[AuditResult] = {
 
@@ -43,9 +42,6 @@ class AuditService @Inject() (auditConnector: AuditConnector, appNameConfigurati
       detail = Json.toJson(event.detail),
       tags = eventTags
     )
-    logger.info(
-      s"Audit event :- dataEvent.tags :: ${dataEvent.tags} --  auditSource:: ${dataEvent.auditSource}" +
-        s" --- detail :: ${dataEvent.detail}")
     auditConnector.sendExtendedEvent(dataEvent)
   }
 

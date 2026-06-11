@@ -17,7 +17,7 @@
 package api.connectors.httpparsers
 
 import api.connectors.DownstreamOutcome
-import api.models.errors.{BVRError, InternalError, MtdError, _}
+import api.models.errors.{BVRError, InternalError, MtdError, *}
 import api.models.outcomes.ResponseWrapper
 import play.api.http.Status.*
 import play.api.libs.json.{JsValue, Json, Reads}

@@ -17,8 +17,8 @@
 package config.rewriters
 
 import com.github.jknack.handlebars.Options
-import config.{AppConfig, ConfigFeatureSwitches}
 import config.rewriters.DocumentationRewriters.CheckAndRewrite
+import config.{AppConfig, ConfigFeatureSwitches}
 
 import javax.inject.{Inject, Singleton}
 

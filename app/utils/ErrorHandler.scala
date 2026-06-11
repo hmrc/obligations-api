@@ -20,8 +20,8 @@ import api.models.errors.*
 import play.api.*
 import play.api.http.Status.*
 import play.api.libs.json.Json
-import play.api.mvc.Results.*
 import play.api.mvc.*
+import play.api.mvc.Results.*
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.*
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector

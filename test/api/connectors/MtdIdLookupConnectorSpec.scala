@@ -16,8 +16,8 @@
 
 package api.connectors
 
-import api.mocks.MockHttpClient
 import api.connectors.MtdIdLookupConnector.Outcome
+import api.mocks.MockHttpClient
 import config.MockAppConfig
 import uk.gov.hmrc.http.StringContextOps
 
