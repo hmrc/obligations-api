@@ -22,6 +22,8 @@ import config.rewriters.DocumentationRewriters.CheckAndRewrite
 import config.{MockAppConfig, RealAppConfig}
 import controllers.{AssetsConfiguration, DefaultAssetsMetadata, RewriteableAssets}
 import definition.*
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.testkit.NoMaterializer
 import play.api.http.{DefaultFileMimeTypes, DefaultHttpErrorHandler, FileMimeTypesConfiguration, HttpConfiguration}
 import play.api.libs.json.Json
 import play.api.mvc.Result
@@ -220,9 +222,9 @@ class DocumentationControllerSpec extends ControllerBaseSpec with MockAppConfig 
       new OasFeatureRewriter()(mockAppConfig)
     )
 
-    private val assets = new RewriteableAssets(errorHandler, assetsMetadata, mock[Environment])
-
-    protected def controller = new DocumentationController(apiFactory, docRewriters, assets, cc)
+    private val assets                      = new RewriteableAssets(errorHandler, assetsMetadata, mock[Environment])
+    implicit val materializer: Materializer = NoMaterializer
+    protected def controller                = new DocumentationController(apiFactory, docRewriters, assets, config, cc)
   }
 
 }
