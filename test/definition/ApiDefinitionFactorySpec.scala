@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import cats.implicits.catsSyntaxValidatedId
 import config.Deprecation.NotDeprecated
 import config.MockAppConfig
 import definition.APIStatus.{ALPHA, BETA}
+import definition.ApiAccessType.{CONTROLLED, PUBLIC}
 import routing.Version3
 import support.UnitSpec
 
@@ -37,6 +38,7 @@ class ApiDefinitionFactorySpec extends UnitSpec {
         Seq(Version3).foreach { version =>
           MockedAppConfig.apiStatus(version) returns "ALPHA"
           MockedAppConfig.endpointsEnabled(version) returns true
+          MockedAppConfig.controlledAccessEnabled returns false
           MockedAppConfig.deprecationFor(version).returns(NotDeprecated.valid).anyNumberOfTimes()
         }
 
@@ -51,12 +53,39 @@ class ApiDefinitionFactorySpec extends UnitSpec {
                 APIVersion(
                   version = Version3,
                   status = ALPHA,
+                  access = PUBLIC,
                   endpointsEnabled = true
                 )
               ),
               requiresTrust = None
             )
           )
+      }
+    }
+  }
+
+  "set the access level" when {
+    "the controlled access flag is enabled" should {
+      "to be CONTROLLED" in new Test {
+        MockedAppConfig.endpointsEnabled(Version3)
+        MockedAppConfig.apiStatus(Version3) returns "BETA"
+        MockedAppConfig.deprecationFor(Version3).returns(NotDeprecated.valid).anyNumberOfTimes()
+
+        MockedAppConfig.controlledAccessEnabled returns true
+
+        apiDefinitionFactory.definition.api.versions.head.access shouldBe CONTROLLED
+      }
+    }
+
+    "the controlled access flag is disabled" should {
+      "return PUBLIC" in new Test {
+        MockedAppConfig.endpointsEnabled(Version3)
+        MockedAppConfig.apiStatus(Version3) returns "BETA"
+        MockedAppConfig.deprecationFor(Version3).returns(NotDeprecated.valid).anyNumberOfTimes()
+
+        MockedAppConfig.controlledAccessEnabled returns false
+
+        apiDefinitionFactory.definition.api.versions.head.access shouldBe PUBLIC
       }
     }
   }

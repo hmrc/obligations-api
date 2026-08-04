@@ -2,6 +2,7 @@
 logs
 project/project
 project/target
+project/.bloop
 target
 lib_managed
 tmp
@@ -23,4 +24,6 @@ yarn-debug.log
 yarn-error.log
 *.DS_Store
 /.bsp
+.vscode
+.metals
     

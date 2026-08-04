@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package definition
 
 import cats.data.Validated.Invalid
 import config.AppConfig
+import definition.ApiAccessType.{CONTROLLED, PUBLIC}
 import routing.{Version, Version3}
 import utils.Logging
 
@@ -37,6 +38,7 @@ class ApiDefinitionFactory @Inject() (appConfig: AppConfig) extends Logging {
           APIVersion(
             version = Version3,
             status = buildAPIStatus(Version3),
+            access = if (appConfig.controlledAccessEnabled) CONTROLLED else PUBLIC,
             endpointsEnabled = appConfig.endpointsEnabled(Version3)
           )
         ),

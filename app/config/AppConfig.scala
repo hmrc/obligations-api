@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ trait AppConfig {
   def endpointsEnabled(version: Version): Boolean
   def endpointsEnabled(version: String): Boolean
   def confidenceLevelConfig: ConfidenceLevelConfig
+  def controlledAccessEnabled: Boolean
   def deprecationFor(version: Version): Validated[String, Deprecation]
 
   def apiDocumentationUrl: String
@@ -79,6 +80,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, val configuration: Config
 
   // API Config
   val apiGatewayContext: String                    = config.getString("api.gateway.context")
+  val controlledAccessEnabled: Boolean             = config.getBoolean("api.controlled-access.enabled")
   val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
 
   def apiStatus(version: Version): String = config.getString(s"api.${version.name}.status")

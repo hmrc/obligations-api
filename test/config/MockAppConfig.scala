@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ trait MockAppConfig extends TestSuite with MockFactory {
     // API Config
     def featureSwitchConfig: CallHandler[Configuration]                               = (() => mockAppConfig.featureSwitchConfig).expects()
     def apiGatewayContext: CallHandler[String]                                        = (() => mockAppConfig.apiGatewayContext).expects()
+    def controlledAccessEnabled: CallHandler[Boolean]                                 = (() => mockAppConfig.controlledAccessEnabled).expects()
     def apiStatus(version: Version): CallHandler[String]                              = (mockAppConfig.apiStatus(_: Version)).expects(version)
     def endpointsEnabled(version: String): CallHandler[Boolean]                       = (mockAppConfig.endpointsEnabled(_: String)).expects(version)
     def endpointsEnabled(version: Version): CallHandler[Boolean]                      = (mockAppConfig.endpointsEnabled(_: Version)).expects(version)
