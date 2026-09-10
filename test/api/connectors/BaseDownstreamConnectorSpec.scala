@@ -24,14 +24,15 @@ import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpReads, StringContextOps}
 
+import java.net.URL
 import scala.concurrent.Future
 
 class BaseDownstreamConnectorSpec extends ConnectorSpec {
   // WLOG
   val body: JsValue                                    = Json.toJson("body")
   val outcome: Right[Nothing, ResponseWrapper[Result]] = Right(ResponseWrapper(correlationId, Result(2)))
-  val url                                              = "some/url?param=value"
-  val absoluteUrl                                      = url"$baseUrl/some/url?param=value"
+  val url: String                                      = "some/url?param=value"
+  val absoluteUrl: URL                                 = url"$baseUrl/some/url?param=value"
   val qps: Seq[(String, String)]                       = Seq("param1" -> "value1")
 
   // WLOG
