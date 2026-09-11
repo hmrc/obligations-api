@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package api.connectors
 
 import api.mocks.MockHttpClient
+import com.google.common.base.Charsets
 import config.MockAppConfig
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, MimeTypes, Status}
@@ -24,6 +25,7 @@ import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.net.URL
+import java.util.Base64
 import scala.concurrent.{ExecutionContext, Future}
 
 trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
@@ -39,21 +41,14 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val dummyDesHeaderCarrierConfig: HeaderCarrier.Config =
+  val dummyHeaderCarrierConfig: HeaderCarrier.Config =
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
       Some("obligations-api")
     )
 
-  val requiredDesHeaders: Seq[(String, String)] = Seq(
-    "Authorization"     -> "Bearer des-token",
-    "Environment"       -> "des-environment",
-    "User-Agent"        -> "obligations-api",
-    "Gov-Test-Scenario" -> "DEFAULT"
-  )
-
-  val allowedDesHeaders: Seq[String] = Seq(
+  val allowedHeaders: Seq[String] = List(
     "Accept",
     "Gov-Test-Scenario",
     "Content-Type",
@@ -73,7 +68,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
       MockedHttpClient
         .get(
           url = url,
-          config = dummyDesHeaderCarrierConfig,
+          config = dummyHeaderCarrierConfig,
           parameters = parameters,
           requiredHeaders = requiredHeaders,
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
@@ -83,13 +78,42 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   }
 
   protected trait DesTest extends ConnectorTest {
+    private val token: String       = "des-token"
+    private val environment: String = "des-environment"
 
-    protected val requiredHeaders: Seq[(String, String)] = requiredDesHeaders
+    protected val requiredHeaders: Seq[(String, String)] = List(
+      "Authorization"     -> s"Bearer $token",
+      "Environment"       -> environment,
+      "User-Agent"        -> "obligations-api",
+      "Gov-Test-Scenario" -> "DEFAULT"
+    )
 
     MockedAppConfig.desBaseUrl returns this.baseUrl
-    MockedAppConfig.desToken returns "des-token"
-    MockedAppConfig.desEnvironment returns "des-environment"
-    MockedAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockedAppConfig.desToken returns token
+    MockedAppConfig.desEnvironment returns environment
+    MockedAppConfig.desEnvironmentHeaders returns Some(allowedHeaders)
+  }
+
+  protected trait HipTest extends ConnectorTest {
+    private val clientId: String     = "clientId"
+    private val clientSecret: String = "clientSecret"
+    private val environment: String  = "hip-environment"
+
+    private val token: String = Base64.getEncoder.encodeToString(s"$clientId:$clientSecret".getBytes(Charsets.UTF_8))
+
+    protected val requiredHeaders: Seq[(String, String)] = List(
+      "Authorization"     -> s"Basic $token",
+      "Environment"       -> environment,
+      "User-Agent"        -> "obligations-api",
+      "CorrelationId"     -> correlationId,
+      "Gov-Test-Scenario" -> "DEFAULT"
+    )
+
+    MockedAppConfig.hipBaseUrl returns this.baseUrl
+    MockedAppConfig.hipEnv returns environment
+    MockedAppConfig.hipClientId returns clientId
+    MockedAppConfig.hipClientSecret returns clientSecret
+    MockedAppConfig.hipEnvironmentHeaders returns Some(allowedHeaders.filterNot(Set("Content-Type")))
   }
 
 }

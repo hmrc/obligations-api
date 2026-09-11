@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ trait IntegrationBaseSpec extends UnitSpec with WireMockHelper with GuiceOneServ
   def servicesConfig: Map[String, Any] = Map(
     "microservice.services.des.host"           -> mockHost,
     "microservice.services.des.port"           -> mockPort,
-    "microservice.services.ifs.host"           -> mockHost,
-    "microservice.services.ifs.port"           -> mockPort,
+    "microservice.services.hip.host"           -> mockHost,
+    "microservice.services.hip.port"           -> mockPort,
     "microservice.services.api2089.host"       -> mockHost,
     "microservice.services.api2089.port"       -> mockPort,
     "microservice.services.mtd-id-lookup.host" -> mockHost,
