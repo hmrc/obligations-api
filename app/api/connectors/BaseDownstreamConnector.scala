@@ -17,21 +17,19 @@
 package api.connectors
 
 import config.AppConfig
-import play.api.Logger
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, StringContextOps}
-import utils.UrlUtils
+import utils.{Logging, UrlUtils}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait BaseDownstreamConnector {
+trait BaseDownstreamConnector extends Logging {
   val http: HttpClientV2
   val appConfig: AppConfig
 
-  val logger: Logger                                       = Logger(this.getClass)
   private val jsonContentTypeHeader: Seq[(String, String)] = Seq(HeaderNames.CONTENT_TYPE -> MimeTypes.JSON)
   implicit protected lazy val _appConfig: AppConfig        = appConfig
 
@@ -49,6 +47,25 @@ trait BaseDownstreamConnector {
     for {
       headers <- getBackendHeaders(strategy, jsonContentTypeHeader)
       result  <- doPost(headers)
+    } yield result
+  }
+
+  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
+
+    val strategy: DownstreamStrategy = uri.strategy
+
+    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
+      val fullUrl: String = UrlUtils.appendQueryParams(getBackendUri(uri.path, strategy), queryParams)
+      http.get(url"$fullUrl").execute
+    }
+
+    for {
+      headers <- getBackendHeaders(strategy)
+      result  <- doGet(headers)
     } yield result
   }
 
@@ -71,25 +88,6 @@ trait BaseDownstreamConnector {
       HeaderCarrier(extraHeaders = apiHeaders ++ passThroughHeaders)
     }
 
-  }
-
-  def get[Resp](uri: DownstreamUri[Resp], queryParams: Seq[(String, String)] = Seq.empty)(implicit
-      ec: ExecutionContext,
-      hc: HeaderCarrier,
-      httpReads: HttpReads[DownstreamOutcome[Resp]],
-      correlationId: String): Future[DownstreamOutcome[Resp]] = {
-
-    val strategy: DownstreamStrategy = uri.strategy
-
-    def doGet(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
-      val fullUrl: String = UrlUtils.appendQueryParams(getBackendUri(uri.path, strategy), queryParams)
-      http.get(url"$fullUrl").execute
-    }
-
-    for {
-      headers <- getBackendHeaders(strategy)
-      result  <- doGet(headers)
-    } yield result
   }
 
 }

@@ -43,6 +43,11 @@ trait DownstreamStrategy {
 
 object DownstreamStrategy {
 
+  /** Creates a strategy instance that uses a fixed token for each host/endpoint
+    *
+    * @param downstreamConfig
+    *   configuration for the downstream host & endpoint
+    */
   def standardStrategy(downstreamConfig: DownstreamConfig): DownstreamStrategy = new DownstreamStrategy {
     override def baseUrl: String = downstreamConfig.baseUrl
 

@@ -70,6 +70,7 @@ class StandardDownstreamHttpParserSpec extends UnitSpec {
       handleInternalErrorsCorrectly(httpReads)
       handleUnexpectedResponse(httpReads)
       handleBvrsCorrectly(httpReads)
+      handleHipErrorsCorrectly(httpReads)
     }
 
     "a success code is specified" must {
