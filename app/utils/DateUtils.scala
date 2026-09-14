@@ -17,7 +17,8 @@
 package utils
 
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime, ZoneId}
+import java.time.temporal.ChronoUnit.SECONDS
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneId}
 import java.util.Locale
 
 object DateUtils {
@@ -39,4 +40,6 @@ object DateUtils {
   }
 
   def longDateTimestampGmt(dateTime: LocalDateTime): String = longDateTimeFormatGmt.format(dateTime)
+
+  def nowAsUtc: String = Instant.now().truncatedTo(SECONDS).toString
 }

@@ -21,7 +21,9 @@ import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import api.models.outcomes.ResponseWrapper
 import org.scalatest.TestSuite
+import play.api.Configuration
 import uk.gov.hmrc.http.StringContextOps
+import utils.DateUtils.nowAsUtc
 import v3.models.response.downstream.DownstreamObligations
 
 import java.time.LocalDate
@@ -29,9 +31,14 @@ import scala.concurrent.Future
 
 class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
 
+  private val nino                            = "AA123456A"
+  private val response: DownstreamObligations = DownstreamObligations(Nil)
+
   "RetrieveObligationsConnector" when {
-    "all optional parameters are absent" should {
-      "make the request with no query parameters " in new DesTest with Test {
+    "all optional parameters are absent and HIP feature switch is disabled" must {
+      "make the request with no query parameters" in new DesTest with Test {
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> false))
+
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
         willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA")
@@ -41,11 +48,33 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
       }
     }
 
-    "a date range is specified" should {
+    "all optional parameters are absent and HIP feature switch is enabled" must {
+      "make the request with no query parameters" in new HipTest with Test {
+
+        override def requiredHeaders: Seq[(String, String)] = super.requiredHeaders ++ List(
+          "X-Originating-System"  -> "MDTP",
+          "X-Receipt-Date"        -> nowAsUtc,
+          "X-Transmitting-System" -> "HIP"
+        )
+
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> true))
+
+        private val outcome = Right(ResponseWrapper(correlationId, response))
+
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA")
+          .returns(Future.successful(outcome))
+
+        await(connector.retrieveObligations(Nino(nino), dateRange = None, status = None)) shouldBe outcome
+      }
+    }
+
+    "a date range is specified and HIP feature switch is disabled" must {
       "make the request to ISO-formatted from and to query parameters" in new DesTest with Test {
         val from                 = "2020-01-01"
         val to                   = "2021-01-01"
         val dateRange: DateRange = DateRange(LocalDate.parse(from), LocalDate.parse(to))
+
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> false))
 
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
@@ -56,11 +85,56 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
       }
     }
 
-    "a status is specified" should {
+    "a date range is specified and HIP feature switch is enabled" must {
+      "make the request to ISO-formatted from and to query parameters" in new HipTest with Test {
+        val from                 = "2020-01-01"
+        val to                   = "2021-01-01"
+        val dateRange: DateRange = DateRange(LocalDate.parse(from), LocalDate.parse(to))
+
+        override def requiredHeaders: Seq[(String, String)] = super.requiredHeaders ++ List(
+          "X-Originating-System"  -> "MDTP",
+          "X-Receipt-Date"        -> nowAsUtc,
+          "X-Transmitting-System" -> "HIP"
+        )
+
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> true))
+
+        private val outcome = Right(ResponseWrapper(correlationId, response))
+
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", parameters = Seq("dateFrom" -> from, "dateTo" -> to))
+          .returns(Future.successful(outcome))
+
+        await(connector.retrieveObligations(Nino(nino), Some(dateRange), status = None)) shouldBe outcome
+      }
+    }
+
+    "a status is specified and HIP feature switch is disabled" must {
       "make the request with the downstream-formatted status query parameter" in new DesTest with Test {
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> false))
+
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
         willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
+          .returns(Future.successful(outcome))
+
+        await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatus.open))) shouldBe outcome
+      }
+    }
+
+    "a status is specified and HIP feature switch is enabled" must {
+      "make the request with the downstream-formatted status query parameter" in new HipTest with Test {
+
+        override def requiredHeaders: Seq[(String, String)] = super.requiredHeaders ++ List(
+          "X-Originating-System"  -> "MDTP",
+          "X-Receipt-Date"        -> nowAsUtc,
+          "X-Transmitting-System" -> "HIP"
+        )
+
+        MockedAppConfig.featureSwitchConfig.returns(Configuration("des_hip_migration_1330.enabled" -> true))
+
+        private val outcome = Right(ResponseWrapper(correlationId, response))
+
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatus.open))) shouldBe outcome
@@ -71,11 +145,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
   trait Test {
     self: ConnectorTest =>
 
-    lazy val response: DownstreamObligations = DownstreamObligations(Nil)
-
-    val connector = new RetrieveObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
-
-    protected val nino = "AA123456A"
+    protected val connector = new RetrieveObligationsConnector(http = mockHttpClient, appConfig = mockAppConfig)
   }
 
 }
