@@ -26,7 +26,7 @@ class MtdStatusSpec extends UnitSpec with EnumJsonSpecSupport {
     ("open", MtdStatus.open)
   )
 
-  "toDes" should {
+  "toDownstream" should {
     "return the correct identifier value" in {
       MtdStatus.fulfilled.toDownstream shouldBe "F"
       MtdStatus.open.toDownstream shouldBe "O"
