@@ -17,7 +17,7 @@
 package v3.models.response.domain
 
 import api.models.domain.business.{DesBusiness, MtdBusiness}
-import api.models.domain.status.{DesStatusV3, MtdStatusV3}
+import api.models.domain.status.{DesStatus, MtdStatus}
 
 trait FixtureDefaults {
 
@@ -35,8 +35,8 @@ trait FixtureDefaults {
     val dueDate      = "2000-04-04"
     val periodKey    = "somePeriod"
 
-    val desStatus: DesStatusV3 = DesStatusV3.O
-    val mtdStatus: MtdStatusV3 = MtdStatusV3.open
+    val desStatus: DesStatus = DesStatus.O
+    val mtdStatus: MtdStatus = MtdStatus.open
 
   }
 

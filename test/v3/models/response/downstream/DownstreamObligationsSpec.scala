@@ -16,7 +16,7 @@
 
 package v3.models.response.downstream
 
-import api.models.domain.status.DesStatusV3
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
 
@@ -55,7 +55,7 @@ class DownstreamObligationsSpec extends UnitSpec {
                   referenceType = "refType"
                 )),
               obligationDetails = Seq(DownstreamObligationDetail(
-                status = DesStatusV3.O,
+                status = DesStatus.O,
                 inboundCorrespondenceFromDate = "2000-01-01",
                 inboundCorrespondenceToDate = "2000-02-02",
                 inboundCorrespondenceDateReceived = None,

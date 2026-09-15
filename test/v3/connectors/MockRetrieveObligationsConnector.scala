@@ -17,7 +17,7 @@
 package v3.connectors
 
 import api.connectors.DownstreamOutcome
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
@@ -34,10 +34,10 @@ trait MockRetrieveObligationsConnector extends TestSuite with MockFactory {
 
     def retrieveObligations(nino: Nino,
                             dateRange: Option[DateRange],
-                            status: Option[MtdStatusV3]): CallHandler[Future[DownstreamOutcome[DownstreamObligations]]] =
+                            status: Option[MtdStatus]): CallHandler[Future[DownstreamOutcome[DownstreamObligations]]] =
       (
         mockRetrieveObligationsConnector
-          .retrieveObligations(_: Nino, _: Option[DateRange], _: Option[MtdStatusV3])(
+          .retrieveObligations(_: Nino, _: Option[DateRange], _: Option[MtdStatus])(
             _: HeaderCarrier,
             _: ExecutionContext,
             _: String

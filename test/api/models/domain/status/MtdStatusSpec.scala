@@ -19,15 +19,15 @@ package api.models.domain.status
 import support.UnitSpec
 import utils.enums.EnumJsonSpecSupport
 
-class MtdStatusV3Spec extends UnitSpec with EnumJsonSpecSupport {
+class MtdStatusSpec extends UnitSpec with EnumJsonSpecSupport {
 
-  testRoundTrip[MtdStatusV3](
-    ("fulfilled", MtdStatusV3.fulfilled),
-    ("open", MtdStatusV3.open)
+  testRoundTrip[MtdStatus](
+    ("fulfilled", MtdStatus.fulfilled),
+    ("open", MtdStatus.open)
   )
 
   "toDes" should {
-    Seq((DesStatusV3.F, MtdStatusV3.fulfilled), (DesStatusV3.O, MtdStatusV3.open)).foreach { case (desStatus, mtdStatus) =>
+    Seq((DesStatus.F, MtdStatus.fulfilled), (DesStatus.O, MtdStatus.open)).foreach { case (desStatus, mtdStatus) =>
       s"convert $mtdStatus to $desStatus" in {
         mtdStatus.toDes shouldBe desStatus
       }

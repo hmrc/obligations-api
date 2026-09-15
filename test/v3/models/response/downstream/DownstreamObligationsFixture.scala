@@ -17,7 +17,7 @@
 package v3.models.response.downstream
 
 import api.models.domain.business.DesBusiness
-import api.models.domain.status.DesStatusV3
+import api.models.domain.status.DesStatus
 import v3.models.response.domain.FixtureDefaults
 
 trait DownstreamObligationsFixture extends FixtureDefaults {
@@ -27,7 +27,7 @@ trait DownstreamObligationsFixture extends FixtureDefaults {
                                referenceType: String = Defaults.referenceType): DownstreamIdentification =
     DownstreamIdentification(incomeSourceType, referenceNumber, referenceType)
 
-  def downstreamObligationDetail(status: DesStatusV3 = Defaults.desStatus,
+  def downstreamObligationDetail(status: DesStatus = Defaults.desStatus,
                                  inboundCorrespondenceFromDate: String = Defaults.fromDate,
                                  inboundCorrespondenceToDate: String = Defaults.toDate,
                                  inboundCorrespondenceDateReceived: Option[String] = Some(Defaults.receivedDate),

@@ -16,7 +16,7 @@
 
 package v3.models.response.downstream
 
-import api.models.domain.status.DesStatusV3
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
 
@@ -37,7 +37,7 @@ class DownstreamObligationDetailSpec extends UnitSpec {
               |}""".stripMargin)
           .as[DownstreamObligationDetail] shouldBe
           DownstreamObligationDetail(
-            status = DesStatusV3.O,
+            status = DesStatus.O,
             inboundCorrespondenceFromDate = "2000-01-01",
             inboundCorrespondenceToDate = "2000-02-02",
             inboundCorrespondenceDateReceived = Some("2000-03-03"),
@@ -58,7 +58,7 @@ class DownstreamObligationDetailSpec extends UnitSpec {
                    |}""".stripMargin)
           .as[DownstreamObligationDetail] shouldBe
           DownstreamObligationDetail(
-            status = DesStatusV3.O,
+            status = DesStatus.O,
             inboundCorrespondenceFromDate = "2000-01-01",
             inboundCorrespondenceToDate = "2000-02-02",
             inboundCorrespondenceDateReceived = None,

@@ -18,7 +18,7 @@ package v3.retrieveCrystallisation
 
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYearRange}
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
@@ -44,7 +44,7 @@ class RetrieveCrystallisationObligationsControllerSpec
 
   private val taxYear          = "2017-18"
   private val maybeStatusParam = Option("fulfilled")
-  private val maybeStatus      = Option(MtdStatusV3.fulfilled)
+  private val maybeStatus      = Option(MtdStatus.fulfilled)
 
   private val requestData = RetrieveCrystallisationObligationsRequest(Nino(nino), TaxYearRange.fromMtd("2017-18"), maybeStatus)
 
@@ -54,7 +54,7 @@ class RetrieveCrystallisationObligationsControllerSpec
         periodStartDate = "2018-04-06",
         periodEndDate = "2019-04-05",
         dueDate = "2020-01-31",
-        status = MtdStatusV3.fulfilled,
+        status = MtdStatus.fulfilled,
         receivedDate = Some("2020-01-25")))
   )
 

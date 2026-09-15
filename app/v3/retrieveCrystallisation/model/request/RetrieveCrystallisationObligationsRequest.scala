@@ -16,7 +16,7 @@
 
 package v3.retrieveCrystallisation.model.request
 
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYearRange}
 
-case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: TaxYearRange, status: Option[MtdStatusV3])
+case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: TaxYearRange, status: Option[MtdStatus])

@@ -16,7 +16,7 @@
 
 package v3.controllers.validators.resolvers
 
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.errors.StatusFormatError
 import cats.data.Validated.{Invalid, Valid}
 import support.UnitSpec
@@ -26,8 +26,8 @@ class ResolveMtdStatusSpec extends UnitSpec {
   "ResolveMtdStatus" should {
 
     "resolve valid values" in {
-      ResolveMtdStatus.resolver("open") shouldBe Valid(MtdStatusV3.open)
-      ResolveMtdStatus.resolver("fulfilled") shouldBe Valid(MtdStatusV3.fulfilled)
+      ResolveMtdStatus.resolver("open") shouldBe Valid(MtdStatus.open)
+      ResolveMtdStatus.resolver("fulfilled") shouldBe Valid(MtdStatus.fulfilled)
     }
 
     "not resolve the invalid values" in {

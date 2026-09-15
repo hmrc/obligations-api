@@ -17,9 +17,9 @@
 package v3.controllers.validators.resolvers
 
 import api.controllers.validators.resolvers.ResolverSupport
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.errors.StatusFormatError
 
 object ResolveMtdStatus extends ResolverSupport {
-  val resolver: Resolver[String, MtdStatusV3] = resolvePartialFunction(StatusFormatError)(MtdStatusV3.parser)
+  val resolver: Resolver[String, MtdStatus] = resolvePartialFunction(StatusFormatError)(MtdStatus.parser)
 }

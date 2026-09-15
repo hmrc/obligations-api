@@ -17,7 +17,7 @@
 package v3.retrievePeriodic.model.response
 
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.utils.JsonErrorValidators
 import play.api.libs.json.Json
 import support.UnitSpec
@@ -75,10 +75,10 @@ class RetrievePeriodObligationsResponseSpec extends UnitSpec with JsonErrorValid
               MtdBusiness.`self-employment`,
               "XAIS12345678910",
               Seq(
-                ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatusV3.fulfilled),
-                ObligationDetail("2019-04-01", "2019-06-30", "2019-07-31", Some("2019-07-01"), MtdStatusV3.fulfilled),
-                ObligationDetail("2019-07-01", "2019-09-30", "2019-10-31", Some("2019-10-08"), MtdStatusV3.fulfilled),
-                ObligationDetail("2019-10-01", "2019-12-31", "2020-01-31", None, MtdStatusV3.open)
+                ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.fulfilled),
+                ObligationDetail("2019-04-01", "2019-06-30", "2019-07-31", Some("2019-07-01"), MtdStatus.fulfilled),
+                ObligationDetail("2019-07-01", "2019-09-30", "2019-10-31", Some("2019-10-08"), MtdStatus.fulfilled),
+                ObligationDetail("2019-10-01", "2019-12-31", "2020-01-31", None, MtdStatus.open)
               )
             )
           ))

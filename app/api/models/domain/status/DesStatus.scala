@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,15 @@
 
 package api.models.domain.status
 
-import support.UnitSpec
-import utils.enums.EnumJsonSpecSupport
+import play.api.libs.json.Format
+import utils.enums.Enums
 
-class DesStatusV3Spec extends UnitSpec with EnumJsonSpecSupport {
+enum DesStatus(val toMtd: MtdStatus) {
+  case F extends DesStatus(MtdStatus.fulfilled)
+  case O extends DesStatus(MtdStatus.open)
+}
 
-  testRoundTrip[DesStatusV3](
-    ("F", DesStatusV3.F),
-    ("O", DesStatusV3.O)
-  )
-
-  "toMtd" should {
-    Seq((DesStatusV3.F, MtdStatusV3.fulfilled), (DesStatusV3.O, MtdStatusV3.open)).foreach { case (desStatus, mtdStatus) =>
-      s"convert $desStatus to $mtdStatus" in {
-        desStatus.toMtd shouldBe mtdStatus
-      }
-    }
-  }
-
+object DesStatus {
+  val parser: PartialFunction[String, DesStatus] = Enums.parser(values)
+  given Format[DesStatus]                        = Enums.format(values)
 }

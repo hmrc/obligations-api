@@ -19,12 +19,17 @@ package api.models.domain.status
 import play.api.libs.json.Format
 import utils.enums.Enums
 
-enum DesStatusV3(val toMtd: MtdStatusV3) {
-  case F extends DesStatusV3(MtdStatusV3.fulfilled)
-  case O extends DesStatusV3(MtdStatusV3.open)
+enum MtdStatus {
+  case fulfilled, open
+
+  def toDes: DesStatus = this match {
+    case MtdStatus.fulfilled => DesStatus.F
+    case MtdStatus.open      => DesStatus.O
+  }
+
 }
 
-object DesStatusV3 {
-  val parser: PartialFunction[String, DesStatusV3] = Enums.parser(values)
-  given Format[DesStatusV3]                        = Enums.format(values)
+object MtdStatus {
+  val parser: PartialFunction[String, MtdStatus] = Enums.parser(values)
+  given Format[MtdStatus]                        = Enums.format(values)
 }

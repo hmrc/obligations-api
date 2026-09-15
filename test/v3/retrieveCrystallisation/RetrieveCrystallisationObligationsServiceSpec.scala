@@ -18,7 +18,7 @@ package v3.retrieveCrystallisation
 
 import api.controllers.EndpointLogContext
 import api.models.domain.business.DesBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino, TaxYear, TaxYearRange}
 import api.models.errors.{
   DownstreamErrorCode,
@@ -47,13 +47,13 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with Dow
   private val nino                      = "AA123456A"
   private val taxYearRangeStart: String = "2017-18"
   private val taxYearRangeEnd: String   = "2019-20"
-  private val status                    = MtdStatusV3.open
+  private val status                    = MtdStatus.open
   private val taxYearRange              = TaxYearRange(TaxYear.fromMtd(taxYearRangeStart), TaxYear.fromMtd(taxYearRangeEnd))
   private val dateRange                 = DateRange(taxYearRange.from.startDate, taxYearRange.to.endDate)
 
   def request(nino: Nino,
               obligationsTaxYear: TaxYearRange = taxYearRange,
-              status: Option[MtdStatusV3] = None): RetrieveCrystallisationObligationsRequest =
+              status: Option[MtdStatus] = None): RetrieveCrystallisationObligationsRequest =
     RetrieveCrystallisationObligationsRequest(
       nino = nino,
       obligationsTaxYear = obligationsTaxYear,

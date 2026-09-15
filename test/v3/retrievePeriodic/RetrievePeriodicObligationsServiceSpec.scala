@@ -18,7 +18,7 @@ package v3.retrievePeriodic
 
 import api.controllers.EndpointLogContext
 import api.models.domain.business.{DesBusiness, MtdBusiness}
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
@@ -38,13 +38,13 @@ class RetrievePeriodicObligationsServiceSpec extends ServiceSpec with Downstream
   private val nino     = "AA123456A"
   private val fromDate = "2018-04-06"
   private val toDate   = "2019-04-05"
-  private val status   = MtdStatusV3.open
+  private val status   = MtdStatus.open
 
   private def request(nino: Nino,
                       typeOfBusiness: Option[MtdBusiness] = None,
                       businessId: Option[String] = None,
                       dateRange: Option[(String, String)] = None,
-                      status: Option[MtdStatusV3] = None) =
+                      status: Option[MtdStatus] = None) =
     RetrievePeriodicObligationsRequest(
       nino = nino,
       typeOfBusiness = typeOfBusiness,

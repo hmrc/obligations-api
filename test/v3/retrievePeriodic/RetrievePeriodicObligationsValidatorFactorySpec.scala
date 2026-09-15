@@ -17,7 +17,7 @@
 package v3.retrievePeriodic
 
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors.*
 import org.scalatest.Inside
@@ -59,7 +59,7 @@ class RetrievePeriodicObligationsValidatorFactorySpec extends UnitSpec with Insi
               typeOfBusiness = Some(MtdBusiness.`self-employment`),
               businessId = Some(BusinessId(validBusinessId)),
               dateRange = Some(DateRange(LocalDate.parse(validFromDate), LocalDate.parse(validToDate))),
-              status = Some(MtdStatusV3.open)
+              status = Some(MtdStatus.open)
             ))
       }
     }
@@ -69,7 +69,7 @@ class RetrievePeriodicObligationsValidatorFactorySpec extends UnitSpec with Insi
         validatorFactory
           .validator(validNino, None, None, None, None, Some("open"))
           .validateAndWrapResult() shouldBe
-          Right(RetrievePeriodicObligationsRequest(Nino(validNino), None, None, None, Some(MtdStatusV3.open)))
+          Right(RetrievePeriodicObligationsRequest(Nino(validNino), None, None, None, Some(MtdStatus.open)))
       }
     }
 
@@ -86,7 +86,7 @@ class RetrievePeriodicObligationsValidatorFactorySpec extends UnitSpec with Insi
               typeOfBusiness = None,
               businessId = None,
               dateRange = Some(DateRange(LocalDate.parse("2020-01-01"), LocalDate.parse("2021-01-01"))),
-              status = Some(MtdStatusV3.fulfilled)
+              status = Some(MtdStatus.fulfilled)
             ))
       }
     }
