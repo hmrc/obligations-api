@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package v3.models.response.domain
 
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 
 trait ObligationsFixture extends FixtureDefaults {
 
@@ -25,7 +25,7 @@ trait ObligationsFixture extends FixtureDefaults {
                        periodEndDate: String = Defaults.toDate,
                        dueDate: String = Defaults.dueDate,
                        receivedDate: Option[String] = Some(Defaults.receivedDate),
-                       status: MtdStatusV3 = Defaults.mtdStatus): ObligationDetail =
+                       status: MtdStatus = Defaults.mtdStatus): ObligationDetail =
     ObligationDetail(
       periodStartDate = periodStartDate,
       periodEndDate = periodEndDate,

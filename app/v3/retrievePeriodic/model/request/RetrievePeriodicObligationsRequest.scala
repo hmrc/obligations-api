@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,11 @@
 package v3.retrievePeriodic.model.request
 
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{BusinessId, DateRange, Nino}
 
 case class RetrievePeriodicObligationsRequest(nino: Nino,
                                               typeOfBusiness: Option[MtdBusiness],
                                               businessId: Option[BusinessId],
                                               dateRange: Option[DateRange],
-                                              status: Option[MtdStatusV3])
+                                              status: Option[MtdStatus])

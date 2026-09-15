@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package v3.models.response.domain
 
 import api.models.domain.business.{DesBusiness, MtdBusiness}
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import play.api.libs.json.Json
 import support.UnitSpec
 import v3.models.response.downstream.DownstreamObligationsFixture
@@ -87,7 +87,7 @@ class BusinessObligationSpec extends UnitSpec with DownstreamObligationsFixture 
 
   "writes" should {
     "write to JSON" when {
-      val obligationDetails = ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatusV3.fulfilled)
+      val obligationDetails = ObligationDetail("2018-04-06", "2019-04-05", "1920-01-31", Some("2020-01-25"), MtdStatus.fulfilled)
 
       "passed a model with typeOfBusiness self-employment" in {
         val json = Json.parse("""

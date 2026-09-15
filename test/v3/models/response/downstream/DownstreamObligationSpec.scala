@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package v3.models.response.downstream
 
-import api.models.domain.status.DesStatusV3
+import api.models.domain.status.DesStatus
 import play.api.libs.json.Json
 import support.UnitSpec
 
@@ -52,7 +52,7 @@ class DownstreamObligationSpec extends UnitSpec with DownstreamObligationsFixtur
               )),
             obligationDetails = Seq(
               DownstreamObligationDetail(
-                status = DesStatusV3.O,
+                status = DesStatus.O,
                 inboundCorrespondenceFromDate = "2000-01-01",
                 inboundCorrespondenceToDate = "2000-02-02",
                 inboundCorrespondenceDateReceived = None,
@@ -81,7 +81,7 @@ class DownstreamObligationSpec extends UnitSpec with DownstreamObligationsFixtur
             identification = None,
             obligationDetails = Seq(
               DownstreamObligationDetail(
-                status = DesStatusV3.O,
+                status = DesStatus.O,
                 inboundCorrespondenceFromDate = "2000-01-01",
                 inboundCorrespondenceToDate = "2000-02-02",
                 inboundCorrespondenceDateReceived = None,

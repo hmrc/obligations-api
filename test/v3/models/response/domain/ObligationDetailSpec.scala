@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package v3.models.response.domain
 
-import api.models.domain.status.{DesStatusV3, MtdStatusV3}
+import api.models.domain.status.{DesStatus, MtdStatus}
 import play.api.libs.json.Json
 import support.UnitSpec
 import v3.models.response.downstream.DownstreamObligationsFixture
@@ -42,10 +42,10 @@ class ObligationDetailSpec extends UnitSpec with DownstreamObligationsFixture wi
       )
     }
 
-    behave like mapStatus(DesStatusV3.O, MtdStatusV3.open)
-    behave like mapStatus(DesStatusV3.F, MtdStatusV3.fulfilled)
+    behave like mapStatus(DesStatus.O, MtdStatus.open)
+    behave like mapStatus(DesStatus.F, MtdStatus.fulfilled)
 
-    def mapStatus(desStatus: DesStatusV3, expectedMtdStatus: MtdStatusV3): Unit =
+    def mapStatus(desStatus: DesStatus, expectedMtdStatus: MtdStatus): Unit =
       s"map status $desStatus to $expectedMtdStatus" in {
         ObligationDetail.fromDownstream(downstreamObligationDetail(status = desStatus)) shouldBe
           obligationDetail(status = expectedMtdStatus)
@@ -64,7 +64,7 @@ class ObligationDetailSpec extends UnitSpec with DownstreamObligationsFixture wi
             |    "status": "fulfilled"
             |}
             |""".stripMargin)
-        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatusV3.fulfilled)
+        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.fulfilled)
 
         Json.toJson(model) shouldBe json
       }
@@ -78,7 +78,7 @@ class ObligationDetailSpec extends UnitSpec with DownstreamObligationsFixture wi
             |    "status": "open"
             |}
             |""".stripMargin)
-        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatusV3.open)
+        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", Some("2019-04-25"), MtdStatus.open)
 
         Json.toJson(model) shouldBe json
       }
@@ -91,7 +91,7 @@ class ObligationDetailSpec extends UnitSpec with DownstreamObligationsFixture wi
             |    "status": "fulfilled"
             |}
             |""".stripMargin)
-        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", None, MtdStatusV3.fulfilled)
+        val model = ObligationDetail("2019-01-01", "2019-03-31", "2019-04-30", None, MtdStatus.fulfilled)
 
         Json.toJson(model) shouldBe json
       }

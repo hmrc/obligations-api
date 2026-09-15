@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ class DesStatusSpec extends UnitSpec with EnumJsonSpecSupport {
   )
 
   "toMtd" should {
-    Seq((DesStatus.F, MtdStatus.Fulfilled), (DesStatus.O, MtdStatus.Open)).foreach { case (desStatus, mtdStatus) =>
+    Seq((DesStatus.F, MtdStatus.fulfilled), (DesStatus.O, MtdStatus.open)).foreach { case (desStatus, mtdStatus) =>
       s"convert $desStatus to $mtdStatus" in {
         desStatus.toMtd shouldBe mtdStatus
       }

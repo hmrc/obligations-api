@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package v3.retrievePeriodic
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.business.MtdBusiness
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{BusinessId, DateRange, Nino}
 import api.models.errors.{ErrorWrapper, NinoFormatError, RuleTaxYearNotSupportedError}
 import api.models.outcomes.ResponseWrapper
@@ -56,7 +56,7 @@ class RetrievePeriodicObligationsControllerSpec
       Some(MtdBusiness.`self-employment`),
       Some(BusinessId(businessId)),
       dateRange = Some(DateRange(LocalDate.parse(fromDate), LocalDate.parse(toDate))),
-      Some(MtdStatusV3.open)
+      Some(MtdStatus.open)
     )
 
   private val response = RetrievePeriodObligationsResponse(
@@ -70,7 +70,7 @@ class RetrievePeriodicObligationsControllerSpec
             toDate,
             "2019-04-30",
             Some("2019-04-25"),
-            MtdStatusV3.open
+            MtdStatus.open
           )
         ))
     )

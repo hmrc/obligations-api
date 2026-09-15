@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package v3.retrieveCrystallisation.model.response
 
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
 import v3.models.response.domain.{ObligationDetail, ObligationsFixture}
 
 class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec with ObligationsFixture {
 
-  private def mtdObligationModel(status: MtdStatusV3 = MtdStatusV3.fulfilled, receivedDate: Option[String] = Some("2020-01-25")): ObligationDetail =
+  private def mtdObligationModel(status: MtdStatus = MtdStatus.fulfilled, receivedDate: Option[String] = Some("2020-01-25")): ObligationDetail =
     ObligationDetail(
       periodStartDate = "2018-04-06",
       periodEndDate = "2019-04-05",
@@ -58,8 +58,8 @@ class RetrieveCrystallisationObligationsResponseSpec extends UnitSpec with Oblig
       "passed a response with multiple obligations" in {
         val model = RetrieveCrystallisationObligationsResponse(
           List(
-            mtdObligationModel(status = MtdStatusV3.fulfilled),
-            mtdObligationModel(status = MtdStatusV3.open),
+            mtdObligationModel(status = MtdStatus.fulfilled),
+            mtdObligationModel(status = MtdStatus.open),
             mtdObligationModel(receivedDate = None)
           ))
 

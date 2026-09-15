@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package v3.connectors
 
 import api.connectors.ConnectorSpec
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import api.models.outcomes.ResponseWrapper
 import org.scalatest.TestSuite
@@ -63,7 +63,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
         willGet(url"$baseUrl/enterprise/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
-        await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatusV3.open))) shouldBe outcome
+        await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatus.open))) shouldBe outcome
       }
     }
   }

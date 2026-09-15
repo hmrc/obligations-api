@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package v3.retrieveCrystallisation.model.request
 
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYearRange}
 
-case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: TaxYearRange, status: Option[MtdStatusV3])
+case class RetrieveCrystallisationObligationsRequest(nino: Nino, obligationsTaxYear: TaxYearRange, status: Option[MtdStatus])

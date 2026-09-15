@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import play.api.libs.json.Format
 import utils.enums.Enums
 
 enum DesStatus(val toMtd: MtdStatus) {
-  case F extends DesStatus(MtdStatus.Fulfilled)
-  case O extends DesStatus(MtdStatus.Open)
+  case F extends DesStatus(MtdStatus.fulfilled)
+  case O extends DesStatus(MtdStatus.open)
 }
 
 object DesStatus {
-  val parser: PartialFunction[String, DesStatus] = Enums.parser(values)
-  given Format[DesStatus]                        = Enums.format(values)
+  given Format[DesStatus] = Enums.format(values)
 }

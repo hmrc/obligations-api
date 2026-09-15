@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,14 @@ import utils.enums.EnumJsonSpecSupport
 class MtdStatusSpec extends UnitSpec with EnumJsonSpecSupport {
 
   testRoundTrip[MtdStatus](
-    ("Fulfilled", MtdStatus.Fulfilled),
-    ("Open", MtdStatus.Open)
+    ("fulfilled", MtdStatus.fulfilled),
+    ("open", MtdStatus.open)
   )
 
-  "toDes" should {
-    Seq((DesStatus.F, MtdStatus.Fulfilled), (DesStatus.O, MtdStatus.Open)).foreach { case (desStatus, mtdStatus) =>
-      s"convert $mtdStatus to $desStatus" in {
-        mtdStatus.toDes shouldBe desStatus
-      }
+  "toDownstream" should {
+    "return the correct identifier value" in {
+      MtdStatus.fulfilled.toDownstream shouldBe "F"
+      MtdStatus.open.toDownstream shouldBe "O"
     }
   }
 

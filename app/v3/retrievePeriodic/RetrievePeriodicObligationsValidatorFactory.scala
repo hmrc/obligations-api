@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package v3.retrievePeriodic
 import api.controllers.validators.Validator
 import api.controllers.validators.resolvers.ResolverSupport.*
 import api.controllers.validators.resolvers.{ResolveBusinessId, ResolveNino}
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.errors.*
 import cats.data.Validated
 import cats.implicits.*
@@ -61,8 +61,8 @@ class RetrievePeriodicObligationsValidatorFactory @Inject() (implicit clock: Clo
     lazy val requestWithDefaultDateRange = request.copy(dateRange = Some(ObligationsDateRangeSupport.defaultDateRange))
 
     request.dateRange match {
-      case None if !request.status.contains(MtdStatusV3.open) => requestWithDefaultDateRange
-      case _                                                  => request
+      case None if !request.status.contains(MtdStatus.open) => requestWithDefaultDateRange
+      case _                                                => request
     }
   }
 

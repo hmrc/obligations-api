@@ -16,7 +16,7 @@
 
 package v3.retrieveCrystallisation
 
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{Nino, TaxYear, TaxYearRange}
 import api.models.errors.*
 import support.{MutableClock, UnitSpec}
@@ -39,7 +39,7 @@ class RetrieveCrystallisationObligationsValidatorFactorySpec extends UnitSpec {
     "a valid request is supplied" must {
       "return the parsed domain object" in {
         validator(validNino, Some("2018-19"), Some("open")).validateAndWrapResult() shouldBe
-          Right(RetrieveCrystallisationObligationsRequest(Nino(validNino), TaxYearRange.fromMtd("2018-19"), Some(MtdStatusV3.open)))
+          Right(RetrieveCrystallisationObligationsRequest(Nino(validNino), TaxYearRange.fromMtd("2018-19"), Some(MtdStatus.open)))
       }
     }
 

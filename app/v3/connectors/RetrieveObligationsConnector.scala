@@ -19,7 +19,7 @@ package v3.connectors
 import api.connectors.DownstreamUri.DesUri
 import api.connectors.httpparsers.StandardDownstreamHttpParser.*
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import api.models.domain.status.MtdStatusV3
+import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
 import config.AppConfig
 import uk.gov.hmrc.http.HeaderCarrier
@@ -32,14 +32,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RetrieveObligationsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def retrieveObligations(nino: Nino, dateRange: Option[DateRange], status: Option[MtdStatusV3])(implicit
+  def retrieveObligations(nino: Nino, dateRange: Option[DateRange], status: Option[MtdStatus])(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[DownstreamObligations]] = {
 
     val queryParams =
       dateRange.toSeq.flatMap(range => Seq("from" -> range.startDateAsIso, "to" -> range.endDateAsIso)) ++
-        status.toSeq.map("status" -> _.toDes.toString)
+        status.toSeq.map("status" -> _.toDownstream)
 
     val url = DesUri[DownstreamObligations](s"enterprise/obligation-data/nino/$nino/ITSA")
 
