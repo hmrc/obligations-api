@@ -27,6 +27,5 @@ enum DesBusiness(val toMtd: Option[MtdBusiness]) {
 }
 
 object DesBusiness {
-  val parser: PartialFunction[String, DesBusiness] = Enums.parser(values)
-  given Format[DesBusiness]                        = Enums.format(values)
+  given Format[DesBusiness] = Enums.format(values)
 }

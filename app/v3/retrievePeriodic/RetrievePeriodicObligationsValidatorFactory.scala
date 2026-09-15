@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class RetrievePeriodicObligationsValidatorFactory @Inject() (implicit clock: Clo
 
     request.dateRange match {
       case None if !request.status.contains(MtdStatus.open) => requestWithDefaultDateRange
-      case _                                                  => request
+      case _                                                => request
     }
   }
 

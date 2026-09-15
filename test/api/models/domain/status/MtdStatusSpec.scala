@@ -27,10 +27,9 @@ class MtdStatusSpec extends UnitSpec with EnumJsonSpecSupport {
   )
 
   "toDes" should {
-    Seq((DesStatus.F, MtdStatus.fulfilled), (DesStatus.O, MtdStatus.open)).foreach { case (desStatus, mtdStatus) =>
-      s"convert $mtdStatus to $desStatus" in {
-        mtdStatus.toDes shouldBe desStatus
-      }
+    "return the correct identifier value" in {
+      MtdStatus.fulfilled.toDownstream shouldBe "F"
+      MtdStatus.open.toDownstream shouldBe "O"
     }
   }
 
