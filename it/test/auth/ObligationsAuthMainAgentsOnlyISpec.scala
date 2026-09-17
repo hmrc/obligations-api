@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class ObligationsAuthMainAgentsOnlyISpec extends AuthMainAgentsOnlyISpec {
 
   override def sendMtdRequest(request: WSRequest): WSResponse = await(request.get())
 
-  override val downstreamUri: String = s"/enterprise/obligation-data/nino/$nino/ITSA"
+  override val downstreamUri: String = s"/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA"
 
   override val downstreamHttpMethod: DownstreamStub.HTTPMethod = DownstreamStub.GET
 
@@ -38,26 +38,28 @@ class ObligationsAuthMainAgentsOnlyISpec extends AuthMainAgentsOnlyISpec {
     Json.parse(
       """
         |{
+        |  "success": {
         |    "obligations": [
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
-        |        }
+        |      {
+        |        "identification": {
+        |          "incomeSourceType": "ITSB",
+        |          "referenceNumber": "XAIS12345678901",
+        |          "referenceType": "MTDBIS"
+        |        },
+        |        "obligationDetails": [
+        |          {
+        |            "status": "O",
+        |            "inboundCorrespondenceFromDate": "2019-01-01",
+        |            "inboundCorrespondenceToDate": "2019-06-06",
+        |            "inboundCorrespondenceDueDate": "2019-04-30",
+        |            "periodKey": "#001"
+        |          }
+        |        ]
+        |      }
         |    ]
+        |  }
         |}
-        |""".stripMargin
+      """.stripMargin
     )
   )
 

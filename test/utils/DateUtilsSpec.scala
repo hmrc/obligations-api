@@ -18,7 +18,7 @@ package utils
 
 import support.UnitSpec
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, ZoneOffset, ZonedDateTime}
 
 class DateUtilsSpec extends UnitSpec {
 
@@ -49,6 +49,16 @@ class DateUtilsSpec extends UnitSpec {
         )
         result shouldBe "Tue, 17 Jan 2023 12:00:00 GMT"
       }
+    }
+  }
+
+  "nowAsUtc" should {
+    "return Date/time in format [yyyy-MM-dd'T'HH:mm:ss'Z']" in {
+      val result: String = DateUtils.nowAsUtc
+
+      result should fullyMatch regex """\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z""".r
+
+      ZonedDateTime.parse(result).getOffset shouldBe ZoneOffset.UTC
     }
   }
 

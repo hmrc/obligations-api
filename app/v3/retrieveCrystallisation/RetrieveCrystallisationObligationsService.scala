@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RetrieveCrystallisationObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
-  private val errorMap: Map[String, MtdError] =
-    Map(
+  private val downstreamErrorsMap: Map[String, MtdError] = {
+    val desErrors = Map(
       "INVALID_IDNUMBER"    -> NinoFormatError,
       "INVALID_IDTYPE"      -> InternalError,
       "INVALID_STATUS"      -> InternalError,
@@ -52,6 +52,18 @@ class RetrieveCrystallisationObligationsService @Inject() (connector: RetrieveOb
       "SERVICE_UNAVAILABLE" -> InternalError
     )
 
+    val hipErrors = Map(
+      "001" -> InternalError,
+      "002" -> NotFoundError,
+      "025" -> NotFoundError,
+      "041" -> InternalError,
+      "042" -> InternalError,
+      "094" -> RuleInsolventTraderError
+    )
+
+    desErrors ++ hipErrors
+  }
+
   def retrieve(request: RetrieveCrystallisationObligationsRequest)(implicit
       ctx: RequestContext,
       ec: ExecutionContext): Future[ServiceOutcome[RetrieveCrystallisationObligationsResponse]] = {
@@ -61,7 +73,7 @@ class RetrieveCrystallisationObligationsService @Inject() (connector: RetrieveOb
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrieveObligations(request.nino, Some(dateRange), request.status))
-        .leftMap(mapDownstreamErrors(errorMap))
+        .leftMap(mapDownstreamErrors(downstreamErrorsMap))
       mtdResponseWrapper <- EitherT.fromEither[Future](filterCrystallisationValues(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 

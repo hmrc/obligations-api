@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RetrievePeriodicObligationsService @Inject() (connector: RetrieveObligationsConnector) extends BaseService {
 
-  private val downstreamErrorMap: Map[String, MtdError] =
-    Map(
+  private val downstreamErrorsMap: Map[String, MtdError] = {
+    val desErrors = Map(
       "INVALID_IDTYPE"      -> InternalError,
       "INVALID_IDNUMBER"    -> NinoFormatError,
       "INVALID_STATUS"      -> InternalError,
@@ -52,13 +52,25 @@ class RetrievePeriodicObligationsService @Inject() (connector: RetrieveObligatio
       "SERVICE_UNAVAILABLE" -> InternalError
     )
 
+    val hipErrors = Map(
+      "001" -> InternalError,
+      "002" -> NotFoundError,
+      "025" -> NotFoundError,
+      "041" -> RuleDateRangeInvalidError,
+      "042" -> InternalError,
+      "094" -> RuleInsolventTraderError
+    )
+
+    desErrors ++ hipErrors
+  }
+
   def retrieve(request: RetrievePeriodicObligationsRequest)(implicit
       ctx: RequestContext,
       ec: ExecutionContext): Future[ServiceOutcome[RetrievePeriodObligationsResponse]] = {
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrieveObligations(request.nino, request.dateRange, request.status))
-        .leftMap(mapDownstreamErrors(downstreamErrorMap))
+        .leftMap(mapDownstreamErrors(downstreamErrorsMap))
       mtdResponseWrapper <- EitherT.fromEither[Future](extractMtdResponse(downstreamResponseWrapper, request.typeOfBusiness, request.businessId))
     } yield mtdResponseWrapper
 

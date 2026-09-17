@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 
-class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
+class RetrievePeriodicObligationsControllerIfsISpec extends IntegrationBaseSpec {
+
+  override def servicesConfig: Map[String, Any] =
+    Map("feature-switch.des_hip_migration_1330.enabled" -> false) ++ super.servicesConfig
 
   "Calling the retrieve periodic obligations endpoint" should {
 
@@ -55,6 +58,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         response.json shouldBe responseBody
         response.header("Content-Type") shouldBe Some("application/json")
       }
+
       "a request with one object with multiple obligationDetails is made" in new Test {
 
         override def setupStubs(): StubMapping = {
@@ -78,6 +82,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         response.json shouldBe responseBodyOneObjectMultipleDetails
         response.header("Content-Type") shouldBe Some("application/json")
       }
+
       "a request with multiple objects with one obligationDetail is made" in new Test {
 
         override def setupStubs(): StubMapping = {
@@ -101,6 +106,7 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         response.json shouldBe responseBodyMultipleObjectsOneDetail
         response.header("Content-Type") shouldBe Some("application/json")
       }
+
       "a request with multiple objects with multiple obligationDetails is made" in new Test {
 
         override def setupStubs(): StubMapping = {
@@ -235,15 +241,15 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         input.foreach(validationErrorTest.tupled)
       }
 
-      "des service error" when {
-        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new Test {
+      "downstream service error" when {
+        def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"downstream returns a $downstreamCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorisedWithIndividualAffinityGroupAndEnrolment()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, queryParams, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(
@@ -336,285 +342,297 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
     val toDate         = "2019-06-06"
     val status         = "open"
 
-    val responseBody: JsValue = Json.parse("""{
+    val responseBody: JsValue = Json.parse(
+      """
+        |{
         |  "obligations": [
-        |     {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "status": "open"
-        |         }
-        |       ]
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "status": "open"
+        |        }
+        |      ]
         |    }
         |  ]
         |}
-        |""".stripMargin)
+      """.stripMargin
+    )
 
     val desResponse: JsValue = Json.parse(
       """
         |{
-        |    "obligations": [
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
-        |""".stripMargin
-    )
-
-    val responseBodyOneObjectMultipleDetails: JsValue = Json.parse("""{
         |  "obligations": [
-        |     {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "status": "open"
-        |         },
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "fulfilled"
-        |         }
-        |       ]
+        |    {
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
+        |        {
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        }
+        |      ]
         |    }
         |  ]
         |}
-        |""".stripMargin)
+      """.stripMargin
+    )
+
+    val responseBodyOneObjectMultipleDetails: JsValue = Json.parse(
+      """
+        |{
+        |  "obligations": [
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "status": "open"
+        |        },
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "fulfilled"
+        |        }
+        |      ]
+        |    }
+        |  ]
+        |}
+      """.stripMargin
+    )
 
     val desResponseOneObjectMultipleDetails: JsValue = Json.parse(
       """
         |{
-        |    "obligations": [
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#002"
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
-        |""".stripMargin
-    )
-
-    val responseBodyMultipleObjectsOneDetail: JsValue = Json.parse("""{
         |  "obligations": [
-        |     {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "open"
-        |         }
-        |       ]
-        |    },
         |    {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "open"
-        |         }
-        |       ]
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
+        |        {
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        },
+        |        {
+        |          "status": "F",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#002"
+        |        }
+        |      ]
         |    }
         |  ]
         |}
-        |""".stripMargin)
+      """.stripMargin
+    )
+
+    val responseBodyMultipleObjectsOneDetail: JsValue = Json.parse(
+      """
+        |{
+        |  "obligations": [
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "open"
+        |        }
+        |      ]
+        |    },
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "open"
+        |        }
+        |      ]
+        |    }
+        |  ]
+        |}
+      """.stripMargin
+    )
 
     val desResponseMultipleObjectsOneDetail: JsValue = Json.parse(
       """
         |{
-        |    "obligations": [
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
-        |        },
-        |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
-        |        }
-        |    ]
-        |}
-        |""".stripMargin
-    )
-
-    val responseBodyMultipleObjectsMultipleDetails: JsValue = Json.parse("""{
         |  "obligations": [
-        |     {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "open"
-        |         },
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "fulfilled"
-        |         }
-        |       ]
+        |    {
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
+        |        {
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        }
+        |      ]
         |    },
         |    {
-        |       "typeOfBusiness": "self-employment",
-        |       "businessId": "XAIS12345678901",
-        |       "obligationDetails": [
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "open"
-        |         },
-        |         {
-        |           "periodStartDate": "2019-01-01",
-        |           "periodEndDate": "2019-06-06",
-        |           "dueDate": "2019-04-30",
-        |           "receivedDate": "2019-04-25",
-        |           "status": "fulfilled"
-        |         }
-        |       ]
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
+        |        {
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        }
+        |      ]
         |    }
         |  ]
         |}
-        |""".stripMargin)
+      """.stripMargin
+    )
+
+    val responseBodyMultipleObjectsMultipleDetails: JsValue = Json.parse(
+      """
+        |{
+        |  "obligations": [
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "open"
+        |        },
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "fulfilled"
+        |        }
+        |      ]
+        |    },
+        |    {
+        |      "typeOfBusiness": "self-employment",
+        |      "businessId": "XAIS12345678901",
+        |      "obligationDetails": [
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "open"
+        |        },
+        |        {
+        |          "periodStartDate": "2019-01-01",
+        |          "periodEndDate": "2019-06-06",
+        |          "dueDate": "2019-04-30",
+        |          "receivedDate": "2019-04-25",
+        |          "status": "fulfilled"
+        |        }
+        |      ]
+        |    }
+        |  ]
+        |}
+      """.stripMargin
+    )
 
     val desResponseMultipleObjectsMultipleDetails: JsValue = Json.parse(
       """
         |{
-        |    "obligations": [
+        |  "obligations": [
+        |    {
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
         |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
         |        },
         |        {
-        |            "identification": {
-        |                "incomeSourceType": "ITSB",
-        |                "referenceNumber": "XAIS12345678901",
-        |                "referenceType": "MTDBIS"
-        |            },
-        |            "obligationDetails": [
-        |                {
-        |                    "status": "O",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                },
-        |                {
-        |                    "status": "F",
-        |                    "inboundCorrespondenceFromDate": "2019-01-01",
-        |                    "inboundCorrespondenceToDate": "2019-06-06",
-        |                    "inboundCorrespondenceDateReceived": "2019-04-25",
-        |                    "inboundCorrespondenceDueDate": "2019-04-30",
-        |                    "periodKey": "#001"
-        |                }
-        |            ]
+        |          "status": "F",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
         |        }
-        |    ]
+        |      ]
+        |    },
+        |    {
+        |      "identification": {
+        |        "incomeSourceType": "ITSB",
+        |        "referenceNumber": "XAIS12345678901",
+        |        "referenceType": "MTDBIS"
+        |      },
+        |      "obligationDetails": [
+        |        {
+        |          "status": "O",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        },
+        |        {
+        |          "status": "F",
+        |          "inboundCorrespondenceFromDate": "2019-01-01",
+        |          "inboundCorrespondenceToDate": "2019-06-06",
+        |          "inboundCorrespondenceDateReceived": "2019-04-25",
+        |          "inboundCorrespondenceDueDate": "2019-04-30",
+        |          "periodKey": "#001"
+        |        }
+        |      ]
+        |    }
+        |  ]
         |}
-        |""".stripMargin
+      """.stripMargin
     )
 
     def setupStubs(): StubMapping
@@ -635,15 +653,15 @@ class RetrievePeriodicObligationsControllerISpec extends IntegrationBaseSpec {
         )
     }
 
-    def uri: String = s"/$nino/income-and-expenditure"
+    private def uri: String = s"/$nino/income-and-expenditure"
 
     def errorBody(code: String): String =
       s"""
-         |{
-         |     "code": "$code",
-         |     "reason": "des message"
-         |}
-    """.stripMargin
+        |{
+        |  "code": "$code",
+        |  "reason": "des message"
+        |}
+      """.stripMargin
 
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,35 +30,37 @@ class ObligationsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAl
 
   override def sendMtdRequest(request: WSRequest): WSResponse = await(request.get())
 
-  override val downstreamUri = s"/enterprise/obligation-data/nino/$nino/ITSA"
+  override val downstreamUri = s"/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA"
 
   override val downstreamHttpMethod: DownstreamStub.HTTPMethod = DownstreamStub.GET
 
   override val maybeDownstreamResponseJson: Option[JsValue] =
     Some(
       Json.parse("""
-                   | {
-                   |    "obligations": [
-                   |        {
-                   |            "identification": {
-                   |                "incomeSourceType": "ITSA",
-                   |                "referenceNumber": "AB123456A",
-                   |                "referenceType": "NINO"
-                   |            },
-                   |            "obligationDetails": [
-                   |                {
-                   |                    "status": "F",
-                   |                    "inboundCorrespondenceFromDate": "2018-04-06",
-                   |                    "inboundCorrespondenceToDate": "2019-04-05",
-                   |                    "inboundCorrespondenceDateReceived": "2020-01-25",
-                   |                    "inboundCorrespondenceDueDate": "2020-01-31",
-                   |                    "periodKey": "ITSA"
-                   |                }
-                   |            ]
-                   |        }
-                   |    ]
-                   |}
-    """.stripMargin)
+          |{
+          |  "success": {
+          |    "obligations": [
+          |      {
+          |        "identification": {
+          |          "incomeSourceType": "ITSA",
+          |          "referenceNumber": "AB123456A",
+          |          "referenceType": "NINO"
+          |        },
+          |        "obligationDetails": [
+          |          {
+          |            "status": "F",
+          |            "inboundCorrespondenceFromDate": "2018-04-06",
+          |            "inboundCorrespondenceToDate": "2019-04-05",
+          |            "inboundCorrespondenceDateReceived": "2020-01-25",
+          |            "inboundCorrespondenceDueDate": "2020-01-31",
+          |            "periodKey": "ITSA"
+          |          }
+          |        ]
+          |      }
+          |    ]
+          |  }
+          |}
+        """.stripMargin)
     )
 
 }

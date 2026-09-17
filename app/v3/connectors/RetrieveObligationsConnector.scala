@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 package v3.connectors
 
-import api.connectors.DownstreamUri.DesUri
+import api.connectors.DownstreamUri.{DesUri, HipUri}
 import api.connectors.httpparsers.StandardDownstreamHttpParser.*
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino}
-import config.AppConfig
+import config.{AppConfig, ConfigFeatureSwitches}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
+import utils.DateUtils.nowAsUtc
 import v3.models.response.downstream.DownstreamObligations
 
 import javax.inject.{Inject, Singleton}
@@ -41,9 +42,20 @@ class RetrieveObligationsConnector @Inject() (val http: HttpClientV2, val appCon
       dateRange.toSeq.flatMap(range => Seq("from" -> range.startDateAsIso, "to" -> range.endDateAsIso)) ++
         status.toSeq.map("status" -> _.toDownstream)
 
-    val url = DesUri[DownstreamObligations](s"enterprise/obligation-data/nino/$nino/ITSA")
+    val hipQueryParams =
+      dateRange.toSeq.flatMap(range => Seq("dateFrom" -> range.startDateAsIso, "dateTo" -> range.endDateAsIso)) ++
+        status.toSeq.map("status" -> _.toDownstream)
 
-    get(url, queryParams)
+    val additionalContractHeaders: Seq[(String, String)] = List(
+      "X-Originating-System"  -> "MDTP",
+      "X-Receipt-Date"        -> nowAsUtc,
+      "X-Transmitting-System" -> "HIP"
+    )
+
+    lazy val hipUrl = HipUri[DownstreamObligations](s"etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", additionalContractHeaders)
+    lazy val desUrl = DesUri[DownstreamObligations](s"enterprise/obligation-data/nino/$nino/ITSA")
+
+    if (ConfigFeatureSwitches().isEnabled("des_hip_migration_1330")) get(hipUrl, hipQueryParams) else get(desUrl, queryParams)
   }
 
 }

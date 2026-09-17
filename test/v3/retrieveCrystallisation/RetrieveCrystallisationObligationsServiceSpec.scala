@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,7 @@ import api.controllers.EndpointLogContext
 import api.models.domain.business.DesBusiness
 import api.models.domain.status.MtdStatus
 import api.models.domain.{DateRange, Nino, TaxYear, TaxYearRange}
-import api.models.errors.{
-  DownstreamErrorCode,
-  DownstreamErrors,
-  ErrorWrapper,
-  InternalError,
-  MtdError,
-  NinoFormatError,
-  NoObligationsFoundError,
-  NotFoundError,
-  RuleInsolventTraderError
-}
+import api.models.errors.*
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
@@ -176,7 +166,7 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with Dow
             await(service.retrieve(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val input = List(
+        val desErrors = List(
           ("INVALID_IDNUMBER", NinoFormatError),
           ("INVALID_IDTYPE", InternalError),
           ("INVALID_STATUS", InternalError),
@@ -190,7 +180,17 @@ class RetrieveCrystallisationObligationsServiceSpec extends ServiceSpec with Dow
           ("SERVER_ERROR", InternalError),
           ("SERVICE_UNAVAILABLE", InternalError)
         )
-        input.foreach(serviceError.tupled)
+
+        val hipErrors = List(
+          ("001", InternalError),
+          ("002", NotFoundError),
+          ("025", NotFoundError),
+          ("041", InternalError),
+          ("042", InternalError),
+          ("094", RuleInsolventTraderError)
+        )
+
+        (desErrors ++ hipErrors).foreach(serviceError.tupled)
       }
     }
   }

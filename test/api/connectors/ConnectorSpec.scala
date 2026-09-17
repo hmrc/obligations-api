@@ -62,7 +62,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     implicit protected val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
 
-    protected val requiredHeaders: Seq[(String, String)]
+    protected def requiredHeaders: Seq[(String, String)]
 
     protected def willGet[T](url: URL, parameters: Seq[(String, String)] = Seq.empty): CallHandler[Future[T]] = {
       MockedHttpClient
@@ -101,7 +101,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     private val token: String = Base64.getEncoder.encodeToString(s"$clientId:$clientSecret".getBytes(Charsets.UTF_8))
 
-    protected val requiredHeaders: Seq[(String, String)] = List(
+    protected def requiredHeaders: Seq[(String, String)] = List(
       "Authorization"     -> s"Basic $token",
       "Environment"       -> environment,
       "User-Agent"        -> "obligations-api",
