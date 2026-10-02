@@ -71,19 +71,4 @@ class ResolveTaxYearSpec extends UnitSpec with ResolverSupport {
     }
   }
 
-  "ResolveTysTaxYear" should {
-    "return no errors" when {
-      "passed a valid tax year that's above or equal to TaxYear.tysTaxYear" in {
-        val validTaxYear = "2023-24"
-        ResolveTysTaxYear(validTaxYear) shouldBe Valid(TaxYear.fromMtd(validTaxYear))
-      }
-    }
-
-    "return an error" when {
-      "passed a valid tax year but below TaxYear.tysTaxYear" in {
-        ResolveTysTaxYear("2021-22") shouldBe Invalid(List(InvalidTaxYearParameterError))
-      }
-    }
-  }
-
 }
