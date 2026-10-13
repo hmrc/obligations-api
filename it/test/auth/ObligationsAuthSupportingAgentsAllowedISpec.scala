@@ -30,7 +30,7 @@ class ObligationsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAl
 
   override def sendMtdRequest(request: WSRequest): WSResponse = await(request.get())
 
-  override val downstreamUri = s"/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA"
+  override val downstreamUri = s"/etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA"
 
   override val downstreamHttpMethod: DownstreamStub.HTTPMethod = DownstreamStub.GET
 

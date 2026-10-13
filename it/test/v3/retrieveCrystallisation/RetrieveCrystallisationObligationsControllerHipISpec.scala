@@ -377,7 +377,7 @@ class RetrieveCrystallisationObligationsControllerHipISpec extends IntegrationBa
       """.stripMargin
     )
 
-    def downstreamUri: String = s"/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA"
+    def downstreamUri: String = s"/etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA"
 
     def downstreamQueryParams: Map[String, String] = Map(
       "dateFrom" -> "2017-04-06",
