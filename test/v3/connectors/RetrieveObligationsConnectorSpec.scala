@@ -61,7 +61,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
 
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA")
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA")
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, status = None)) shouldBe outcome
@@ -101,7 +101,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
 
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", parameters = Seq("dateFrom" -> from, "dateTo" -> to))
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA", parameters = Seq("dateFrom" -> from, "dateTo" -> to))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), Some(dateRange), status = None)) shouldBe outcome
@@ -134,7 +134,7 @@ class RetrieveObligationsConnectorSpec extends TestSuite with ConnectorSpec {
 
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", parameters = Seq("status" -> "O"))
+        willGet(url"$baseUrl/etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA", parameters = Seq("status" -> "O"))
           .returns(Future.successful(outcome))
 
         await(connector.retrieveObligations(Nino(nino), dateRange = None, Some(MtdStatus.open))) shouldBe outcome

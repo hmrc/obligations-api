@@ -52,7 +52,7 @@ class RetrieveObligationsConnector @Inject() (val http: HttpClientV2, val appCon
       "X-Transmitting-System" -> "HIP"
     )
 
-    lazy val hipUrl = HipUri[DownstreamObligations](s"etmp/RESTAdapter/obligation-data/nino/$nino/ITSA", additionalContractHeaders)
+    lazy val hipUrl = HipUri[DownstreamObligations](s"etmp/RESTAdapter/obligation-data/NINO/$nino/ITSA", additionalContractHeaders)
     lazy val desUrl = DesUri[DownstreamObligations](s"enterprise/obligation-data/nino/$nino/ITSA")
 
     if (ConfigFeatureSwitches().isEnabled("des_hip_migration_1330")) get(hipUrl, hipQueryParams) else get(desUrl, queryParams)
