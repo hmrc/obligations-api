@@ -25,20 +25,21 @@ import api.services.{MockAuditService, ServiceOutcome}
 import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import cats.implicits.catsSyntaxValidatedId
-import config.Deprecation.{Deprecated, NotDeprecated}
+import config.Deprecation.{Deprecated, NotDeprecated, ScheduledDeprecation}
 import config.{AppConfig, Deprecation, MockAppConfig}
 import org.scalamock.handlers.CallHandler
 import play.api.http.{HeaderNames, Status}
 import play.api.libs.json.{JsString, Json, OWrites}
-import play.api.mvc.{AnyContent, AnyContentAsEmpty}
+import play.api.mvc.{AnyContent, AnyContentAsEmpty, Result}
 import play.api.test.{FakeRequest, ResultExtractors}
 import routing.Version
 import support.UnitSpec
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
+import utils.DateUtils.longDateTimestampGmt
 import utils.MockIdGenerator
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -92,13 +93,15 @@ class RequestHandlerSpec
     def validate: Validated[Seq[MtdError], Input.type] = Invalid(List(NinoFormatError))
   }
 
+  private val successRequestHandler =
+    RequestHandler
+      .withValidator(successValidatorForRequest)
+      .withService(mockService.service)
+
   "RequestHandler" when {
     "a request is successful" must {
       "return the correct response" in {
-        val requestHandler = RequestHandler
-          .withValidator(successValidatorForRequest)
-          .withService(mockService.service)
-          .withPlainJsonResult(successCode)
+        val requestHandler = successRequestHandler.withPlainJsonResult(successCode)
 
         mockDeprecation(NotDeprecated)
 
@@ -112,10 +115,7 @@ class RequestHandlerSpec
       }
 
       "return no content if required" in {
-        val requestHandler = RequestHandler
-          .withValidator(successValidatorForRequest)
-          .withService(mockService.service)
-          .withNoContentResult()
+        val requestHandler = successRequestHandler.withNoContentResult()
 
         mockDeprecation(NotDeprecated)
 
@@ -132,10 +132,7 @@ class RequestHandlerSpec
         "return the correct response" when {
           "deprecatedOn and sunsetDate exists" in {
 
-            val requestHandler = RequestHandler
-              .withValidator(successValidatorForRequest)
-              .withService(mockService.service)
-              .withPlainJsonResult(successCode)
+            val requestHandler = successRequestHandler.withPlainJsonResult(successCode)
 
             service returns Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output)))
 
@@ -160,10 +157,7 @@ class RequestHandlerSpec
           }
 
           "only deprecatedOn exists" in {
-            val requestHandler = RequestHandler
-              .withValidator(successValidatorForRequest)
-              .withService(mockService.service)
-              .withPlainJsonResult(successCode)
+            val requestHandler = successRequestHandler.withPlainJsonResult(successCode)
 
             service returns Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output)))
 
@@ -188,6 +182,42 @@ class RequestHandlerSpec
       }
     }
 
+    "handling deprecation headers" should {
+      val documentationUrl: String    = "http://test-BaseUrl/documentation-url"
+      val deprecatedOn: LocalDateTime = LocalDate.parse("2027-01-15").plusDays(1).atStartOfDay.minusSeconds(1)
+      val sunsetDate: LocalDateTime   = LocalDate.parse("2028-01-15").plusDays(1).atStartOfDay.minusSeconds(1)
+
+      "include the correct headers for a scheduled API version deprecation" in {
+        MockedAppConfig.apiDocumentationUrl().returns(documentationUrl).anyNumberOfTimes()
+
+        mockDeprecation(ScheduledDeprecation(deprecatedOn = deprecatedOn, sunsetDate = Some(sunsetDate)))
+
+        service.returns(Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output))))
+
+        val requestHandler: RequestHandler = successRequestHandler.withPlainJsonResult(successCode)
+        val result: Future[Result]         = requestHandler.handleRequest()
+
+        header("Deprecation", result) shouldBe Some(longDateTimestampGmt(deprecatedOn))
+        header("Sunset", result) shouldBe Some(longDateTimestampGmt(sunsetDate))
+        header("Link", result) shouldBe Some(documentationUrl)
+      }
+
+      "include the correct headers for a deprecated API version" in {
+        MockedAppConfig.apiDocumentationUrl().returns(documentationUrl).anyNumberOfTimes()
+
+        mockDeprecation(Deprecated(deprecatedOn = deprecatedOn, sunsetDate = None))
+
+        service.returns(Future.successful(Right(ResponseWrapper(serviceCorrelationId, Output))))
+
+        val requestHandler: RequestHandler = successRequestHandler.withPlainJsonResult(successCode)
+        val result: Future[Result]         = requestHandler.handleRequest()
+
+        header("Deprecation", result) shouldBe Some(longDateTimestampGmt(deprecatedOn))
+        header("Sunset", result) shouldBe None
+        header("Link", result) shouldBe Some(documentationUrl)
+      }
+    }
+
     "a request fails with validation errors" must {
       "return the errors" in {
         val requestHandler = RequestHandler
@@ -207,10 +237,7 @@ class RequestHandlerSpec
 
     "a request fails with service errors" must {
       "return the errors" in {
-        val requestHandler = RequestHandler
-          .withValidator(successValidatorForRequest)
-          .withService(mockService.service)
-          .withPlainJsonResult(successCode)
+        val requestHandler = successRequestHandler.withPlainJsonResult(successCode)
 
         mockDeprecation(NotDeprecated)
 
@@ -240,10 +267,7 @@ class RequestHandlerSpec
         includeResponse = includeResponse
       )
 
-      val basicRequestHandler = RequestHandler
-        .withValidator(successValidatorForRequest)
-        .withService(mockService.service)
-        .withPlainJsonResult(successCode)
+      val basicRequestHandler = successRequestHandler.withPlainJsonResult(successCode)
 
       val basicErrorRequestHandler = RequestHandler
         .withValidator(singleErrorValidatorForRequest)

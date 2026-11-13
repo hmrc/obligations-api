@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,12 @@ sealed trait Deprecation
 object Deprecation {
   case object NotDeprecated extends Deprecation
 
-  case class Deprecated(deprecatedOn: LocalDateTime, sunsetDate: Option[LocalDateTime]) extends Deprecation
+  sealed trait HasDeprecationDates extends Deprecation {
+    def deprecatedOn: LocalDateTime
+    def sunsetDate: Option[LocalDateTime]
+  }
 
+  case class ScheduledDeprecation(deprecatedOn: LocalDateTime, sunsetDate: Option[LocalDateTime]) extends HasDeprecationDates
+
+  case class Deprecated(deprecatedOn: LocalDateTime, sunsetDate: Option[LocalDateTime]) extends HasDeprecationDates
 }
